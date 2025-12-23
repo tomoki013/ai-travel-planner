@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import TravelPlanner from "@/components/TravelPlanner";
 
@@ -12,7 +13,15 @@ export default function Home() {
           次の冒険を、AIと一緒に見つけよう。
         </p>
 
-        <TravelPlanner />
+        <Suspense
+          fallback={
+            <div className="w-full max-w-2xl h-[500px] bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl animate-pulse flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
+            </div>
+          }
+        >
+          <TravelPlanner />
+        </Suspense>
 
         <div className="flex gap-4 mt-12 text-sm text-muted-foreground/50 animate-in fade-in duration-1000 delay-300">
           <div className="flex items-center gap-2">
