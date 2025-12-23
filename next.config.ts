@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
   },
   basePath: "/ai-travel-planner",
   trailingSlash: true,
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['travel.tomokichidiary.com'], // 独自ドメインを許可
+    },
+  },
 };
 
 export default nextConfig;
