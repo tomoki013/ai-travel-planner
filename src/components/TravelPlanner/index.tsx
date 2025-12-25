@@ -28,10 +28,58 @@ export default function TravelPlanner() {
   const [result, setResult] = useState<Itinerary | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleNext = () => setStep((prev) => prev + 1);
-  const handleBack = () => setStep((prev) => Math.max(0, prev - 1));
+  const validateStep = (currentStep: number) => {
+    switch (currentStep) {
+      case 0: // Destination
+        if (!input.destination.trim()) {
+          setErrorMessage("行き先を入力してください ✈️");
+          return false;
+        }
+        break;
+      case 1: // Dates
+        // Optional
+        break;
+      case 2: // Companions
+        if (!input.companions) {
+          setErrorMessage("誰との旅行か選択してください 👥");
+          return false;
+        }
+        break;
+      case 3: // Themes
+        if (input.theme.length === 0) {
+          setErrorMessage("テーマを少なくとも1つ選択してください 🎭");
+          return false;
+        }
+        if (!input.budget) {
+          setErrorMessage("予算感を選択してください 💰");
+          return false;
+        }
+        if (!input.pace) {
+          setErrorMessage("旅行のペースを選択してください ⚡");
+          return false;
+        }
+        break;
+      case 4: // FreeText (Optional)
+        break;
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (validateStep(step)) {
+      setErrorMessage("");
+      setStep((prev) => prev + 1);
+    }
+  };
+
+  const handleBack = () => {
+    setErrorMessage("");
+    setStep((prev) => Math.max(0, prev - 1));
+  };
 
   const handlePlan = async () => {
+    if (!validateStep(step)) return;
+
     setStatus("loading");
     setErrorMessage("");
     try {
@@ -115,8 +163,7 @@ export default function TravelPlanner() {
       onBack={handleBack}
       onNext={handleNext}
       onComplete={handlePlan}
-      isNextDisabled={step === 0 && !input.destination}
-      errorMessage={status === "error" ? errorMessage : undefined}
+      errorMessage={errorMessage}
     >
       {step === 0 && (
         <StepDestination

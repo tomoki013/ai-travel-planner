@@ -1,7 +1,7 @@
 "use client";
 
 import { UserInput } from "@/lib/types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface StepDatesProps {
   input: UserInput;
@@ -20,7 +20,7 @@ export default function StepDates({ input, onChange }: StepDatesProps) {
     const match = input.dates.match(/(\d{4}-\d{2}-\d{2})から(\d+)日間/);
     if (match) return parseInt(match[2]);
     const durationMatch = input.dates.match(/(\d+)日間/);
-    return durationMatch ? parseInt(durationMatch[1]) : 3;
+    return durationMatch ? parseInt(durationMatch[1]) : 3; // Default 3 days
   });
 
   const updateParent = (d: string, dur: number) => {
@@ -34,8 +34,15 @@ export default function StepDates({ input, onChange }: StepDatesProps) {
   };
 
   const handleDurationChange = (val: number) => {
-    setDuration(val);
-    updateParent(startDate, val);
+    // Limit between 1 and 30 days
+    const newDur = Math.max(1, Math.min(30, val));
+    setDuration(newDur);
+    updateParent(startDate, newDur);
+  };
+
+  const clearDate = () => {
+    setStartDate("");
+    updateParent("", duration);
   };
 
   return (
@@ -44,41 +51,66 @@ export default function StepDates({ input, onChange }: StepDatesProps) {
         <h2 className="text-3xl font-bold text-white">いつ、どれくらい？</h2>
       </div>
 
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <label className="text-xs text-white/50 uppercase tracking-widest">
-            出発日 (任意)
-          </label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => handleDateChange(e.target.value)}
-            className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-4 text-white text-xl focus:outline-hidden focus:border-white/50 transition-colors [&::-webkit-calendar-picker-indicator]:invert"
-          />
+      <div className="space-y-8">
+        {/* Date Input */}
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <label className="text-xs text-white/50 uppercase tracking-widest">
+              出発日 (任意)
+            </label>
+            {startDate && (
+              <button
+                onClick={clearDate}
+                className="text-xs text-red-300 hover:text-red-200 underline"
+              >
+                クリア
+              </button>
+            )}
+          </div>
+          <div className="relative">
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => handleDateChange(e.target.value)}
+              style={{ colorScheme: "dark" }}
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-4 text-white text-xl focus:outline-hidden focus:border-white/50 transition-colors cursor-pointer"
+            />
+          </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex justify-between items-baseline">
-            <label className="text-xs text-white/50 uppercase tracking-widest">
-              旅行日数
-            </label>
-            <span className="text-2xl font-bold text-white">
-              {duration}{" "}
-              <span className="text-sm font-normal text-white/60">日間</span>
-            </span>
-          </div>
-          <input
-            type="range"
-            min="1"
-            max="14"
-            value={duration}
-            onChange={(e) => handleDurationChange(parseInt(e.target.value))}
-            className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-teal-400"
-          />
-          <div className="flex justify-between text-xs text-white/30 font-mono">
-            <span>1日</span>
-            <span>1週間</span>
-            <span>2週間</span>
+        {/* Duration Input - Counter Style */}
+        <div className="space-y-3">
+          <label className="text-xs text-white/50 uppercase tracking-widest">
+            旅行日数
+          </label>
+          <div className="flex items-center gap-4 bg-white/5 p-2 rounded-2xl border border-white/10">
+            <button
+              onClick={() => handleDurationChange(duration - 1)}
+              className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 active:scale-95 transition-all text-2xl font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+              disabled={duration <= 1}
+            >
+              −
+            </button>
+
+            <div className="flex-1 text-center">
+              <span className="text-3xl font-bold text-white block leading-none">
+                {duration}
+                <span className="text-sm font-normal text-white/60 ml-1">
+                  日間
+                </span>
+              </span>
+              <span className="text-[10px] text-white/40 block mt-1">
+                {duration === 1 ? "日帰り" : `${duration - 1}泊${duration}日`}
+              </span>
+            </div>
+
+            <button
+              onClick={() => handleDurationChange(duration + 1)}
+              className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 active:scale-95 transition-all text-2xl font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+              disabled={duration >= 30}
+            >
+              +
+            </button>
           </div>
         </div>
       </div>

@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { Itinerary, UserInput } from "@/lib/types";
 import { encodePlanData } from "@/lib/urlUtils";
-import { FaTwitter, FaFacebook, FaLine, FaLink, FaShareAlt } from "react-icons/fa";
+import {
+  FaTwitter,
+  FaFacebook,
+  FaLine,
+  FaLink,
+  FaShareAlt,
+} from "react-icons/fa";
 
 interface ShareButtonsProps {
   input: UserInput;
@@ -21,7 +27,7 @@ export default function ShareButtons({
   useEffect(() => {
     if (typeof window !== "undefined") {
       const encoded = encodePlanData(input, result);
-      const url = `${window.location.origin}${window.location.pathname}?q=${encoded}`;
+      const url = `${window.location.origin}/plan?q=${encoded}`;
       setShareUrl(url);
       setCanShare(!!navigator.share);
     }
