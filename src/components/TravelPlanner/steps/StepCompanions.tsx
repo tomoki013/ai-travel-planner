@@ -24,7 +24,7 @@ export default function StepCompanions({
   ];
 
   return (
-    <div className="flex flex-col h-full space-y-8 pt-4 animate-in fade-in slide-in-from-right-8 duration-500">
+    <div className="flex flex-col space-y-8 pt-4 animate-in fade-in slide-in-from-right-8 duration-500">
       <div className="text-center space-y-2">
         <h2 className="text-3xl font-serif font-bold text-foreground">
           誰との旅ですか？
@@ -34,7 +34,7 @@ export default function StepCompanions({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 overflow-y-auto pb-4 px-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pb-4 px-2">
         {options.map((opt) => (
           <button
             key={opt.id}
