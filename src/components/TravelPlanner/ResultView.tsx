@@ -4,6 +4,7 @@ import { Itinerary, UserInput } from "@/lib/types";
 import Image from "next/image";
 import TravelPlannerChat from "../TravelPlannerChat";
 import ShareButtons from "../ShareButtons";
+import { FaMapMarkerAlt, FaClock, FaCalendarAlt } from "react-icons/fa";
 
 interface ResultViewProps {
   result: Itinerary;
@@ -22,12 +23,13 @@ export default function ResultView({
   const heroImg = result.heroImage || "/images/eiffel-tower-and-sunset.jpg";
 
   return (
-    <div className="w-full max-w-6xl mx-auto mt-4 text-left animate-in fade-in duration-700">
+    <div className="w-full max-w-5xl mx-auto mt-4 text-left animate-in fade-in duration-700 pb-20">
+
       {/* Floating Restart Button */}
       <div className="fixed top-24 right-4 sm:right-8 z-50">
         <button
           onClick={onRestart}
-          className="px-6 py-3 rounded-full bg-black/80 backdrop-blur-md hover:bg-black/90 border border-white/20 text-white transition-all text-sm font-medium shadow-2xl flex items-center gap-2 group"
+          className="px-5 py-2.5 rounded-full bg-white/90 backdrop-blur-md hover:bg-white border-2 border-primary/20 text-primary transition-all text-sm font-bold shadow-lg flex items-center gap-2 group"
         >
           <span className="group-hover:-rotate-180 transition-transform duration-500">
             ↺
@@ -36,65 +38,83 @@ export default function ResultView({
         </button>
       </div>
 
-      {/* Hero Section */}
-      <div className="relative h-[60vh] w-full rounded-[2rem] overflow-hidden mb-12 shadow-2xl border border-white/10 group">
-        <Image
-          src={heroImg}
-          alt={result.destination}
-          fill
-          className="object-cover transition-transform duration-[20s] group-hover:scale-110"
-          priority
-        />
-        <div className="absolute inset-0 bg-linear-to-b from-black/20 via-transparent to-black" />
+      {/* Journal Header Section */}
+      <div className="relative mb-16 px-4 sm:px-0">
+        <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full rounded-sm overflow-hidden shadow-xl border-8 border-white bg-white rotate-1">
+             <Image
+                src={heroImg}
+                alt={result.destination}
+                fill
+                className="object-cover"
+                priority
+            />
+             {/* Tape Effect */}
+             <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 bg-yellow-100/80 rotate-[-2deg] shadow-sm backdrop-blur-sm"></div>
+        </div>
 
-        <div className="absolute bottom-0 left-0 p-8 sm:p-16 w-full">
-          <p className="text-sm font-mono text-teal-400 uppercase tracking-widest mb-4">
-            Your Personalized Journey
-          </p>
-          <h1 className="text-5xl sm:text-7xl font-serif text-white mb-6 drop-shadow-lg">
-            {result.destination}
-          </h1>
-          <p className="text-lg sm:text-xl text-white/90 font-light leading-relaxed max-w-2xl drop-shadow-md">
-            {result.description}
-          </p>
+        <div className="mt-8 text-center relative z-10">
+            <div className="inline-block bg-white/80 backdrop-blur-sm px-8 py-6 rounded-sm shadow-sm border border-stone-100 -rotate-1">
+                 <p className="text-sm font-hand text-stone-500 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
+                    <FaMapMarkerAlt className="text-primary" />
+                    Your Destination
+                </p>
+                <h1 className="text-4xl sm:text-6xl font-serif text-stone-800 mb-4 tracking-tight">
+                    {result.destination}
+                </h1>
+                 <p className="text-lg text-stone-600 font-light leading-relaxed max-w-xl mx-auto font-sans">
+                    {result.description}
+                </p>
+            </div>
+        </div>
 
-          <div className="mt-8">
-            <ShareButtons input={input} result={result} />
-          </div>
+        {/* Share Buttons */}
+        <div className="flex justify-center mt-6">
+             <ShareButtons input={input} result={result} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12 px-2 sm:px-0">
+
+      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12 px-4 sm:px-0">
         {/* Timeline */}
-        <div className="space-y-20">
+        <div className="space-y-16">
           {result.days.map((day) => (
-            <div key={day.day}>
-              <div className="flex items-end gap-4 mb-8 sticky top-4 z-30 bg-background/50 backdrop-blur-md p-4 rounded-xl border border-white/5">
-                <span className="text-5xl font-serif text-white">
-                  {day.day}
-                </span>
-                <span className="text-sm text-gray-400 uppercase tracking-widest mb-2">
-                  Day
-                </span>
-                <div className="h-px bg-white/20 flex-1 mb-3 ml-4"></div>
-                <span className="text-lg text-teal-400 font-serif italic mb-1">
-                  {day.title}
-                </span>
+            <div key={day.day} className="relative">
+              {/* Day Header - Sticky but styled for light theme */}
+              <div className="sticky top-4 z-30 mb-8">
+                  <div className="inline-flex items-center gap-4 bg-[#fcfbf9]/95 backdrop-blur-md py-3 px-6 rounded-r-full shadow-sm border border-stone-200 border-l-4 border-l-primary shadow-stone-200/50">
+                    <span className="text-4xl font-serif text-primary">
+                        {day.day}
+                    </span>
+                    <div className="flex flex-col">
+                        <span className="text-xs text-stone-400 uppercase tracking-widest font-bold">Day</span>
+                        <span className="text-stone-600 font-serif italic text-lg leading-none">
+                            {day.title}
+                        </span>
+                    </div>
+                  </div>
               </div>
 
-              <div className="border-l border-white/10 ml-6 space-y-12 pb-12 relative">
+              {/* Activities */}
+              <div className="border-l-2 border-stone-200 ml-8 space-y-8 pb-8 relative">
                 {day.activities.map((act, i) => (
-                  <div key={i} className="relative pl-12 group">
-                    <div className="absolute left-[-5px] top-6 w-2.5 h-2.5 rounded-full bg-teal-500 border-4 border-black/50 ring-1 ring-teal-500/50"></div>
+                  <div key={i} className="relative pl-10 group">
+                    {/* Dot on timeline */}
+                    <div className="absolute left-[-9px] top-6 w-4 h-4 rounded-full bg-white border-4 border-primary shadow-sm z-10"></div>
 
-                    <div className="bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 rounded-2xl p-6 transition-all duration-300">
-                      <div className="inline-block px-3 py-1 rounded bg-white/10 text-xs font-mono text-teal-300 mb-3">
+                    {/* Activity Card */}
+                    <div className="bg-white hover:bg-stone-50 border border-stone-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1">
+                        {/* Decorative background stripe */}
+                        <div className="absolute top-0 left-0 w-1 h-full bg-stone-200 group-hover:bg-primary transition-colors"></div>
+
+                      <div className="flex items-center gap-2 mb-2 text-stone-500 text-sm font-mono bg-stone-100 inline-block px-2 py-1 rounded-md">
+                        <FaClock className="text-primary/70" />
                         {act.time}
                       </div>
-                      <h4 className="text-xl font-bold text-white mb-2">
+
+                      <h4 className="text-xl font-bold text-stone-800 mb-2 font-serif">
                         {act.activity}
                       </h4>
-                      <p className="text-gray-400 leading-relaxed text-sm">
+                      <p className="text-stone-600 leading-relaxed text-sm">
                         {act.description}
                       </p>
                     </div>
@@ -104,59 +124,71 @@ export default function ResultView({
             </div>
           ))}
 
-          {/* Chat */}
-          <div className="bg-white/5 rounded-3xl p-8 border border-white/10">
-            <h3 className="text-xl font-bold text-white mb-4">
-              Customize Plan with AI
-            </h3>
-            {/* Warning: onRegenerate prop is required but I provided a placeholder. need to implement real logic later */}
-            <TravelPlannerChat itinerary={result} onRegenerate={onRegenerate} />
+          {/* Chat Section - Restyled */}
+          <div className="bg-white rounded-3xl p-8 border-2 border-stone-100 shadow-lg relative overflow-hidden">
+             {/* Texture overlay */}
+             <div className="absolute inset-0 bg-[url('/images/cream-paper.png')] opacity-20 pointer-events-none mix-blend-multiply" />
+
+            <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-2xl">
+                        🤖
+                    </div>
+                    <h3 className="text-xl font-bold text-stone-800 font-serif">
+                        Customize Plan with AI
+                    </h3>
+                </div>
+
+                <div className="bg-stone-50/50 rounded-xl">
+                    <TravelPlannerChat itinerary={result} onRegenerate={onRegenerate} />
+                </div>
+            </div>
           </div>
         </div>
 
         {/* Sidebar / References */}
         <div className="space-y-8">
-          <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-400 border-b border-white/10 pb-4">
-            Reference Articles
-          </h3>
+          <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm sticky top-8">
+              <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-stone-400 border-b border-stone-100 pb-4 mb-4 flex items-center gap-2">
+                <FaCalendarAlt /> Reference Articles
+              </h3>
 
-          <div className="space-y-6 sticky top-8">
-            {result.references && result.references.length > 0 ? (
-              result.references.map((ref, i) => (
-                <a
-                  key={i}
-                  href={ref.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block group bg-black/40 rounded-xl overflow-hidden border border-white/10 hover:border-teal-500/50 transition-all"
-                >
-                  <div className="relative h-40 w-full">
-                    {ref.image ? (
-                      <Image
-                        src={ref.image}
-                        alt={ref.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-800 flex items-center justify-center text-xs">
-                        No Image
+              <div className="space-y-6">
+                {result.references && result.references.length > 0 ? (
+                  result.references.map((ref, i) => (
+                    <a
+                      key={i}
+                      href={ref.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block group relative"
+                    >
+                        <div className="relative h-32 w-full rounded-lg overflow-hidden border border-stone-200 shadow-sm group-hover:shadow-md transition-all">
+                        {ref.image ? (
+                          <Image
+                            src={ref.image}
+                            alt={ref.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-stone-100 flex items-center justify-center text-xs text-stone-400">
+                            No Image
+                          </div>
+                        )}
+                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent opacity-80" />
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <h5 className="text-white text-sm font-bold line-clamp-2">
-                        {ref.title}
-                      </h5>
-                    </div>
+                       <h5 className="mt-2 text-stone-700 text-sm font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                            {ref.title}
+                        </h5>
+                    </a>
+                  ))
+                ) : (
+                  <div className="p-4 bg-stone-50 rounded-xl border border-stone-100 text-sm text-stone-500 italic text-center">
+                    No specific references linked.
                   </div>
-                </a>
-              ))
-            ) : (
-              <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-sm text-gray-500 italic">
-                No specific references linked.
+                )}
               </div>
-            )}
           </div>
         </div>
       </div>

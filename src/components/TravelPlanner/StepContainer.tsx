@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { FaPlane } from "react-icons/fa6";
 
 interface StepContainerProps {
   step: number;
@@ -74,7 +75,7 @@ export default function StepContainer({
 
       {/* Header / Progress */}
       <div className="relative z-10 px-6 pt-8 pb-4">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-8">
           <button
             onClick={onBack}
             disabled={step === 0}
@@ -90,14 +91,27 @@ export default function StepContainer({
           <div className="w-10 h-10" /> {/* Spacer */}
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full h-1.5 bg-stone-200 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-primary"
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5 }}
-          />
+        {/* Progress Bar Container */}
+        <div className="relative w-full h-8 flex items-center">
+            {/* Track */}
+            <div className="absolute top-1/2 left-0 w-full h-1 bg-stone-200 rounded-full -translate-y-1/2 overflow-hidden">
+                 <motion.div
+                    className="h-full bg-primary/50"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.5 }}
+                />
+            </div>
+
+            {/* Flying Plane Icon */}
+            <motion.div
+                className="absolute top-1/2 -translate-y-1/2 text-primary text-xl z-20 drop-shadow-sm"
+                initial={{ left: 0 }}
+                animate={{ left: `calc(${progress}% - 12px)` }} // Adjust -12px to center the plane on the tip
+                transition={{ duration: 0.5 }}
+            >
+                <FaPlane className="transform rotate-45" />
+            </motion.div>
         </div>
       </div>
 
