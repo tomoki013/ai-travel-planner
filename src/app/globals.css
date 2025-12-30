@@ -60,6 +60,13 @@
   --font-sans: var(--font-noto-sans-jp);
   --font-serif: var(--font-kaisei-decol);
   --font-hand: var(--font-yomogi);
+
+  --animate-progress-indeterminate: progress-indeterminate 1.5s infinite linear;
+}
+
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 body {
