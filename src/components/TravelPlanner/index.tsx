@@ -23,7 +23,7 @@ export default function TravelPlanner() {
   });
 
   const [status, setStatus] = useState<
-    "idle" | "loading" | "complete" | "error"
+    "idle" | "loading" | "updating" | "complete" | "error"
   >("idle");
   const [result, setResult] = useState<Itinerary | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -102,7 +102,7 @@ export default function TravelPlanner() {
     chatHistory: { role: string; text: string }[]
   ) => {
     if (!result) return;
-    setStatus("loading");
+    setStatus("updating");
     setErrorMessage("");
     try {
       const response = await regeneratePlan(result, chatHistory);
@@ -137,13 +137,14 @@ export default function TravelPlanner() {
     return <LoadingView />;
   }
 
-  if (status === "complete" && result) {
+  if ((status === "complete" || status === "updating") && result) {
     return (
       <ResultView
         result={result}
         input={input}
         onRestart={handleRestart}
         onRegenerate={handleRegenerate}
+        isUpdating={status === "updating"}
       />
     );
   }

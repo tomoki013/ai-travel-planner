@@ -11,6 +11,7 @@ interface ResultViewProps {
   input: UserInput;
   onRestart: () => void;
   onRegenerate: (history: { role: string; text: string }[]) => void;
+  isUpdating?: boolean;
 }
 
 export default function ResultView({
@@ -18,12 +19,27 @@ export default function ResultView({
   input,
   onRestart,
   onRegenerate,
+  isUpdating = false,
 }: ResultViewProps) {
   // Use heroImage if available, else a fallback
   const heroImg = result.heroImage || "/images/eiffel-tower-and-sunset.jpg";
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-4 text-left animate-in fade-in duration-700 pb-20">
+    <div className="w-full max-w-5xl mx-auto mt-4 text-left animate-in fade-in duration-700 pb-20 relative">
+      {/* Updating Overlay */}
+      {isUpdating && (
+        <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-white/60 backdrop-blur-sm animate-in fade-in duration-500">
+          <div className="bg-white p-8 rounded-full shadow-xl border-4 border-primary/20 animate-bounce">
+             <span className="text-4xl">✏️</span>
+          </div>
+          <h2 className="mt-6 text-3xl font-hand font-bold text-stone-800 tracking-wide animate-pulse">
+            プランを書き直しています...
+          </h2>
+          <p className="mt-2 text-stone-500 font-sans text-sm">
+            Updating your travel plan
+          </p>
+        </div>
+      )}
 
       {/* Floating Restart Button */}
       <div className="fixed top-24 right-4 sm:right-8 z-50">
@@ -140,7 +156,7 @@ export default function ResultView({
                 </div>
 
                 <div className="bg-stone-50/50 rounded-xl">
-                    <TravelPlannerChat itinerary={result} onRegenerate={onRegenerate} />
+                    <TravelPlannerChat itinerary={result} onRegenerate={onRegenerate} isRegenerating={isUpdating} />
                 </div>
             </div>
           </div>
