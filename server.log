@@ -9,36 +9,9 @@
      · serverActions
 
  ✓ Starting...
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
-
- ✓ Ready in 1607ms
+ ✓ Ready in 1932ms
  ○ Compiling / ...
- GET / 200 in 10.7s (compile: 9.8s, render: 860ms)
- GET /images/eiffel-tower-and-sunset.jpg 404 in 1117ms (compile: 977ms, render: 140ms)
- ⨯ The requested resource isn't a valid image for /images/eiffel-tower-and-sunset.jpg received null
- GET /images/cream-paper.png 404 in 1227ms (compile: 967ms, render: 260ms)
- GET /images/eiffel-tower-and-sunset.jpg 404 in 43ms (compile: 6ms, render: 37ms)
- ⨯ The requested resource isn't a valid image for /images/eiffel-tower-and-sunset.jpg received null
- GET /images/eiffel-tower-and-sunset.jpg 404 in 52ms (compile: 8ms, render: 44ms)
- ⨯ The requested resource isn't a valid image for /images/eiffel-tower-and-sunset.jpg received null
- GET /images/kiyomizu-temple-autumn-leaves-lightup.jpg 404 in 46ms (compile: 11ms, render: 35ms)
- ⨯ The requested resource isn't a valid image for /images/kiyomizu-temple-autumn-leaves-lightup.jpg received null
- GET /images/balloons-in-cappadocia.jpg 404 in 48ms (compile: 6ms, render: 42ms)
- ⨯ The requested resource isn't a valid image for /images/balloons-in-cappadocia.jpg received null
- GET /images/tajmahal.jpg 404 in 47ms (compile: 6ms, render: 42ms)
- ⨯ The requested resource isn't a valid image for /images/tajmahal.jpg received null
- GET / 200 in 418ms (compile: 214ms, render: 205ms)
- GET /images/cream-paper.png 404 in 91ms (compile: 40ms, render: 50ms)
-Error: Turbopack build failed with 1 errors:
-./src/app
-Error: Next.js inferred your workspace root, but it may not be correct.
-    We couldn't find the Next.js package (next/package.json) from the project directory: /app/src/app
-     To fix this, set turbopack.root in your Next.js config, or ensure the Next.js package is resolvable from this directory.
-    Note: For security and performance reasons, files outside of the project directory will not be compiled.
-    See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
-
-    at ignore-listed frames
-[?25h
+ GET / 200 in 13.7s (compile: 12.6s, render: 1088ms)
+ GET /images/cream-paper.png 404 in 1315ms (compile: 1134ms, render: 181ms)
+ GET / 200 in 481ms (compile: 196ms, render: 285ms)
+ GET /images/cream-paper.png 404 in 67ms (compile: 8ms, render: 60ms)
