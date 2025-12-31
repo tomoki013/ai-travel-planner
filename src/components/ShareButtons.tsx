@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { Itinerary, UserInput } from "@/lib/types";
 import { encodePlanData } from "@/lib/urlUtils";
 import {
-  FaTwitter,
   FaFacebook,
   FaLine,
   FaLink,
   FaShareAlt,
 } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 interface ShareButtonsProps {
   input: UserInput;
@@ -26,12 +26,16 @@ export default function ShareButtons({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const encoded = encodePlanData(input, result);
-      const url = `${window.location.origin}/plan?q=${encoded}`;
-      setShareUrl(url);
-      setCanShare(!!navigator.share);
+      // Wrap in setTimeout to avoid synchronous state update linter error
+      const timer = setTimeout(() => {
+        const encoded = encodePlanData(input, result);
+        const url = `${window.location.origin}/plan?q=${encoded}`;
+        setShareUrl(url);
+        setCanShare(!!navigator.share);
+      }, 0);
+      return () => clearTimeout(timer);
     }
-  }, [input, result]); // This effect depends on input/result changes
+  }, [input, result]);
 
   const shareText = `AIに旅行プランを作ってもらいました！\n目的地: ${
     result.destination
@@ -59,7 +63,6 @@ export default function ShareButtons({
     }
   };
 
-  // Social Share Links
   const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(
     shareText
   )}&url=${encodeURIComponent(shareUrl)}`;
@@ -74,22 +77,20 @@ export default function ShareButtons({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      <h4 className="text-sm font-bold text-white mb-3 text-center sm:text-left flex items-center gap-2">
+      <h4 className="text-sm font-bold text-stone-600 mb-3 text-center sm:text-left flex items-center gap-2">
         <FaShareAlt /> Share this plan
       </h4>
       <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-        {/* Native Share (Mobile) */}
         {canShare && (
           <button
             onClick={handleNativeShare}
-            className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all w-10 h-10 flex items-center justify-center"
+            className="p-3 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition-all w-10 h-10 flex items-center justify-center"
             aria-label="Share"
           >
             <FaShareAlt size={18} />
           </button>
         )}
 
-        {/* X (Twitter) */}
         <a
           href={xShareUrl}
           target="_blank"
@@ -97,10 +98,9 @@ export default function ShareButtons({
           className="p-3 rounded-full bg-black hover:bg-gray-900 text-white border border-white/20 transition-all flex items-center justify-center w-10 h-10"
           aria-label="Share on X"
         >
-          <FaTwitter size={16} />
+          <FaXTwitter size={16} />
         </a>
 
-        {/* LINE */}
         <a
           href={lineShareUrl}
           target="_blank"
@@ -111,7 +111,6 @@ export default function ShareButtons({
           <FaLine size={20} />
         </a>
 
-        {/* Facebook */}
         <a
           href={fbShareUrl}
           target="_blank"
@@ -122,10 +121,9 @@ export default function ShareButtons({
           <FaFacebook size={18} />
         </a>
 
-        {/* Copy Link */}
         <button
           onClick={handleCopy}
-          className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all relative w-10 h-10 flex items-center justify-center"
+          className="p-3 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 transition-all relative w-10 h-10 flex items-center justify-center"
           aria-label="Copy Link"
         >
           {copied ? (

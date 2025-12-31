@@ -24,29 +24,50 @@ export default function StepCompanions({
   ];
 
   return (
-    <div className="flex flex-col h-full space-y-6 pt-4">
-      <h2 className="text-3xl font-bold text-white">誰との旅ですか？</h2>
+    <div className="flex flex-col space-y-8 pt-4 animate-in fade-in slide-in-from-right-8 duration-500">
+      <div className="text-center space-y-2">
+        <h2 className="text-3xl font-serif font-bold text-foreground">
+          誰との旅ですか？
+        </h2>
+        <p className="font-hand text-muted-foreground">
+          旅のパートナーを選んでください
+        </p>
+      </div>
 
-      <div className="grid grid-cols-2 gap-3 overflow-y-auto pb-4 noscrollbar">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pb-4 px-2">
         {options.map((opt) => (
           <button
             key={opt.id}
             onClick={() => onChange(opt.id)}
-            className={`p-4 rounded-2xl border text-left transition-all ${
-              value === opt.id
-                ? "bg-white text-black border-white shadow-xl scale-[1.02]"
-                : "bg-white/5 border-white/10 text-white hover:bg-white/10"
-            }`}
+            className={`
+              relative p-4 rounded-xl border-2 text-left transition-all duration-300 group overflow-hidden
+              ${
+                value === opt.id
+                  ? "bg-white border-primary shadow-[4px_4px_0px_0px_var(--color-primary)] translate-x-[-2px] translate-y-[-2px] z-10"
+                  : "bg-white border-stone-200 hover:border-primary/50 hover:shadow-md hover:bg-stone-50"
+              }
+            `}
           >
-            <span className="text-3xl mb-2 block">{opt.icon}</span>
-            <span className="text-sm font-bold block">{opt.label}</span>
-            <span
-              className={`text-xs ${
-                value === opt.id ? "text-gray-500" : "text-gray-400"
-              }`}
-            >
-              {opt.desc}
-            </span>
+            <div className="flex flex-col h-full justify-between">
+              <span className="text-4xl mb-2 block transform group-hover:scale-110 transition-transform duration-300 drop-shadow-sm">
+                {opt.icon}
+              </span>
+              <div>
+                <span className={`text-lg font-bold block font-serif leading-tight ${value === opt.id ? 'text-primary' : 'text-foreground'}`}>
+                  {opt.label}
+                </span>
+                <span className="text-xs text-stone-500 font-hand mt-1 block">
+                  {opt.desc}
+                </span>
+              </div>
+            </div>
+
+            {/* Selection indicator (Stamp mark) */}
+            {value === opt.id && (
+              <div className="absolute top-2 right-2 text-primary opacity-20 transform rotate-12">
+                <span className="text-4xl">●</span>
+              </div>
+            )}
           </button>
         ))}
       </div>

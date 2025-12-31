@@ -1,59 +1,57 @@
-import { Itinerary, UserInput } from "./types";
+import pako from "pako";
+import LZString from "lz-string";
+import { UserInput, Itinerary } from "./types";
 
-/**
- * Encodes the plan data (input + result) into a URL-safe Base64 string.
- * We use a custom object structure to minimize size if possible,
- * but for now we simply wrap the necessary data.
- */
 export function encodePlanData(input: UserInput, result: Itinerary): string {
-  try {
-    const data = {
-      i: input,
-      r: result,
-    };
-    const jsonString = JSON.stringify(data);
-    // Encode to Base64 (handle Unicode characters)
-    const base64 = btoa(
-      encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g, (match, p1) => {
-        return String.fromCharCode(parseInt(p1, 16));
-      })
-    );
-    // Make URL-safe: + -> -, / -> _, remove =
-    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-  } catch (e) {
-    console.error("Failed to encode plan data", e);
-    return "";
-  }
+  const data = JSON.stringify({ input, result });
+  return LZString.compressToEncodedURIComponent(data);
 }
 
-/**
- * Decodes the plan data from a URL-safe Base64 string.
- */
-export function decodePlanData(
-  encoded: string
-): { input: UserInput; result: Itinerary } | null {
+export function decodePlanData(encoded: string): { input: UserInput, result: Itinerary } | null {
+  if (!encoded) return null;
+
+  // Try LZString first
   try {
-    // Restore Base64: - -> +, _ -> /, add padding
+    const decompressed = LZString.decompressFromEncodedURIComponent(encoded);
+    if (decompressed) {
+        try {
+            return JSON.parse(decompressed);
+        } catch (e) {
+            // Not valid JSON, ignore
+        }
+    }
+  } catch (e) {
+      // Ignore LZString error
+  }
+
+  // Fallback to legacy pako (browser-compatible)
+  try {
+    // Decode base64url to Uint8Array without Buffer
+    // base64url: - -> +, _ -> /, remove padding
     let base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
-    while (base64.length % 4) {
-      base64 += "=";
+    const pad = base64.length % 4;
+    if (pad) {
+      if (pad === 1) {
+        throw new Error("Invalid base64 length");
+      }
+      base64 += new Array(5 - pad).join("=");
     }
 
-    // Decode from Base64 (handle Unicode characters)
-    const jsonString = decodeURIComponent(
-      Array.prototype.map
-        .call(atob(base64), (c: string) => {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join("")
-    );
-    const data = JSON.parse(jsonString);
-    if (data.i && data.r) {
-      return { input: data.i, result: data.r };
+    // In Node.js environment (e.g. tests), atob might not be available or behaves differently?
+    // But this code runs in browser.
+    // However, unit tests run in Node (Vitest). Node 20 has global atob.
+
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
     }
-    return null;
+
+    const decompressed = pako.inflate(bytes, { to: "string" });
+    return JSON.parse(decompressed);
   } catch (e) {
-    console.error("Failed to decode plan data", e);
+    // console.error("Failed to decode plan data:", e);
     return null;
   }
 }
