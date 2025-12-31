@@ -34,7 +34,7 @@ async function main() {
     chunkOverlap: 200,
   });
 
-  let allDocs: any[] = [];
+  const allDocs: any[] = [];
 
   for (const file of mdxFiles) {
     const filePath = path.join(postsDir, file);

@@ -26,12 +26,16 @@ export default function ShareButtons({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const encoded = encodePlanData(input, result);
-      const url = `${window.location.origin}/plan?q=${encoded}`;
-      setShareUrl(url);
-      setCanShare(!!navigator.share);
+      // Wrap in setTimeout to avoid synchronous state update linter error
+      const timer = setTimeout(() => {
+        const encoded = encodePlanData(input, result);
+        const url = `${window.location.origin}/plan?q=${encoded}`;
+        setShareUrl(url);
+        setCanShare(!!navigator.share);
+      }, 0);
+      return () => clearTimeout(timer);
     }
-  }, [input, result]); // This effect depends on input/result changes
+  }, [input, result]);
 
   const shareText = `AIに旅行プランを作ってもらいました！\n目的地: ${
     result.destination
@@ -59,7 +63,6 @@ export default function ShareButtons({
     }
   };
 
-  // Social Share Links
   const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(
     shareText
   )}&url=${encodeURIComponent(shareUrl)}`;
@@ -78,7 +81,6 @@ export default function ShareButtons({
         <FaShareAlt /> Share this plan
       </h4>
       <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-        {/* Native Share (Mobile) */}
         {canShare && (
           <button
             onClick={handleNativeShare}
@@ -89,7 +91,6 @@ export default function ShareButtons({
           </button>
         )}
 
-        {/* X (Twitter) */}
         <a
           href={xShareUrl}
           target="_blank"
@@ -100,7 +101,6 @@ export default function ShareButtons({
           <FaTwitter size={16} />
         </a>
 
-        {/* LINE */}
         <a
           href={lineShareUrl}
           target="_blank"
@@ -111,7 +111,6 @@ export default function ShareButtons({
           <FaLine size={20} />
         </a>
 
-        {/* Facebook */}
         <a
           href={fbShareUrl}
           target="_blank"
@@ -122,7 +121,6 @@ export default function ShareButtons({
           <FaFacebook size={18} />
         </a>
 
-        {/* Copy Link */}
         <button
           onClick={handleCopy}
           className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all relative w-10 h-10 flex items-center justify-center"

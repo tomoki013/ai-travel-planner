@@ -13,7 +13,7 @@ export class SimpleRecursiveCharacterTextSplitter {
         let start = 0;
         
         while (start < text.length) {
-            let end = start + this.chunkSize;
+            const end = start + this.chunkSize;
             
             if (end >= text.length) {
                 chunks.push(text.slice(start));

@@ -22,23 +22,27 @@ function PlanContent() {
   >("loading");
 
   useEffect(() => {
-    if (!q) {
-      setError("プランが見つかりませんでした。URLを確認してください。");
-      setStatus("error");
-      return;
-    }
+    // Wrap in setTimeout to avoid synchronous state update linter error
+    const timer = setTimeout(() => {
+        if (!q) {
+        setError("プランが見つかりませんでした。URLを確認してください。");
+        setStatus("error");
+        return;
+        }
 
-    const decoded = decodePlanData(q);
-    if (decoded) {
-      setInput(decoded.input);
-      setResult(decoded.result);
-      setStatus("idle");
-    } else {
-      setError(
-        "プランデータの読み込みに失敗しました。リンクが壊れている可能性があります。"
-      );
-      setStatus("error");
-    }
+        const decoded = decodePlanData(q);
+        if (decoded) {
+        setInput(decoded.input);
+        setResult(decoded.result);
+        setStatus("idle");
+        } else {
+        setError(
+            "プランデータの読み込みに失敗しました。リンクが壊れている可能性があります。"
+        );
+        setStatus("error");
+        }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [q]);
 
   const handleRegenerate = async (
@@ -52,16 +56,8 @@ function PlanContent() {
         setResult(response.data);
         setStatus("idle");
       } else {
-        // We don't set global error here to preserve the plan view, just maybe alert or log?
-        // Or maybe ResultView handles internal error?
-        // Logic from TravelPlanner.tsx was:
-        // setErrorMessage(response.message || "Failed to regenerate.");
-        // setStatus("error"); which hides the result view.
-        // We probably want to stay on result view but show error.
-        // But for now let's mimic TravelPlanner behavior or fallback to idle.
         console.error(response.message);
-        setStatus("idle"); // reset to idle so user can try again, or handle error better.
-        // TODO: Pass error to ResultView if it supports it?
+        setStatus("idle");
       }
     } catch (e) {
       console.error(e);

@@ -2,7 +2,6 @@
 
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { FaPlane } from "react-icons/fa6";
 
 interface StepContainerProps {
@@ -15,15 +14,6 @@ interface StepContainerProps {
   errorMessage?: string;
   children: ReactNode;
 }
-
-// Background images for each step
-const stepImages = [
-  "/images/eiffel-tower-and-sunset.jpg", // Destination
-  "/images/kiyomizu-temple-autumn-leaves-lightup.jpg", // Dates
-  "/images/balloons-in-cappadocia.jpg", // Companions
-  "/images/tajmahal.jpg", // Themes
-  "/images/eiffel-tower-and-sunset.jpg", // FreeText
-];
 
 export default function StepContainer({
   step,

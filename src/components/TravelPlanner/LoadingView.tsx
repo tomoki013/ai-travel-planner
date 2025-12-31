@@ -1,15 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-
-// Reusing images for consistent theme
-const loadingImages = [
-  "/images/eiffel-tower-and-sunset.jpg",
-  "/images/kiyomizu-temple-autumn-leaves-lightup.jpg",
-  "/images/balloons-in-cappadocia.jpg",
-  "/images/tajmahal.jpg",
-];
 
 const loadingMessages = [
   "ガイドブックを開いています...",
