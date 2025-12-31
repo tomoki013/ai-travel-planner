@@ -7,9 +7,11 @@ import { chatWithPlanner } from "@/app/actions/travel-planner";
 export default function TravelPlannerChat({
   itinerary,
   onRegenerate,
+  isRegenerating = false,
 }: {
   itinerary: Itinerary;
   onRegenerate: (history: { role: string; text: string }[]) => void;
+  isRegenerating?: boolean;
 }) {
   const [messages, setMessages] = useState<
     { role: "user" | "model"; text: string }[]
@@ -97,13 +99,14 @@ export default function TravelPlannerChat({
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            onKeyDown={(e) => e.key === "Enter" && !isRegenerating && handleSend()}
             placeholder="e.g. Can we find a cheaper lunch option?"
-            className="flex-1 bg-transparent border-none px-4 py-1 text-stone-800 text-sm focus:outline-hidden placeholder:text-stone-400"
+            disabled={isRegenerating}
+            className="flex-1 bg-transparent border-none px-4 py-1 text-stone-800 text-sm focus:outline-hidden placeholder:text-stone-400 disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <button
             onClick={handleSend}
-            disabled={!input.trim() || loading}
+            disabled={!input.trim() || loading || isRegenerating}
             className="p-2.5 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
           >
             <svg
@@ -128,7 +131,8 @@ export default function TravelPlannerChat({
         <div className="mt-4 flex justify-end animate-in fade-in slide-in-from-bottom-2">
           <button
             onClick={() => onRegenerate(messages)}
-            className="flex items-center gap-2 px-6 py-3 rounded-full bg-stone-100 border border-stone-200 text-stone-700 hover:bg-stone-200 transition-all font-bold text-sm shadow-sm"
+            disabled={isRegenerating}
+            className="flex items-center gap-2 px-6 py-3 rounded-full bg-stone-100 border border-stone-200 text-stone-700 hover:bg-stone-200 transition-all font-bold text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
