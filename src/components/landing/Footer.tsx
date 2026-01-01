@@ -42,7 +42,7 @@ export default function Footer() {
       </div>
 
       <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-stone-200 border-dashed text-center text-xs text-stone-500">
-        <p>© 2025 AI Travel Planner. All rights reserved.</p>
+        <p>© 2025-2026 AI Travel Planner. All rights reserved.</p>
       </div>
     </footer>
   );
