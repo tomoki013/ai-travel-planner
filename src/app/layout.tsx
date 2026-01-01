@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Kaisei_Decol, Yomogi } from "next/font/google";
+import Script from "next/script";
 import Footer from "@/components/landing/Footer";
 import "./globals.css";
 
