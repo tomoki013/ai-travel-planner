@@ -28,7 +28,9 @@ export default function StepContainer({
   const isLastStep = step === totalSteps - 1;
 
   // Progress Bar Calculation
-  const progress = ((step + 1) / totalSteps) * 100;
+  // Safety check for division by zero
+  const safeTotal = Math.max(1, totalSteps - 1);
+  const progress = (step / safeTotal) * 100;
 
   return (
     <div className="w-full max-w-lg mx-auto h-[90vh] sm:h-[800px] relative rounded-3xl overflow-hidden shadow-2xl flex flex-col bg-[#fcfbf9] border-8 border-white">
@@ -54,7 +56,7 @@ export default function StepContainer({
             ←
           </button>
           <span className="text-stone-500 font-mono text-xs tracking-widest bg-white/50 px-2 py-1 rounded-md">
-            STEP {step + 1}/{totalSteps}
+            STEP {step}/{Math.max(1, totalSteps - 1)}
           </span>
           <div className="w-10 h-10" /> {/* Spacer */}
         </div>

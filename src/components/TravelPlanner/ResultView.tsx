@@ -68,18 +68,6 @@ export default function ResultView({
         </div>
       )}
 
-      {/* Floating Restart Button */}
-      <div className="fixed top-24 right-4 sm:right-8 z-50">
-        <button
-          onClick={onRestart}
-          className="px-5 py-2.5 rounded-full bg-white/90 backdrop-blur-md hover:bg-white border-2 border-primary/20 text-primary transition-all text-sm font-bold shadow-lg flex items-center gap-2 group"
-        >
-          <span className="group-hover:-rotate-180 transition-transform duration-500">
-            ↺
-          </span>
-          New Trip
-        </button>
-      </div>
 
       {/* Journal Header Section */}
       <div className="relative mb-16 px-4 sm:px-0">
