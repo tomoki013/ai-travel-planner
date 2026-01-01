@@ -105,18 +105,34 @@ export default function UpdatesPage() {
             </div>
           </section>
 
-          <div className="mt-16 p-6 bg-stone-100 rounded-xl text-center">
-            <p className="text-stone-600 text-sm mb-4">
-              機能のご要望や不具合のご報告は、GitHub Issueまでお寄せください。
-            </p>
-             <a
-               href="https://github.com/tomoki013/ai-travel-planner/issues"
-               target="_blank"
-               rel="noopener noreferrer"
-               className="inline-flex items-center gap-2 text-[#e67e22] font-bold hover:underline"
-             >
-               <FaFlag /> GitHub Issueを作成する
-             </a>
+          <div className="mt-16 bg-stone-50 rounded-xl border border-stone-200 p-8">
+            <h3 className="text-center font-bold text-lg text-[#2c2c2c] mb-6 font-serif">
+              ご意見・お問い合わせ
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <a
+                href="/contact"
+                className="flex flex-col items-center justify-center p-6 bg-white rounded-lg border border-stone-200 hover:border-[#e67e22] hover:shadow-sm transition-all group"
+              >
+                <span className="font-bold text-[#2c2c2c] group-hover:text-[#e67e22] mb-2">お問い合わせ</span>
+                <span className="text-xs text-stone-500 text-center">
+                  一般的なご質問やご感想はこちら
+                </span>
+              </a>
+              <a
+                href="https://github.com/tomoki013/ai-travel-planner/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center justify-center p-6 bg-white rounded-lg border border-stone-200 hover:border-[#e67e22] hover:shadow-sm transition-all group"
+              >
+                <span className="flex items-center gap-2 font-bold text-[#2c2c2c] group-hover:text-[#e67e22] mb-2">
+                  <FaFlag size={14} /> 不具合報告・要望
+                </span>
+                <span className="text-xs text-stone-500 text-center">
+                  GitHub Issueにて受け付けています
+                </span>
+              </a>
+            </div>
           </div>
 
         </div>

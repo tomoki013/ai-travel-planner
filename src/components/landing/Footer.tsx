@@ -26,6 +26,7 @@ export default function Footer() {
             {/* <li><Link href="#" className="hover:text-[#e67e22] transition-colors decoration-dashed hover:underline">使い方</Link></li> */}
             <li><Link href="/updates" className="hover:text-[#e67e22] transition-colors decoration-dashed hover:underline">更新情報・ロードマップ</Link></li>
             <li><Link href="/faq" className="hover:text-[#e67e22] transition-colors decoration-dashed hover:underline">よくある質問</Link></li>
+            <li><Link href="/contact" className="hover:text-[#e67e22] transition-colors decoration-dashed hover:underline">お問い合わせ</Link></li>
           </ul>
         </div>
 
