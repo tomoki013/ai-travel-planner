@@ -150,7 +150,7 @@ export default function PlanPage() {
         </div>
 
         <ExampleSection />
-        <FAQSection />
+        <FAQSection limit={5} />
       </main>
 
       <Footer />
