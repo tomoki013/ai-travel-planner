@@ -16,10 +16,12 @@ import StepInitialChoice from "./steps/StepInitialChoice";
 import StepRegion from "./steps/StepRegion";
 import StepBudget from "./steps/StepBudget";
 import StepPace from "./steps/StepPace";
+import PlaneTransition from "./PlaneTransition";
 
 export default function TravelPlanner() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [input, setInput] = useState<UserInput>({
     destination: "",
     isDestinationDecided: undefined,
@@ -133,7 +135,13 @@ export default function TravelPlanner() {
     } else {
       setInput(prev => ({ ...prev, isDestinationDecided: false, destination: "" }));
     }
-    setStep(1);
+
+    // Trigger transition animation
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setIsTransitioning(false);
+      setStep(1);
+    }, 1200); // Wait for most of the animation to play before switching view
   };
 
   const handlePlan = async () => {
@@ -174,7 +182,12 @@ export default function TravelPlanner() {
   const TOTAL_STEPS = 8;
 
   if (step === 0) {
-    return <StepInitialChoice onDecide={handleInitialChoice} />;
+    return (
+      <>
+        {isTransitioning && <PlaneTransition />}
+        <StepInitialChoice onDecide={handleInitialChoice} />
+      </>
+    );
   }
 
   return (
