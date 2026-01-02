@@ -14,7 +14,7 @@ export default function PlaneTransition() {
         style={{
           animation: "fly-across 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards",
           left: 0,
-          bottom: 0,
+          top: 0,
         }}
       >
         <FaPlane size={80} />
