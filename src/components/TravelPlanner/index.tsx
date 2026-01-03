@@ -123,17 +123,6 @@ export default function TravelPlanner() {
 
     if (validateStep(step)) {
       setErrorMessage("");
-
-      // Trigger animation after Step 2 (Places)
-      if (step === 2) {
-        setIsTransitioning(true);
-        setTimeout(() => {
-          setIsTransitioning(false);
-          setStep((prev) => prev + 1);
-        }, 700);
-        return;
-      }
-
       setStep((prev) => prev + 1);
     }
   };
@@ -152,8 +141,12 @@ export default function TravelPlanner() {
       setInput(prev => ({ ...prev, isDestinationDecided: false, destination: "" }));
     }
 
-    // Move directly to step 1 without animation
-    setStep(1);
+    // Trigger transition animation
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setIsTransitioning(false);
+      setStep(1);
+    }, 700); // Wait for most of the animation to play before switching view
   };
 
   const handlePlan = async () => {
@@ -196,7 +189,10 @@ export default function TravelPlanner() {
 
   if (step === 0) {
     return (
-      <StepInitialChoice onDecide={handleInitialChoice} />
+      <>
+        {isTransitioning && <PlaneTransition />}
+        <StepInitialChoice onDecide={handleInitialChoice} />
+      </>
     );
   }
 
@@ -209,8 +205,6 @@ export default function TravelPlanner() {
       onComplete={handlePlan}
       errorMessage={errorMessage}
     >
-      {step === 2 && isTransitioning && <PlaneTransition />}
-
       {step === 1 && input.isDestinationDecided === true && (
         <StepDestination
           value={input.destination}
