@@ -44,7 +44,15 @@ it("navigates through 'Decided' flow", async () => {
   const nextBtn = screen.getByRole("button", { name: "次へ" });
   fireEvent.click(nextBtn);
 
-  // Step 2: Companions (Click 'Business')
+  // Step 2: Places (New Step)
+  await screen.findByText((content) => content.includes("絶対に行きたい"));
+  const noPlacesBtn = screen.getByText("ない");
+  fireEvent.click(noPlacesBtn);
+
+  // Proceed to next step
+  fireEvent.click(nextBtn);
+
+  // Step 3: Companions (Click 'Business')
   const businessBtn = await screen.findByText("ビジネス");
   fireEvent.click(businessBtn);
   fireEvent.click(nextBtn);
@@ -95,7 +103,20 @@ it("navigates through 'Not Decided' flow", async () => {
   const nextBtn1 = screen.getByRole("button", { name: "次へ" });
   fireEvent.click(nextBtn1);
 
-  // Step 2: Companions
+  // Step 2: Places
+  // Note: Depending on logic, StepRegion might need to finish animation.
+  // The 'Not Decided' flow goes: Initial(0) -> Region(1) -> Places(2)
+  // The previous click was on 'nextBtn1' after Region selection.
+  // Wait for Places step to appear.
+  await screen.findByText((content) => content.includes("絶対に行きたい"));
+  const noPlacesBtn = screen.getByText("ない");
+  fireEvent.click(noPlacesBtn);
+
+  // Proceed to next step
+  const nextBtn2 = screen.getByRole("button", { name: "次へ" });
+  fireEvent.click(nextBtn2);
+
+  // Step 3: Companions
   const companionStep = await screen.findByText("誰との旅ですか？");
   expect(companionStep).toBeDefined();
 

@@ -17,6 +17,7 @@ export interface UserInput {
   pace: string;
   freeText: string;
   travelVibe?: string; // New field for "South Island", "Resort vibe", etc.
+  mustVisitPlaces?: string[]; // Optional list of specific places the user wants to visit
 }
 
 export interface Activity {
