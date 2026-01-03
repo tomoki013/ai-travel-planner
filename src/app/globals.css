@@ -105,14 +105,14 @@ body {
 
 @keyframes fly-across {
   0% {
-    transform: translate(-20vw, 120vh) rotate(45deg);
+    transform: translate(-20vw, 120vh) rotate(-45deg);
     opacity: 0;
   }
   10% {
     opacity: 1;
   }
   100% {
-    transform: translate(120vw, -20vh) rotate(45deg);
+    transform: translate(120vw, -20vh) rotate(-45deg);
     opacity: 1;
   }
 }
