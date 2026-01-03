@@ -16,6 +16,7 @@ import StepInitialChoice from "./steps/StepInitialChoice";
 import StepRegion from "./steps/StepRegion";
 import StepBudget from "./steps/StepBudget";
 import StepPace from "./steps/StepPace";
+import StepPlaces from "./steps/StepPlaces";
 import PlaneTransition from "./PlaneTransition";
 
 export default function TravelPlanner() {
@@ -33,6 +34,7 @@ export default function TravelPlanner() {
     pace: "",
     freeText: "",
     travelVibe: "",
+    mustVisitPlaces: [],
   });
 
   const [status, setStatus] = useState<
@@ -62,25 +64,28 @@ export default function TravelPlanner() {
           }
         }
         break;
-      case 2: // Companions
+      case 2: // Places (Optional)
+        // Always valid even if empty
+        break;
+      case 3: // Companions
         if (!input.companions) {
           setErrorMessage("誰との旅行か選択してください 👥");
           return false;
         }
         break;
-      case 3: // Themes
+      case 4: // Themes
         if (input.theme.length === 0) {
           setErrorMessage("テーマを少なくとも1つ選択してください 🎭");
           return false;
         }
         break;
-      case 4: // Budget
+      case 5: // Budget
         if (!input.budget) {
           setErrorMessage("予算感を選択してください 💰");
           return false;
         }
         break;
-      case 5: // Dates
+      case 6: // Dates
         // Dates are technically optional or flexible, but if something entered check it?
         // StepDates logic handles "flexible" internally.
         if (!input.dates) {
@@ -92,13 +97,13 @@ export default function TravelPlanner() {
           return false;
         }
         break;
-      case 6: // Pace
+      case 7: // Pace
          if (!input.pace) {
           setErrorMessage("旅行のペースを選択してください ⚡");
           return false;
         }
         break;
-      case 7: // FreeText (Optional)
+      case 8: // FreeText (Optional)
         break;
     }
     return true;
@@ -118,6 +123,17 @@ export default function TravelPlanner() {
 
     if (validateStep(step)) {
       setErrorMessage("");
+
+      // Trigger animation after Step 2 (Places)
+      if (step === 2) {
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setIsTransitioning(false);
+          setStep((prev) => prev + 1);
+        }, 700);
+        return;
+      }
+
       setStep((prev) => prev + 1);
     }
   };
@@ -136,12 +152,8 @@ export default function TravelPlanner() {
       setInput(prev => ({ ...prev, isDestinationDecided: false, destination: "" }));
     }
 
-    // Trigger transition animation
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setIsTransitioning(false);
-      setStep(1);
-    }, 700); // Wait for most of the animation to play before switching view
+    // Move directly to step 1 without animation
+    setStep(1);
   };
 
   const handlePlan = async () => {
@@ -173,20 +185,18 @@ export default function TravelPlanner() {
   // New Steps Mapping
   // 0: Initial Choice
   // 1: Destination OR Region
-  // 2: Companions
-  // 3: Themes
-  // 4: Budget
-  // 5: Dates
-  // 6: Pace
-  // 7: FreeText
-  const TOTAL_STEPS = 8;
+  // 2: Places (New)
+  // 3: Companions
+  // 4: Themes
+  // 5: Budget
+  // 6: Dates
+  // 7: Pace
+  // 8: FreeText
+  const TOTAL_STEPS = 9;
 
   if (step === 0) {
     return (
-      <>
-        {isTransitioning && <PlaneTransition />}
-        <StepInitialChoice onDecide={handleInitialChoice} />
-      </>
+      <StepInitialChoice onDecide={handleInitialChoice} />
     );
   }
 
@@ -199,6 +209,8 @@ export default function TravelPlanner() {
       onComplete={handlePlan}
       errorMessage={errorMessage}
     >
+      {step === 2 && isTransitioning && <PlaneTransition />}
+
       {step === 1 && input.isDestinationDecided === true && (
         <StepDestination
           value={input.destination}
@@ -216,36 +228,42 @@ export default function TravelPlanner() {
         />
       )}
       {step === 2 && (
+        <StepPlaces
+          mustVisitPlaces={input.mustVisitPlaces}
+          onChange={(val) => setInput({ ...input, mustVisitPlaces: val })}
+        />
+      )}
+      {step === 3 && (
         <StepCompanions
           value={input.companions}
           onChange={(val) => setInput({ ...input, companions: val })}
         />
       )}
-      {step === 3 && (
+      {step === 4 && (
         <StepThemes
           input={input}
           onChange={(val) => setInput({ ...input, ...val })}
         />
       )}
-      {step === 4 && (
+      {step === 5 && (
         <StepBudget
           value={input.budget}
           onChange={(val) => setInput({ ...input, budget: val })}
         />
       )}
-      {step === 5 && (
+      {step === 6 && (
          <StepDates
           input={input}
           onChange={(val) => setInput({ ...input, ...val })}
         />
       )}
-      {step === 6 && (
+      {step === 7 && (
          <StepPace
           value={input.pace}
           onChange={(val) => setInput({ ...input, pace: val })}
         />
       )}
-      {step === 7 && (
+      {step === 8 && (
         <StepFreeText
           value={input.freeText}
           onChange={(val) => setInput({ ...input, freeText: val })}
