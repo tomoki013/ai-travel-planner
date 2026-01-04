@@ -120,46 +120,46 @@ export default function StepContainer({
             {children}
           </motion.div>
         </AnimatePresence>
-
-        {/* Summary Overlay */}
-        <AnimatePresence>
-          {showSummary && (
-            <motion.div
-              initial={{ opacity: 0, y: "100%" }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="absolute inset-0 z-50 bg-stone-50/95 backdrop-blur-sm p-6 overflow-y-auto"
-            >
-               <div className="flex justify-between items-center mb-6">
-                 <h2 className="text-lg font-bold text-stone-800 font-serif">現在のリクエスト</h2>
-                 <button
-                   onClick={() => setShowSummary(false)}
-                   className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-200 text-stone-600 hover:bg-stone-300 transition-colors"
-                 >
-                   <FaXmark />
-                 </button>
-               </div>
-               <RequestSummary
-                  input={input}
-                  className="mb-0 shadow-none border-stone-200"
-                  onEdit={(targetStep) => {
-                    setShowSummary(false);
-                    onJumpToStep?.(targetStep);
-                  }}
-               />
-               <div className="mt-8 text-center">
-                 <button
-                    onClick={() => setShowSummary(false)}
-                    className="px-6 py-2 bg-stone-800 text-white rounded-full text-sm font-bold hover:bg-stone-700 transition-colors"
-                 >
-                    閉じる
-                 </button>
-               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* Summary Overlay */}
+      <AnimatePresence>
+        {showSummary && (
+          <motion.div
+            initial={{ opacity: 0, y: "100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="absolute inset-0 z-50 bg-stone-50/95 backdrop-blur-sm p-6 overflow-y-auto"
+          >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold text-stone-800 font-serif">現在のリクエスト</h2>
+                <button
+                  onClick={() => setShowSummary(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-200 text-stone-600 hover:bg-stone-300 transition-colors"
+                >
+                  <FaXmark />
+                </button>
+              </div>
+              <RequestSummary
+                input={input}
+                className="mb-0 shadow-none border-stone-200"
+                onEdit={(targetStep) => {
+                  setShowSummary(false);
+                  onJumpToStep?.(targetStep);
+                }}
+              />
+              <div className="mt-8 text-center">
+                <button
+                  onClick={() => setShowSummary(false)}
+                  className="px-6 py-2 bg-stone-800 text-white rounded-full text-sm font-bold hover:bg-stone-700 transition-colors"
+                >
+                  閉じる
+                </button>
+              </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer / Action Button */}
       <div className="relative z-10 p-6 pt-4 bg-linear-to-t from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent">
