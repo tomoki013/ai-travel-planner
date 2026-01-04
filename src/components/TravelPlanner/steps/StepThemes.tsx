@@ -12,7 +12,8 @@ import {
   FaRunning,
   FaHotTub,
   FaCamera,
-  FaCompass
+  FaCompass,
+  FaQuestion
 } from "react-icons/fa";
 
 interface StepThemesProps {
@@ -32,6 +33,7 @@ const THEME_ITEMS = [
   { label: "温泉・サウナ", icon: FaHotTub, id: "温泉・サウナ" },
   { label: "写真映え", icon: FaCamera, id: "写真映え" },
   { label: "冒険", icon: FaCompass, id: "冒険" },
+  { label: "その他", icon: FaQuestion, id: "その他" },
 ];
 
 export default function StepThemes({ input, onChange }: StepThemesProps) {
