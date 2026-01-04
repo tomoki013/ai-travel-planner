@@ -221,6 +221,7 @@ export default function TravelPlanner() {
       errorMessage={errorMessage}
       input={input}
       onJumpToStep={handleJumpToStep}
+      widthClass={step === 8 ? "max-w-3xl" : "max-w-lg"}
     >
       {step === 1 && input.isDestinationDecided === true && (
         <StepDestination
