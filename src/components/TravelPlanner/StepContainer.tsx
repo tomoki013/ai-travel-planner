@@ -17,6 +17,7 @@ interface StepContainerProps {
   children: ReactNode;
   input: UserInput;
   onJumpToStep?: (step: number) => void;
+  widthClass?: string;
 }
 
 export default function StepContainer({
@@ -30,6 +31,7 @@ export default function StepContainer({
   children,
   input,
   onJumpToStep,
+  widthClass = "max-w-lg",
 }: StepContainerProps) {
   const [showSummary, setShowSummary] = useState(false);
   const isLastStep = step === totalSteps - 1;
@@ -40,7 +42,7 @@ export default function StepContainer({
   const progress = (step / safeTotal) * 100;
 
   return (
-    <div className="w-full max-w-lg mx-auto h-[90vh] sm:h-[800px] relative rounded-3xl overflow-hidden shadow-2xl flex flex-col bg-[#fcfbf9] border-8 border-white">
+    <div className={`w-full ${widthClass} mx-auto h-[90vh] sm:h-[800px] relative rounded-3xl overflow-hidden shadow-2xl flex flex-col bg-[#fcfbf9] border-8 border-white`}>
       {/* Background Texture */}
       <div
         className="absolute inset-0 z-0 opacity-50 pointer-events-none mix-blend-multiply"

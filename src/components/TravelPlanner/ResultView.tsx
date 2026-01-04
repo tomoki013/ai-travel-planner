@@ -118,10 +118,6 @@ export default function ResultView({
         </div>
       </div>
 
-      <div className="px-4 sm:px-0 mb-12">
-          <RequestSummary input={input} />
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12 px-4 sm:px-0">
         {/* Timeline */}
         <div className="space-y-16">
@@ -239,6 +235,10 @@ export default function ResultView({
               </div>
           </div>
         </div>
+      </div>
+
+      <div className="px-4 sm:px-0 mt-16 mb-12">
+          <RequestSummary input={input} />
       </div>
     </div>
   );
