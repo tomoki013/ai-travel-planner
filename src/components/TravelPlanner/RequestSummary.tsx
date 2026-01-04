@@ -14,9 +14,10 @@ import { FaUser, FaUsers, FaChildReaching } from "react-icons/fa6";
 
 interface RequestSummaryProps {
   input: UserInput;
+  className?: string;
 }
 
-export default function RequestSummary({ input }: RequestSummaryProps) {
+export default function RequestSummary({ input, className = "" }: RequestSummaryProps) {
   // --- Mappings for Display ---
 
   const getCompanionLabel = (val: string) => {
@@ -64,7 +65,7 @@ export default function RequestSummary({ input }: RequestSummaryProps) {
   const companionInfo = getCompanionLabel(input.companions);
 
   return (
-    <div className="w-full bg-white rounded-xl border border-stone-200 shadow-sm p-6 mb-8 relative overflow-hidden group">
+    <div className={`w-full bg-white rounded-xl border border-stone-200 shadow-sm p-6 mb-8 relative overflow-hidden group ${className}`}>
         {/* Decorative background */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-stone-50 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
 
@@ -85,7 +86,7 @@ export default function RequestSummary({ input }: RequestSummaryProps) {
                         : (input.travelVibe || "おまかせ")
                     }
                 </div>
-                {!input.isDestinationDecided && input.region !== "anywhere" && (
+                {!input.isDestinationDecided && input.region && input.region !== "anywhere" && (
                      <div className="text-xs text-stone-500 mt-1">({input.region === "domestic" ? "国内" : "海外"})</div>
                 )}
             </div>
