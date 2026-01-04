@@ -28,7 +28,7 @@ export default function TravelPlanner() {
     isDestinationDecided: undefined,
     region: "",
     dates: "",
-    companions: "solo",
+    companions: "",
     theme: [],
     budget: "",
     pace: "",
