@@ -5,7 +5,10 @@ import Image from "next/image";
 import TravelPlannerChat from "../TravelPlannerChat";
 import ShareButtons from "../ShareButtons";
 import RequestSummary from "./RequestSummary";
-import { FaMapMarkerAlt, FaClock, FaCalendarAlt } from "react-icons/fa";
+import { FaClock, FaPenToSquare } from "react-icons/fa6";
+import { FaMapMarkerAlt, FaCalendarAlt } from "react-icons/fa";
+import { useState } from "react";
+import TravelPlanner from "./index";
 
 interface ResultViewProps {
   result: Itinerary;
@@ -22,6 +25,9 @@ export default function ResultView({
   onRegenerate,
   isUpdating = false,
 }: ResultViewProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editStep, setEditStep] = useState(0);
+
   // Use heroImage if available, else a fallback
   const heroImg = result.heroImage || "/images/eiffel-tower-and-sunset.jpg";
 
@@ -238,8 +244,38 @@ export default function ResultView({
       </div>
 
       <div className="px-4 sm:px-0 mt-16 mb-12">
-          <RequestSummary input={input} />
+          <RequestSummary
+            input={input}
+            onEdit={(step) => {
+              setEditStep(step);
+              setIsEditing(true);
+            }}
+          />
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={() => {
+                setEditStep(1); // Start from destination/region check
+                setIsEditing(true);
+              }}
+              className="flex items-center gap-2 px-6 py-3 bg-stone-100 border border-stone-200 rounded-full text-stone-600 font-bold hover:bg-stone-200 hover:text-stone-800 transition-all active:scale-95 shadow-xs"
+            >
+               <FaPenToSquare />
+               条件を変更して再生成
+            </button>
+          </div>
       </div>
+
+      {isEditing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+           <div className="w-full max-w-lg max-h-[90vh] overflow-hidden">
+               <TravelPlanner
+                  initialInput={input}
+                  initialStep={editStep || 1}
+                  onClose={() => setIsEditing(false)}
+               />
+           </div>
+        </div>
+      )}
     </div>
   );
 }

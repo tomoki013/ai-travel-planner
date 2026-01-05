@@ -18,6 +18,7 @@ interface StepContainerProps {
   input: UserInput;
   onJumpToStep?: (step: number) => void;
   widthClass?: string;
+  onClose?: () => void;
 }
 
 export default function StepContainer({
@@ -32,6 +33,7 @@ export default function StepContainer({
   input,
   onJumpToStep,
   widthClass = "max-w-lg",
+  onClose,
 }: StepContainerProps) {
   const [showSummary, setShowSummary] = useState(false);
   const isLastStep = step === totalSteps - 1;
@@ -68,13 +70,24 @@ export default function StepContainer({
             STEP {step}/{Math.max(1, totalSteps - 1)}
           </span>
 
-          <button
-            onClick={() => setShowSummary(true)}
-            className="w-10 h-10 flex items-center justify-center rounded-full border border-stone-300 text-stone-600 transition-all hover:bg-stone-100 hover:text-primary active:scale-95"
-            title="選択内容を確認"
-          >
-            <FaListCheck />
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowSummary(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-full border border-stone-300 text-stone-600 transition-all hover:bg-stone-100 hover:text-primary active:scale-95"
+              title="選択内容を確認"
+            >
+              <FaListCheck />
+            </button>
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="w-10 h-10 flex items-center justify-center rounded-full border border-stone-300 text-stone-600 transition-all hover:bg-stone-100 hover:text-red-500 active:scale-95"
+                title="閉じる"
+              >
+                <FaXmark />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Progress Bar Container */}

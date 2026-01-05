@@ -19,24 +19,32 @@ import StepPace from "./steps/StepPace";
 import StepPlaces from "./steps/StepPlaces";
 import PlaneTransition from "./PlaneTransition";
 
-export default function TravelPlanner() {
+interface TravelPlannerProps {
+  initialInput?: UserInput;
+  initialStep?: number;
+  onClose?: () => void;
+}
+
+export default function TravelPlanner({ initialInput, initialStep = 0, onClose }: TravelPlannerProps) {
   const router = useRouter();
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(initialStep);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [input, setInput] = useState<UserInput>({
-    destination: "",
-    isDestinationDecided: undefined,
-    region: "",
-    dates: "",
-    companions: "",
-    theme: [],
-    budget: "",
-    pace: "",
-    freeText: "",
-    travelVibe: "",
-    mustVisitPlaces: [],
-    hasMustVisitPlaces: undefined,
-  });
+  const [input, setInput] = useState<UserInput>(
+    initialInput || {
+      destination: "",
+      isDestinationDecided: undefined,
+      region: "",
+      dates: "",
+      companions: "",
+      theme: [],
+      budget: "",
+      pace: "",
+      freeText: "",
+      travelVibe: "",
+      mustVisitPlaces: [],
+      hasMustVisitPlaces: undefined,
+    }
+  );
 
   const [status, setStatus] = useState<
     "idle" | "loading" | "updating" | "complete" | "error"
@@ -222,6 +230,7 @@ export default function TravelPlanner() {
       input={input}
       onJumpToStep={handleJumpToStep}
       widthClass={step === 8 ? "max-w-3xl" : "max-w-lg"}
+      onClose={onClose}
     >
       {step === 1 && input.isDestinationDecided === true && (
         <StepDestination

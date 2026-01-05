@@ -130,6 +130,9 @@ export default function PrivacyPolicy() {
             </p>
           </section>
 
+          <div className="text-right text-sm mt-12 border-t pt-4">
+            最終更新日: 2025年2月18日
+          </div>
         </div>
       </main>
     </div>
