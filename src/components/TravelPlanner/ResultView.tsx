@@ -24,6 +24,7 @@ export default function ResultView({
   onRegenerate,
   isUpdating = false,
 }: ResultViewProps) {
+  const router = useRouter();
   // Use heroImage if available, else a fallback
   const heroImg = result.heroImage || "/images/eiffel-tower-and-sunset.jpg";
 
