@@ -48,12 +48,14 @@ function PlanContent() {
   }, [q]);
 
   const handleRegenerate = async (
-    chatHistory: { role: string; text: string }[]
+    chatHistory: { role: string; text: string }[],
+    overridePlan?: Itinerary
   ) => {
-    if (!result || !input) return;
+    const planToUse = overridePlan || result;
+    if (!planToUse || !input) return;
     setStatus("regenerating");
     try {
-      const response = await regeneratePlan(result, chatHistory);
+      const response = await regeneratePlan(planToUse, chatHistory);
       if (response.success && response.data) {
         const encoded = encodePlanData(input, response.data);
         router.push(`/plan?q=${encoded}`);
@@ -102,6 +104,7 @@ function PlanContent() {
         input={input}
         onRestart={handleRestart}
         onRegenerate={handleRegenerate}
+        onResultChange={setResult}
         isUpdating={status === "regenerating"}
       />
   );
