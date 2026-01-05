@@ -15,6 +15,7 @@ interface ResultViewProps {
   onRestart: () => void;
   onRegenerate: (history: { role: string; text: string }[]) => void;
   isUpdating?: boolean;
+  onEditInput?: (stepIndex: number) => void;
 }
 
 export default function ResultView({
@@ -23,6 +24,7 @@ export default function ResultView({
   onRestart,
   onRegenerate,
   isUpdating = false,
+  onEditInput,
 }: ResultViewProps) {
   const router = useRouter();
   // Use heroImage if available, else a fallback
@@ -241,13 +243,17 @@ export default function ResultView({
       </div>
 
       <div className="px-4 sm:px-0 mt-16 mb-12">
-          <RequestSummary input={input} />
+          <RequestSummary input={input} onEdit={onEditInput} />
 
           <div className="mt-8 flex justify-center">
             <button
               onClick={() => {
-                const encoded = encodePlanData(input, result);
-                router.push(`/?q=${encoded}`);
+                if (onEditInput) {
+                  onEditInput(8); // Step 8 is FreeText/Summary
+                } else {
+                   const encoded = encodePlanData(input, result);
+                   router.push(`/?q=${encoded}`);
+                }
               }}
               className="group relative inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-stone-200 rounded-full text-stone-600 font-bold shadow-sm hover:border-primary hover:text-primary hover:shadow-md transition-all duration-300 cursor-pointer"
             >
