@@ -5,13 +5,15 @@ import Image from "next/image";
 import TravelPlannerChat from "../TravelPlannerChat";
 import ShareButtons from "../ShareButtons";
 import RequestSummary from "./RequestSummary";
-import { FaMapMarkerAlt, FaClock, FaCalendarAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaClock, FaCalendarAlt, FaPen, FaTrash, FaPlus, FaSave, FaTimes } from "react-icons/fa";
+import { useState } from "react";
 
 interface ResultViewProps {
   result: Itinerary;
   input: UserInput;
   onRestart: () => void;
-  onRegenerate: (history: { role: string; text: string }[]) => void;
+  onRegenerate: (history: { role: string; text: string }[], overridePlan?: Itinerary) => void;
+  onResultChange?: (result: Itinerary) => void;
   isUpdating?: boolean;
 }
 
@@ -20,10 +22,68 @@ export default function ResultView({
   input,
   onRestart,
   onRegenerate,
+  onResultChange,
   isUpdating = false,
 }: ResultViewProps) {
   // Use heroImage if available, else a fallback
   const heroImg = result.heroImage || "/images/eiffel-tower-and-sunset.jpg";
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingResult, setEditingResult] = useState<Itinerary | null>(null);
+
+  const startEditing = () => {
+    setEditingResult(JSON.parse(JSON.stringify(result))); // Deep clone
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setIsEditing(false);
+    setEditingResult(null);
+  };
+
+  const saveAndRegenerate = () => {
+    if (!editingResult) return;
+
+    // Update parent state if callback is provided
+    if (onResultChange) {
+      onResultChange(editingResult);
+    }
+
+    // Trigger regeneration with a system-like user message
+    const history = [{ role: 'user', text: 'プランの内容を直接編集しました。整合性を確認して再生成してください。' }];
+    onRegenerate(history, editingResult);
+
+    setIsEditing(false);
+  };
+
+  const handleActivityChange = (dayIndex: number, actIndex: number, field: 'time' | 'activity' | 'description', value: string) => {
+    if (!editingResult) return;
+    const newResult = { ...editingResult };
+    newResult.days[dayIndex].activities[actIndex] = {
+      ...newResult.days[dayIndex].activities[actIndex],
+      [field]: value
+    };
+    setEditingResult(newResult);
+  };
+
+  const handleDeleteActivity = (dayIndex: number, actIndex: number) => {
+    if (!editingResult) return;
+    const newResult = { ...editingResult };
+    newResult.days[dayIndex].activities.splice(actIndex, 1);
+    setEditingResult(newResult);
+  };
+
+  const handleAddActivity = (dayIndex: number) => {
+    if (!editingResult) return;
+    const newResult = { ...editingResult };
+    newResult.days[dayIndex].activities.push({
+      time: "12:00",
+      activity: "新しいアクティビティ",
+      description: "詳細を入力してください"
+    });
+    setEditingResult(newResult);
+  };
+
 
   // Helper to parse date string
   const formatTravelDates = (dateStr: string) => {
@@ -52,6 +112,8 @@ export default function ResultView({
   const numberOfNights = Math.max(0, numberOfDays - 1);
   const durationString = `${numberOfNights}泊${numberOfDays}日`;
 
+  const displayResult = isEditing && editingResult ? editingResult : result;
+
   return (
     <div className="w-full max-w-5xl mx-auto mt-4 text-left animate-in fade-in duration-700 pb-20 relative">
       {/* Updating Overlay */}
@@ -66,6 +128,24 @@ export default function ResultView({
           <p className="mt-2 text-stone-500 font-sans text-sm">
             Updating your travel plan
           </p>
+        </div>
+      )}
+
+      {/* Edit Mode Actions (Floating/Sticky) */}
+      {isEditing && (
+        <div className="sticky top-20 z-50 flex justify-center gap-4 mb-4 animate-in slide-in-from-top-4">
+             <button
+                onClick={cancelEditing}
+                className="flex items-center gap-2 bg-white text-stone-600 px-6 py-3 rounded-full shadow-lg border border-stone-200 hover:bg-stone-50 font-bold transition-all"
+             >
+                <FaTimes /> キャンセル
+             </button>
+             <button
+                onClick={saveAndRegenerate}
+                className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full shadow-lg hover:bg-primary/90 font-bold transition-all animate-pulse"
+             >
+                <FaSave /> 保存して再生成
+             </button>
         </div>
       )}
 
@@ -121,7 +201,20 @@ export default function ResultView({
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12 px-4 sm:px-0">
         {/* Timeline */}
         <div className="space-y-16">
-          {result.days.map((day) => (
+
+          {/* Edit Trigger - Only show if not editing */}
+          {!isEditing && (
+            <div className="flex justify-end">
+                <button
+                    onClick={startEditing}
+                    className="flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors bg-primary/5 px-4 py-2 rounded-full"
+                >
+                    <FaPen /> プラン内容を編集
+                </button>
+            </div>
+          )}
+
+          {displayResult.days.map((day, dayIndex) => (
             <div key={day.day} className="relative">
               {/* Day Header - Sticky but styled for light theme */}
               <div className="sticky top-4 z-30 mb-8">
@@ -140,54 +233,107 @@ export default function ResultView({
 
               {/* Activities */}
               <div className="border-l-2 border-stone-200 ml-8 space-y-8 pb-8 relative">
-                {day.activities.map((act, i) => (
-                  <div key={i} className="relative pl-10 group">
+                {day.activities.map((act, actIndex) => (
+                  <div key={actIndex} className="relative pl-10 group">
                     {/* Dot on timeline */}
                     <div className="absolute left-[-9px] top-6 w-4 h-4 rounded-full bg-white border-4 border-primary shadow-sm z-10"></div>
 
                     {/* Activity Card */}
-                    <div className="bg-white hover:bg-stone-50 border border-stone-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1">
+                    <div className={`bg-white border rounded-xl p-6 shadow-sm transition-all duration-300 relative overflow-hidden ${isEditing ? 'border-primary/30 ring-2 ring-primary/5' : 'hover:bg-stone-50 border-stone-100 hover:shadow-md group-hover:-translate-y-1'}`}>
                         {/* Decorative background stripe */}
-                        <div className="absolute top-0 left-0 w-1 h-full bg-stone-200 group-hover:bg-primary transition-colors"></div>
+                        {!isEditing && <div className="absolute top-0 left-0 w-1 h-full bg-stone-200 group-hover:bg-primary transition-colors"></div>}
 
-                      <div className="flex items-center gap-2 mb-2 text-stone-500 text-sm font-mono bg-stone-100 inline-block px-2 py-1 rounded-md">
-                        <FaClock className="text-primary/70" />
-                        {act.time}
-                      </div>
+                        {isEditing ? (
+                            <div className="space-y-3">
+                                <div className="flex items-start justify-between gap-4">
+                                     <div className="flex-1 space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <FaClock className="text-stone-400" />
+                                            <input
+                                                value={act.time}
+                                                onChange={(e) => handleActivityChange(dayIndex, actIndex, 'time', e.target.value)}
+                                                className="bg-stone-50 border border-stone-200 rounded px-2 py-1 text-sm font-mono w-24 focus:outline-hidden focus:border-primary"
+                                                placeholder="Time"
+                                            />
+                                        </div>
+                                        <input
+                                            value={act.activity}
+                                            onChange={(e) => handleActivityChange(dayIndex, actIndex, 'activity', e.target.value)}
+                                            className="w-full font-bold text-stone-800 border-b border-stone-200 focus:border-primary focus:outline-hidden py-1"
+                                            placeholder="Activity Name"
+                                        />
+                                     </div>
+                                     <button
+                                        onClick={() => handleDeleteActivity(dayIndex, actIndex)}
+                                        className="text-stone-400 hover:text-red-500 p-2"
+                                        title="削除"
+                                     >
+                                        <FaTrash />
+                                     </button>
+                                </div>
+                                <textarea
+                                    value={act.description}
+                                    onChange={(e) => handleActivityChange(dayIndex, actIndex, 'description', e.target.value)}
+                                    className="w-full text-sm text-stone-600 bg-stone-50 border border-stone-200 rounded p-2 focus:outline-hidden focus:border-primary h-24"
+                                    placeholder="Description"
+                                />
+                            </div>
+                        ) : (
+                            <>
+                                <div className="flex items-center gap-2 mb-2 text-stone-500 text-sm font-mono bg-stone-100 inline-block px-2 py-1 rounded-md">
+                                    <FaClock className="text-primary/70" />
+                                    {act.time}
+                                </div>
 
-                      <h4 className="text-xl font-bold text-stone-800 mb-2 font-serif">
-                        {act.activity}
-                      </h4>
-                      <p className="text-stone-600 leading-relaxed text-sm">
-                        {act.description}
-                      </p>
+                                <h4 className="text-xl font-bold text-stone-800 mb-2 font-serif">
+                                    {act.activity}
+                                </h4>
+                                <p className="text-stone-600 leading-relaxed text-sm">
+                                    {act.description}
+                                </p>
+                            </>
+                        )}
                     </div>
                   </div>
                 ))}
+
+                {/* Add Activity Button (Only in edit mode) */}
+                {isEditing && (
+                    <div className="pl-10">
+                        <button
+                            onClick={() => handleAddActivity(dayIndex)}
+                            className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-stone-400 hover:text-primary hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2 font-bold"
+                        >
+                            <FaPlus /> アクティビティを追加
+                        </button>
+                    </div>
+                )}
               </div>
             </div>
           ))}
 
           {/* Chat Section - Restyled */}
-          <div className="bg-white rounded-3xl p-8 border-2 border-stone-100 shadow-lg relative overflow-hidden">
-             {/* Texture overlay */}
-             <div className="absolute inset-0 bg-[url('/images/cream-paper.png')] opacity-20 pointer-events-none mix-blend-multiply" />
+          {!isEditing && (
+            <div className="bg-white rounded-3xl p-8 border-2 border-stone-100 shadow-lg relative overflow-hidden">
+                {/* Texture overlay */}
+                <div className="absolute inset-0 bg-[url('/images/cream-paper.png')] opacity-20 pointer-events-none mix-blend-multiply" />
 
-            <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-2xl">
-                        🤖
+                <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-2xl">
+                            🤖
+                        </div>
+                        <h3 className="text-xl font-bold text-stone-800 font-serif">
+                            Customize Plan with AI
+                        </h3>
                     </div>
-                    <h3 className="text-xl font-bold text-stone-800 font-serif">
-                        Customize Plan with AI
-                    </h3>
-                </div>
 
-                <div className="bg-stone-50/50 rounded-xl">
-                    <TravelPlannerChat itinerary={result} onRegenerate={onRegenerate} isRegenerating={isUpdating} />
+                    <div className="bg-stone-50/50 rounded-xl">
+                        <TravelPlannerChat itinerary={result} onRegenerate={onRegenerate} isRegenerating={isUpdating} />
+                    </div>
                 </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Sidebar / References */}
