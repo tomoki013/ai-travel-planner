@@ -46,14 +46,14 @@ const roadmapData: RoadmapItem[] = [
   },
   {
     status: "done",
-    date: "2025.12.25", // Approximate date based on context
+    date: "2025.12.23", // Approximate date based on context
     title: "β版サービス公開",
     description:
       "UIとUXの修正、および本格的なサービス開始に伴うページ整理を行いました。",
   },
   {
     status: "done",
-    date: "2025.12.05", // Approximate date based on context
+    date: "2025.12.13", // Approximate date based on context
     title: "α版サービス公開",
     description:
       "AI Travel Plannerのα版を公開しました。Gemini AIを活用した旅行プラン生成が可能です。",
