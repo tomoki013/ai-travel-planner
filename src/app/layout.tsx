@@ -22,7 +22,7 @@ const yomogi = Yomogi({
 });
 
 export const metadata: Metadata = {
-  title: "AI Travel Planner - Powered by ともきちの旅行日記",
+  title: "Tabidea - Powered by ともきちの旅行日記",
   description: "AIと一緒に、あなただけの旅の計画を。",
 };
 

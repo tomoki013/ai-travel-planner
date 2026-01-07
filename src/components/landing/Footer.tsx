@@ -8,7 +8,7 @@ export default function Footer() {
 
         {/* Brand */}
         <div className="space-y-4 md:col-span-1">
-          <h3 className="text-2xl font-serif font-bold text-[#e67e22]">AI Travel Planner</h3>
+          <h3 className="text-2xl font-serif font-bold text-[#e67e22]">Tabidea</h3>
           <p className="text-stone-600 text-sm leading-relaxed max-w-xs font-hand">
             あなたの旅の物語を、AIと一緒に紡ぎ出す。<br />
             Powered by ともきちの旅行日記
@@ -47,7 +47,7 @@ export default function Footer() {
       </div>
 
       <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-stone-200 border-dashed text-center text-xs text-stone-500">
-        <p>© 2025-2026 AI Travel Planner. All rights reserved.</p>
+        <p>© 2025-2026 Tabidea. All rights reserved.</p>
       </div>
     </footer>
   );

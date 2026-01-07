@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { FaFlag, FaCheck, FaTools } from "react-icons/fa";
 
 export const metadata: Metadata = {
-  title: "更新情報・ロードマップ - AI Travel Planner",
+  title: "更新情報・ロードマップ - Tabidea",
   description:
-    "AI Travel Plannerの更新情報と今後の開発ロードマップを掲載しています。",
+    "Tabideaの更新情報と今後の開発ロードマップを掲載しています。",
 };
 
 type RoadmapItem = {
@@ -56,7 +56,7 @@ const roadmapData: RoadmapItem[] = [
     date: "2025.12.13", // Approximate date based on context
     title: "α版サービス公開",
     description:
-      "AI Travel Plannerのα版を公開しました。Gemini AIを活用した旅行プラン生成が可能です。",
+      "Tabideaのα版を公開しました。Gemini AIを活用した旅行プラン生成が可能です。",
   },
 ];
 
@@ -81,7 +81,7 @@ export default function UpdatesPage() {
             Updates & Roadmap
           </h1>
           <p className="text-stone-600 font-hand text-lg">
-            AI Travel Plannerのこれまでの歩みと、これからの計画。
+            Tabideaのこれまでの歩みと、これからの計画。
           </p>
         </header>
 

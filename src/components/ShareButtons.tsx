@@ -39,7 +39,7 @@ export default function ShareButtons({
 
   const shareText = `AIに旅行プランを作ってもらいました！\n目的地: ${
     result.destination
-  }\nテーマ: ${input.theme.join(", ")}\n\n#AIトラベルプランナー #ともきち日記`;
+  }\nテーマ: ${input.theme.join(", ")}\n\n#Tabidea #ともきち日記`;
 
   const handleCopy = async () => {
     try {
