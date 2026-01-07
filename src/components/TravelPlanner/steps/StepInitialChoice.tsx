@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import PolicyLink from "@/components/ui/PolicyLink";
 
 interface StepInitialChoiceProps {
   onDecide: (decided: boolean) => void;
@@ -91,6 +92,12 @@ export default function StepInitialChoice({ onDecide }: StepInitialChoiceProps) 
           {/* Border Highlight on Hover */}
           <div className="absolute inset-0 border-4 border-teal-400/0 group-hover:border-teal-400/20 rounded-3xl transition-all duration-300" />
         </motion.button>
+      </div>
+
+      <div className="text-center">
+        <PolicyLink href="/ai-policy">
+          AIポリシーを確認する
+        </PolicyLink>
       </div>
     </div>
   );
