@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import PolicyLink from "@/components/ui/PolicyLink";
 
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
@@ -91,9 +92,9 @@ export default function PrivacyPolicy() {
               <p>
                 当サービスは、AIによる旅行プラン生成のためにGoogle Gemini APIを使用しています。
                 入力されたデータの取り扱いやAIによる生成データの性質に関する詳細については、別途定める
-                <a href="/ai-policy" className="text-blue-500 hover:underline">
+                <PolicyLink href="/ai-policy">
                   AIポリシー
-                </a>
+                </PolicyLink>
                 をご確認ください。
               </p>
             </div>
@@ -105,9 +106,9 @@ export default function PrivacyPolicy() {
             </h2>
             <p>
               当サービスにおけるAI技術の利用、生成されるコンテンツの正確性、およびユーザーの責任範囲等については、
-              <a href="/ai-policy" className="text-blue-500 hover:underline">
+              <PolicyLink href="/ai-policy">
                 AIポリシー
-              </a>
+              </PolicyLink>
               に詳細を規定しています。本ポリシーと併せてご確認ください。
             </p>
           </section>
@@ -131,7 +132,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <div className="text-right text-sm text-muted-foreground mt-12">
-            最終更新日: 2025年12月25日
+            最終更新日: 2026年1月7日
           </div>
         </div>
       </main>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import PolicyLink from "@/components/ui/PolicyLink";
 
 export const metadata: Metadata = {
   title: "利用規約",
@@ -41,9 +42,9 @@ export default function TermsOfService() {
             <p>
               当サービスは、Google LLCが提供する「Gemini API」を利用して旅行プランを生成しています。
               AIの利用に関する詳細、データの取り扱い、および生成されるコンテンツの性質については、別途定める
-              <a href="/ai-policy" className="text-blue-500 hover:underline">
+              <PolicyLink href="/ai-policy">
                 AIポリシー
-              </a>
+              </PolicyLink>
               をご確認ください。ユーザーは、本規約に加え、AIポリシーにも同意したものとみなされます。
             </p>
           </section>
@@ -84,9 +85,9 @@ export default function TermsOfService() {
                 <li>
                   <strong>AI生成情報の正確性：</strong>{" "}
                   AIが提案する情報の正確性、完全性、最新性、有用性については保証いたしません。詳細は
-                  <a href="/ai-policy" className="text-blue-500 hover:underline">
+                  <PolicyLink href="/ai-policy">
                     AIポリシー
-                  </a>
+                  </PolicyLink>
                   をご参照ください。
                 </li>
                 <li>
@@ -148,7 +149,7 @@ export default function TermsOfService() {
           </section>
 
           <div className="text-right text-sm text-muted-foreground mt-12">
-            最終更新日: 2025年12月25日
+            最終更新日: 2026年1月7日
           </div>
         </div>
       </main>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import PolicyLink from "@/components/ui/PolicyLink";
 
 export const metadata: Metadata = {
   title: "AIポリシー",
@@ -19,7 +19,7 @@ export default function AiPolicy() {
             <p>
               Tabidea（以下、「当サービス」といいます。）は、旅行プランの提案等の機能において、最先端の人工知能（AI）技術を活用しています。
               本AIポリシー（以下、「本ポリシー」といいます。）は、当サービスにおけるAIの利用、データ取扱い、およびAIが生成するコンテンツの性質について詳細に定めるものです。
-              ユーザーは、当サービスの利用にあたり、<Link href="/terms" className="text-blue-500 hover:underline">利用規約</Link>および<Link href="/privacy" className="text-blue-500 hover:underline">プライバシーポリシー</Link>に加え、本ポリシーの内容を理解し、同意したものとみなされます。
+              ユーザーは、当サービスの利用にあたり、<PolicyLink href="/terms">利用規約</PolicyLink>および<PolicyLink href="/privacy">プライバシーポリシー</PolicyLink>に加え、本ポリシーの内容を理解し、同意したものとみなされます。
             </p>
           </section>
 
@@ -142,7 +142,7 @@ export default function AiPolicy() {
           </section>
 
           <div className="text-right text-sm text-muted-foreground mt-12">
-            制定日: 2025年2月18日
+            最終更新日: 2026年1月7日
           </div>
         </div>
       </main>
