@@ -1,11 +1,11 @@
-# AI Travel Planner (Powered by ともきちの旅行日記)
+# Tabidea (Powered by ともきちの旅行日記)
 
 AIと一緒に、あなただけの旅の計画を。
 「ともきちの旅行日記」が提供する、AIを活用した旅行プラン作成サービスです。
 
 ## 概要
 
-AI Travel Plannerは、Google Gemini AIを活用して、あなたの希望に合わせたパーソナライズされた旅行プランを提案するWebアプリケーションです。
+Tabideaは、Google Gemini AIを活用して、あなたの希望に合わせたパーソナライズされた旅行プランを提案するWebアプリケーションです。
 「旅行日記」のような温かみのあるデザインと、ワクワクするようなユーザー体験を目指しています。
 
 ## 特徴
@@ -60,5 +60,5 @@ pnpm dev
 
 ## ライセンス
 
-© 2025-2026 AI Travel Planner (Powered by [ともきちの旅行日記](https://travel.tomokichidiary.com/))
+© 2025-2026 Tabidea (Powered by [ともきちの旅行日記](https://travel.tomokichidiary.com/))
 All rights reserved.

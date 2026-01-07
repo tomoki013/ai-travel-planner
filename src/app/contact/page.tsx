@@ -5,9 +5,9 @@ import ContactForm from "@/components/ContactForm";
 import { FaX } from "react-icons/fa6";
 
 export const metadata: Metadata = {
-  title: "お問い合わせ - AI Travel Planner",
+  title: "お問い合わせ - Tabidea",
   description:
-    "AI Travel Plannerに関するお問い合わせ、機能リクエスト、不具合報告はこちらから。",
+    "Tabideaに関するお問い合わせ、機能リクエスト、不具合報告はこちらから。",
 };
 
 export default function ContactPage() {
