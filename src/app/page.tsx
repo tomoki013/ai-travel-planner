@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import TravelPlanner from "@/components/TravelPlanner";
 import HeroSection from "@/components/landing/HeroSection";
+import FeaturesHeroSection from "@/components/landing/FeaturesHeroSection";
 import FeatureSection from "@/components/landing/FeatureSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import ExampleSection from "@/components/landing/ExampleSection";
@@ -27,6 +28,7 @@ export default function Home() {
         </HeroSection>
 
         {/* Other Sections */}
+        <FeaturesHeroSection />
         <FeatureSection />
         <HowItWorksSection />
         <ExampleSection />
