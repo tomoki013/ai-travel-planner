@@ -68,42 +68,92 @@ export class SimpleMarkdownHeaderTextSplitter {
     }
 
     async splitText(text: string): Promise<{ pageContent: string; metadata: any }[]> {
-        // Very basic implementation: Split by top level headers #
-        // Note: Real implementation is recursive and tree-based. 
-        // This simplified version just chunks by lines starting with #
-        
-        const lines = text.split('\n');
-        const docs: { pageContent: string; metadata: any }[] = [];
-        let currentContent: string[] = [];
-        let currentHeader = "";
+        return this._split(text, this.headersToSplitOn, {});
+    }
 
-        for (const line of lines) {
-            if (line.startsWith('#')) {
-                // Flush previous
-                if (currentContent.length > 0) {
-                    docs.push({
-                        pageContent: currentContent.join('\n').trim(),
-                        metadata: currentHeader ? { header: currentHeader } : {}
+    private _split(
+        text: string,
+        separators: [string, string][],
+        currentMetadata: any
+    ): { pageContent: string; metadata: any }[] {
+        // Base case: no more separators to check
+        if (separators.length === 0) {
+            const trimmed = text.trim();
+            if (!trimmed) return [];
+            return [{ pageContent: trimmed, metadata: currentMetadata }];
+        }
+
+        const [sep, key] = separators[0];
+        const nextSeparators = separators.slice(1);
+        
+        // Check if the current separator exists at the start of any line
+        // We look for `\n<sep> ` or `^<sep> `
+        // But simply iterating lines is safer
+        const lines = text.split('\n');
+
+        const sections: { title: string | null; contentLines: string[] }[] = [];
+        let currentSectionLines: string[] = [];
+        let currentTitle: string | null = null;
+
+        // To handle the case where text starts with header immediately or after some newlines
+        // We accumulate lines until we hit a header line matching the current separator
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const isHeader = line.startsWith(sep + ' ');
+
+            if (isHeader) {
+                // If we have accumulated content, push it as a section
+                if (currentSectionLines.length > 0 || currentTitle !== null) {
+                    sections.push({
+                        title: currentTitle,
+                        contentLines: currentSectionLines
                     });
                 }
-                currentContent = [];
-                currentHeader = line.replace(/^#+\s*/, '');
-                // We keep the header in the content or just in metadata? 
-                // LangChain puts it in metadata and removes from content often, but let's keep it simple.
-                // Let's add the header line to content too for context.
-                currentContent.push(line);
+
+                // Start new section
+                currentTitle = line.slice(sep.length + 1).trim(); // Remove "# " and trim
+                currentSectionLines = [];
             } else {
-                currentContent.push(line);
+                currentSectionLines.push(line);
             }
         }
         
-        if (currentContent.length > 0) {
-            docs.push({
-                pageContent: currentContent.join('\n').trim(),
-                metadata: currentHeader ? { header: currentHeader } : {}
+        // Push the last section
+        if (currentSectionLines.length > 0 || currentTitle !== null) {
+            sections.push({
+                title: currentTitle,
+                contentLines: currentSectionLines
             });
         }
 
-        return docs;
+        // If we found no headers of this level (only one section with null title),
+        // just recurse on the whole text with next separators
+        if (sections.length === 1 && sections[0].title === null) {
+            return this._split(text, nextSeparators, currentMetadata);
+        }
+
+        // Otherwise, process each section
+        const results: { pageContent: string; metadata: any }[] = [];
+
+        for (const section of sections) {
+            const sectionText = section.contentLines.join('\n');
+
+            // If title is null, it's the preamble (content before first header of this level)
+            // It inherits currentMetadata
+            // If title is present, we append it to metadata
+            let nextMetadata = currentMetadata;
+            if (section.title !== null) {
+                nextMetadata = {
+                    ...currentMetadata,
+                    [key]: section.title
+                };
+            }
+
+            const subResults = this._split(sectionText, nextSeparators, nextMetadata);
+            results.push(...subResults);
+        }
+
+        return results;
     }
 }
