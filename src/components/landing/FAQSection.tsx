@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { useState } from "react";
-import { FaChevronDown, FaChevronUp, FaChevronRight } from "react-icons/fa";
+import { FaChevronRight } from "react-icons/fa";
 import { faqs } from "@/lib/data/faq";
+import FAQCard from "@/components/faq/FAQCard";
 
 interface FAQSectionProps {
   limit?: number;
@@ -30,31 +30,13 @@ export default function FAQSection({ limit }: FAQSectionProps) {
 
         <div className="space-y-4">
           {displayFaqs.map((faq, index) => (
-            <div
+            <FAQCard
               key={index}
-              className="bg-white border border-stone-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-[#fcfbf9] transition-colors"
-              >
-                <span className="font-bold text-lg text-[#2c2c2c]">{faq.q}</span>
-                {openIndex === index ? (
-                  <FaChevronUp className="text-[#e67e22]" />
-                ) : (
-                  <FaChevronDown className="text-stone-400" />
-                )}
-              </button>
-              <motion.div
-                initial={false}
-                animate={{ height: openIndex === index ? "auto" : 0 }}
-                className="overflow-hidden"
-              >
-                <div className="p-6 pt-0 text-stone-600 leading-relaxed border-t border-dashed border-stone-200">
-                  {faq.a}
-                </div>
-              </motion.div>
-            </div>
+              question={faq.q}
+              answer={faq.a}
+              isOpen={openIndex === index}
+              onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            />
           ))}
         </div>
 
