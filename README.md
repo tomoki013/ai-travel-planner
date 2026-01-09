@@ -1,3 +1,5 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tomoki013/ai-travel-planner)
+
 # Tabidea (Powered by ともきちの旅行日記)
 
 AIと一緒に、あなただけの旅の計画を。
@@ -19,7 +21,7 @@ Tabideaは、Google Gemini AIを活用して、あなたの希望に合わせた
 
 ## 技術スタック
 
-*   **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+*   **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 *   **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 *   **AI**: [Google Gemini API](https://ai.google.dev/)
 *   **Database (Vector)**: [Pinecone](https://www.pinecone.io/) (RAG用)
@@ -58,8 +60,3 @@ pnpm dev
 ```
 
 ブラウザで [http://localhost:3000](http://localhost:3000) を開いて確認してください。
-
-## ライセンス
-
-© 2025-2026 Tabidea (Powered by [ともきちの旅行日記](https://travel.tomokichidiary.com/))
-All rights reserved.
