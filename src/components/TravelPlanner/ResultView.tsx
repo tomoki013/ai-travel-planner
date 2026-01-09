@@ -128,7 +128,7 @@ export default function ResultView({
   const displayResult = isEditing && editingResult ? editingResult : result;
 
   return (
-    <div className="w-full max-w-6xl mx-auto mt-4 px-4 text-left animate-in fade-in duration-700 pb-20 relative">
+    <div className="w-full max-w-6xl mx-auto mt-4 px-4 sm:px-6 lg:px-8 text-left animate-in fade-in duration-700 pb-20 relative overflow-x-hidden">
       {/* Updating Overlay */}
       {isUpdating && (
         <div className="fixed inset-0 z-60 flex flex-col items-center justify-center bg-white/60 backdrop-blur-sm animate-in fade-in duration-500">
@@ -174,7 +174,7 @@ export default function ResultView({
       </div>
 
       {/* Journal Header Section */}
-      <div className="relative mb-16">
+      <div className="relative mb-16 overflow-x-hidden">
         <div className="relative aspect-video sm:aspect-21/9 w-full rounded-sm overflow-hidden shadow-xl border-8 border-white bg-white rotate-1">
           <Image
             src={heroImg}
@@ -188,9 +188,9 @@ export default function ResultView({
         </div>
 
         <div className="mt-8 text-center relative z-10">
-          <div className="inline-block bg-white/80 backdrop-blur-sm px-8 py-6 rounded-sm shadow-sm border border-stone-100 -rotate-1 relative group">
+          <div className="inline-block bg-white/80 backdrop-blur-sm px-8 py-6 rounded-sm shadow-sm border border-stone-100 -rotate-1 relative group max-w-full">
             {/* Date Stamp */}
-            <div className="absolute -top-6 -right-6 sm:-right-12 bg-white border-2 border-primary/30 text-stone-600 font-mono text-xs font-bold px-3 py-1.5 shadow-sm rotate-12 rounded-sm z-20">
+            <div className="absolute -top-6 -right-4 sm:-right-8 bg-white border-2 border-primary/30 text-stone-600 font-mono text-xs font-bold px-3 py-1.5 shadow-sm rotate-12 rounded-sm z-20">
               <div className="flex flex-col items-center gap-0.5 whitespace-nowrap">
                 <div className="flex items-center gap-1.5">
                   <FaCalendarAlt className="text-primary" />
@@ -223,7 +223,7 @@ export default function ResultView({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 lg:gap-12 overflow-x-hidden">
         {/* Timeline */}
         <div className="space-y-16">
 

@@ -47,8 +47,36 @@ export default function PlanModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300 overflow-y-auto">
-      <div className="w-full max-w-5xl h-[90vh] bg-transparent relative animate-in zoom-in-95 duration-300 my-auto">
+    <div
+      className="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300 overflow-y-auto"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-5xl h-[90vh] bg-transparent relative animate-in zoom-in-95 duration-300 my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute -top-2 -right-2 z-10 w-10 h-10 bg-white rounded-full shadow-lg hover:bg-stone-100 transition-all flex items-center justify-center text-stone-600 hover:text-stone-800 border-2 border-stone-200 hover:scale-110"
+          aria-label="閉じる"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
         <TravelPlanner
           initialInput={initialInput}
           initialStep={initialStep}
