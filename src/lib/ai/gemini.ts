@@ -39,7 +39,7 @@ export class GeminiService implements AIService {
       CONTEXT (Travel Diary Archives):
       ${contextText}
 
-      CURRENT DATE: ${new Date().toISOString().split('T')[0]}
+      CURRENT DATE AND TIME: ${new Date().toISOString()}
 
       INSTRUCTIONS:
       1. Create a detailed itinerary based on the User Request (Destination, Dates, Companions, Themes, Budget, Pace).
@@ -54,7 +54,14 @@ export class GeminiService implements AIService {
          - If no context was used, return an empty array.
       6. IMAGES: Use a URL from context ONLY if explicitly available and relevant. Otherwise return null.
       7. LANGUAGE: The JSON structure keys must be in English, but ALL content values (description, reasoning, titles, activities) MUST be in **JAPANESE**.
-      8. RETURN ONLY JSON. No markdown formatting.
+      8. MEAL SCHEDULING: Include 3 meals per day (breakfast, lunch, dinner) as activities. EXCEPTION: For arrival and departure days, adjust meal count based on arrival/departure times.
+      9. DAILY ACTIVITY COUNT (based on Pace):
+         - "relaxed": 3 meals + 1-2 sightseeing/activity spots per day
+         - "balanced": 3 meals + 3-4 sightseeing/activity spots per day
+         - "active": 3 meals + 5-6 sightseeing/activity spots per day
+         - "packed": 3 meals + 7-8 sightseeing/activity spots per day
+         NOTE: On arrival/departure days, adjust the activity count based on available time.
+      10. RETURN ONLY JSON. No markdown formatting.
 
       EXAMPLES:
 
