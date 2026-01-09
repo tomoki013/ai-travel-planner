@@ -53,18 +53,6 @@ function PlanContent() {
         setStatus("idle");
         // Close modal if URL changes (regeneration complete)
         setIsEditingRequest(false);
-
-        // Scroll to itinerary top when plan is regenerated
-        if (status === "regenerating") {
-          setTimeout(() => {
-            const itinerarySection = document.querySelector(
-              '[data-itinerary-section]'
-            );
-            if (itinerarySection) {
-              itinerarySection.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-          }, 100);
-        }
       } else {
         setError(
           "プランデータの読み込みに失敗しました。リンクが壊れている可能性があります。"
