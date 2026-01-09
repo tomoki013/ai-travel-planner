@@ -26,17 +26,15 @@ export class GeminiService implements AIService {
       .map((a, i) => `[ID: ${i}]\nTitle: ${a.title}\nContent: ${a.content}`)
       .join("\n\n");
 
-    const systemPrompt = `
+    // System instruction containing context, instructions, examples, and schema
+    const systemInstruction = `
       Your role is to create special travel Selection itineraries based on the blog's archives.
-      
+
       CONTEXT (Travel Diary Archives):
       ${contextText}
-      
+
       CURRENT DATE: ${new Date().toISOString().split('T')[0]}
 
-      USER REQUEST:
-      ${prompt}
-      
       INSTRUCTIONS:
       1. Create a detailed itinerary based on the User Request (Destination, Dates, Companions, Themes, Budget, Pace).
       2. ANALYZE if the Context articles match the Destination in the User Request.
@@ -62,7 +60,7 @@ export class GeminiService implements AIService {
         "days": [ ... (detailed plan) ... ],
         "reference_indices": [0, 2]
       }
-      
+
       JSON SCHEMA:
       {
         "reasoning": "string (Why you chose this plan/spots, logic behind decisions)",
@@ -91,13 +89,32 @@ export class GeminiService implements AIService {
       }
     `;
 
+    // User request as a separate message
+    const userRequest = `
+      USER REQUEST:
+      ${prompt}
+    `;
+
     try {
       console.log(
         `[gemini] Request prepared. Sending to Google Generative AI...`
       );
       const startTime = Date.now();
       const result = await this.model.generateContent({
-        contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: systemInstruction }]
+          },
+          {
+            role: "model",
+            parts: [{ text: "理解しました。ご指示に従って旅行プランを生成します。" }]
+          },
+          {
+            role: "user",
+            parts: [{ text: userRequest }]
+          }
+        ],
         generationConfig: {
           responseMimeType: "application/json",
           temperature: 0.35,
