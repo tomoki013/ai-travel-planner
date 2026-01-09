@@ -60,7 +60,7 @@ export default function ContactForm() {
               name="name"
               required
               className="w-full p-4 rounded-xl border-2 border-stone-200 bg-white focus:border-[#e67e22] focus:outline-none transition-colors font-sans"
-              placeholder="山田 太郎"
+              placeholder="たびであ"
             />
             {state.errors?.name && (
               <p className="text-red-500 text-xs mt-1">
@@ -82,7 +82,7 @@ export default function ContactForm() {
               name="email"
               required
               className="w-full p-4 rounded-xl border-2 border-stone-200 bg-white focus:border-[#e67e22] focus:outline-none transition-colors font-sans"
-              placeholder="taro@example.com"
+              placeholder="tabidea@example.com"
             />
             {state.errors?.email && (
               <p className="text-red-500 text-xs mt-1">
