@@ -55,6 +55,14 @@ const roadmapData: RoadmapItem[] = [
   },
   {
     status: "done",
+    date: "2026.01.09",
+    version: "0.2.8",
+    title: "プラン生成精度の向上",
+    description:
+      "AIによるプラン生成の精度を向上させました。より具体的で実現性の高いプランが提案されるようになりました。",
+  },
+  {
+    status: "done",
     date: "2025.01.08", // Approximate date based on context
     version: "0.2.1",
     title: "よくある質問および機能紹介・使い方ページを設置",
