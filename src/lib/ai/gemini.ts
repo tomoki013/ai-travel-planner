@@ -195,7 +195,13 @@ export class GeminiService implements AIService {
      `;
 
     try {
-      const result = await this.model.generateContent(systemPrompt);
+      const result = await this.model.generateContent({
+        contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.3,
+        },
+      });
       const response = await result.response;
       let text = response.text();
       text = text
