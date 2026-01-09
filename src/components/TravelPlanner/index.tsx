@@ -186,6 +186,10 @@ export default function TravelPlanner({ initialInput, initialStep, onClose }: Tr
         // Compress data and redirect
         const encoded = encodePlanData(input, response.data);
         router.push(`/plan?q=${encoded}`);
+        // Close modal if it's open
+        if (onClose) {
+          onClose();
+        }
       } else {
         setErrorMessage(response.message || "Something went wrong.");
         setStatus("error");
