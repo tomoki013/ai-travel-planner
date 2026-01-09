@@ -24,7 +24,7 @@ export class GeminiService implements AIService {
     console.log(
       `[gemini] Generating itinerary. Context articles: ${context.length}`
     );
-    const MAX_CONTENT_LENGTH = 500;
+    const MAX_CONTENT_LENGTH = 250; // Reduced from 500 to 250 to minimize token usage
     const contextText = context
       .map((a, i) => {
         const truncatedContent = a.content.length > MAX_CONTENT_LENGTH
@@ -40,115 +40,21 @@ export class GeminiService implements AIService {
       : "";
 
     const systemInstruction = `
-      Your role is to create special travel Selection itineraries based on the blog's archives.
+      Create travel itineraries based on the blog's archives.
 
-      CONTEXT (Travel Diary Archives):
-      ${contextText}
-
-      CURRENT DATE AND TIME: ${new Date().toISOString()}
+      CONTEXT: ${contextText}
       ${dayRangeInfo}
 
-      INSTRUCTIONS:
-      1. Create a detailed itinerary based on the User Request (Destination, Dates, Companions, Themes, Budget, Pace).${startDay && endDay ? ` Generate ONLY days ${startDay} to ${endDay}.` : ""}
-      2. ANALYZE if the Context articles match the Destination in the User Request.
-         - IF MATCH (Same City/Region): PRIORITIZE using spots, restaurants, and experiences from the Context.
-         - IF MISMATCH (Different City/Region): You may use the "vibe" or "style" from the Context as inspiration, BUT be careful.
-      3. CRITICAL: If the User asks for "Paris" and context is about "Tokyo", do NOT put Tokyo cafes in Paris. Use general knowledge for Paris instead.
-      4. STRICT RULE: If using a Context article for style/vibe inspiration only (because of location mismatch), DO NOT mention the article name or location in the final text description. Just apply the style silently.
-      5. REFERENCE FILTERING: Populate \`reference_indices\` with the **IDs** of Context articles that were ACTUAL SOURCES of information or specific inspiration.
-         - DO NOT include an ID just because it exists in context.
-         - DO NOT include an ID if the article was not used or is irrelevant.
-         - If no context was used, return an empty array.
-      6. IMAGES: Use a URL from context ONLY if explicitly available and relevant. Otherwise return null.
-      7. LANGUAGE: The JSON structure keys must be in English, but ALL content values (description, reasoning, titles, activities) MUST be in **JAPANESE**.
-      8. MEAL SCHEDULING: Include 3 meals per day (breakfast, lunch, dinner) as activities. EXCEPTION: For arrival and departure days, adjust meal count based on arrival/departure times.
-      9. DAILY ACTIVITY COUNT (based on Pace):
-         - "relaxed": 3 meals + 1-2 sightseeing/activity spots per day
-         - "balanced": 3 meals + 3-4 sightseeing/activity spots per day
-         - "active": 3 meals + 5-6 sightseeing/activity spots per day
-         - "packed": 3 meals + 7-8 sightseeing/activity spots per day
-         NOTE: On arrival/departure days, adjust the activity count based on available time.
-      10. RETURN ONLY JSON. No markdown formatting.
+      RULES:
+      1. Create itinerary for User Request (Destination, Dates, Companions, Themes, Budget, Pace).${startDay && endDay ? ` ONLY days ${startDay} to ${endDay}.` : ""}
+      2. Use Context if it matches the destination. Don't mix locations (e.g., no Tokyo spots in Paris).
+      3. Populate reference_indices ONLY with IDs of articles actually used.
+      4. ALL content in JAPANESE (description, reasoning, titles, activities).
+      5. Include 3 meals/day. Adjust on arrival/departure days.
+      6. Activity count by pace: relaxed(1-2), balanced(3-4), active(5-6), packed(7-8) + meals.
+      7. Return ONLY JSON.
 
-      EXAMPLES:
-
-      EXAMPLE 1 (目的地が決まっている場合):
-      User Request: "京都で静かなお寺に行きたい、1泊2日、夫婦旅行"
-      Output (JSON):
-      {
-        "reasoning": "ユーザーは混雑を嫌っているため、清水寺や金閣寺などの定番は除外。アクセスは少し悪いが雰囲気が良い詩仙堂や圓光寺を選択。記事コンテキストに京都の穴場カフェがあるのでそれを休憩場所に採用。",
-        "id": "kyoto-quiet-temples-2024",
-        "destination": "京都",
-        "heroImage": null,
-        "description": "観光客の喧騒から離れ、心静かに庭園と向き合う大人の京都旅をご提案します。",
-        "days": [
-          {
-            "day": 1,
-            "title": "洛北の静寂を訪ねて",
-            "activities": [
-              {"time": "10:00", "activity": "詩仙堂", "description": "石川丈山が建てた山荘で、手入れの行き届いた庭園と静寂を楽しめます。"},
-              {"time": "12:00", "activity": "一乗寺エリアでランチ", "description": "地元の人に愛される隠れ家カフェでゆっくりと。"},
-              {"time": "14:00", "activity": "圓光寺", "description": "紅葉の名所として知られますが、新緑の季節も美しい庭園です。"},
-              {"time": "16:00", "activity": "旅館チェックイン", "description": "祇園の静かな宿で休息。"}
-            ]
-          },
-          {
-            "day": 2,
-            "title": "嵐山の朝と帰路",
-            "activities": [
-              {"time": "07:00", "activity": "嵐山竹林の道", "description": "早朝なら人も少なく、幻想的な雰囲気を独り占めできます。"},
-              {"time": "09:00", "activity": "天龍寺", "description": "世界遺産の庭園を朝の清々しい空気の中で鑑賞。"},
-              {"time": "11:00", "activity": "嵯峨野散策・帰路", "description": "お土産を探しながら駅へ向かいます。"}
-            ]
-          }
-        ],
-        "reference_indices": [0, 2]
-      }
-
-      EXAMPLE 2 (目的地が未定の場合):
-      User Request: "国内、のんびり温泉、夫婦旅行、2泊3日"
-      Output (JSON):
-      {
-        "reasoning": "夫婦でのんびりできる温泉地として、混雑を避けられる湯布院を選択。由布岳の景色と個室露天風呂のある宿が条件に合致。観光地化されすぎず、大人が落ち着いて過ごせる雰囲気。",
-        "id": "yufuin-onsen-relaxation-2024",
-        "destination": "湯布院",
-        "heroImage": null,
-        "description": "由布岳の麓で過ごす、大人の温泉旅。喧騒から離れ、二人だけの静かな時間をお過ごしください。",
-        "days": [
-          {
-            "day": 1,
-            "title": "湯布院到着・温泉街散策",
-            "activities": [
-              {"time": "14:00", "activity": "湯布院駅到着", "description": "特急ゆふいんの森で到着。駅舎も風情があります。"},
-              {"time": "15:00", "activity": "湯の坪街道散策", "description": "おしゃれな雑貨店やカフェが並ぶメインストリート。"},
-              {"time": "17:00", "activity": "旅館チェックイン", "description": "客室露天風呂付きの宿で、由布岳を眺めながらゆっくり。"},
-              {"time": "19:00", "activity": "旅館で夕食", "description": "地元の食材を使った懐石料理を堪能。"}
-            ]
-          },
-          {
-            "day": 2,
-            "title": "自然と芸術を楽しむ",
-            "activities": [
-              {"time": "09:00", "activity": "金鱗湖散策", "description": "朝霧が立ち込める幻想的な湖畔を散歩。"},
-              {"time": "11:00", "activity": "由布院ステンドグラス美術館", "description": "ヨーロッパのアンティークステンドグラスを鑑賞。"},
-              {"time": "13:00", "activity": "地元カフェでランチ", "description": "湯布院野菜を使ったヘルシーランチ。"},
-              {"time": "15:00", "activity": "旅館で温泉三昧", "description": "貸切風呂や露天風呂でリラックス。"}
-            ]
-          },
-          {
-            "day": 3,
-            "title": "別府経由で帰路",
-            "activities": [
-              {"time": "10:00", "activity": "チェックアウト・別府へ移動", "description": "バスで約50分の別府温泉へ。"},
-              {"time": "11:30", "activity": "別府地獄めぐり", "description": "海地獄や血の池地獄など、独特の温泉景観を見学。"},
-              {"time": "14:00", "activity": "別府駅から帰路", "description": "お土産に温泉コスメや地獄蒸しプリンを。"}
-            ]
-          }
-        ],
-        "reference_indices": []
-      }
-
-      JSON SCHEMA:
+      JSON FORMAT:
       {
         "reasoning": "string (Why you chose this plan/spots, logic behind decisions)",
         "id": "string (unique-ish id)",
@@ -204,7 +110,7 @@ export class GeminiService implements AIService {
         ],
         generationConfig: {
           responseMimeType: "application/json",
-          temperature: 0.35,
+          temperature: 0.2, // Lower temperature for faster, more deterministic responses
         },
       });
       const response = await result.response;
@@ -303,7 +209,7 @@ export class GeminiService implements AIService {
         contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
         generationConfig: {
           responseMimeType: "application/json",
-          temperature: 0.3,
+          temperature: 0.2,
         },
       });
       const response = await result.response;

@@ -64,7 +64,8 @@ export async function generatePlan(input: UserInput): Promise<ActionState> {
 
     let contextArticles: any[] = [];
     try {
-        contextArticles = await scraper.search(query);
+        // Reduce topK to minimize context size and speed up generation
+        contextArticles = await scraper.search(query, { topK: 3 });
         console.log(
         `[action] Step 1 Complete. Found ${
             contextArticles.length
@@ -80,7 +81,7 @@ export async function generatePlan(input: UserInput): Promise<ActionState> {
 
     // Extract duration and check if we need to split
     const totalDays = extractDuration(input.dates);
-    const shouldSplit = totalDays > 2; // Split if more than 2 days
+    const shouldSplit = totalDays > 1; // Split aggressively for all trips over 1 day
 
     let plan: Itinerary;
 
@@ -186,8 +187,8 @@ export async function generatePlan(input: UserInput): Promise<ActionState> {
       plan.references = Array.from(referenceMap.values());
 
     } else {
-      // Original behavior for trips of 2 days or less
-      console.log(`[action] Duration is ${totalDays} days (≤2). Generating single plan...`);
+      // Original behavior for single day trips only
+      console.log(`[action] Duration is ${totalDays} day(s) (≤1). Generating single plan...`);
 
       let prompt = "";
       if (input.isDestinationDecided) {
