@@ -1,0 +1,60 @@
+"use client";
+
+import { useEffect } from "react";
+import TravelPlanner from "@/components/TravelPlanner";
+import { UserInput } from "@/lib/types";
+
+interface PlanModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  initialInput?: UserInput | null;
+  initialStep?: number;
+}
+
+export default function PlanModal({
+  isOpen,
+  onClose,
+  initialInput,
+  initialStep,
+}: PlanModalProps) {
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+
+      // Prevent scrolling on both html and body
+      document.documentElement.style.overflow = "hidden";
+      document.documentElement.style.position = "fixed";
+      document.documentElement.style.top = `-${scrollY}px`;
+      document.documentElement.style.width = "100%";
+      document.body.style.overflow = "hidden";
+
+      return () => {
+        // Restore scrolling
+        document.documentElement.style.overflow = "";
+        document.documentElement.style.position = "";
+        document.documentElement.style.top = "";
+        document.documentElement.style.width = "";
+        document.body.style.overflow = "";
+
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300 overflow-y-auto">
+      <div className="w-full max-w-5xl h-[90vh] bg-transparent relative animate-in zoom-in-95 duration-300 my-auto">
+        <TravelPlanner
+          initialInput={initialInput}
+          initialStep={initialStep}
+          onClose={onClose}
+        />
+      </div>
+    </div>
+  );
+}
