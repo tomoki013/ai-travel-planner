@@ -90,23 +90,23 @@ export async function generatePlan(input: UserInput): Promise<ActionState> {
       const chunks = splitDaysIntoChunks(totalDays);
       console.log(`[action] Created ${chunks.length} chunks:`, chunks);
 
-      // Generate plan for each chunk with aggressive parallel processing
+      // Generate plan for each chunk sequentially to avoid duplicate places
+      // Each chunk needs to know what places were already visited in previous chunks
       const chunkPlans: Itinerary[] = [];
-      const BATCH_SIZE = 5; // Process 5 chunks at a time for maximum speed
+      const visitedPlaces: string[] = [];
 
-      for (let batchStart = 0; batchStart < chunks.length; batchStart += BATCH_SIZE) {
-        const batchEnd = Math.min(batchStart + BATCH_SIZE, chunks.length);
-        const batchChunks = chunks.slice(batchStart, batchEnd);
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        console.log(`[action] Generating chunk ${i + 1}/${chunks.length} (days ${chunk.start}-${chunk.end})...`);
 
-        console.log(`[action] Processing batch ${Math.floor(batchStart / BATCH_SIZE) + 1}/${Math.ceil(chunks.length / BATCH_SIZE)} (${batchChunks.length} chunks)...`);
+        // Build the visited places instruction
+        const visitedPlacesInstruction = visitedPlaces.length > 0
+          ? `\n              ALREADY VISITED PLACES (DO NOT revisit these): ${visitedPlaces.join(", ")}\n              You MUST suggest DIFFERENT places and activities. Do not repeat any of the above locations.`
+          : "";
 
-        const batchPromises = batchChunks.map(async (chunk, batchIndex) => {
-          const i = batchStart + batchIndex;
-          console.log(`[action] Generating chunk ${i + 1}/${chunks.length} (days ${chunk.start}-${chunk.end})...`);
-
-          let prompt = "";
-          if (input.isDestinationDecided) {
-            prompt = `
+        let prompt = "";
+        if (input.isDestinationDecided) {
+          prompt = `
               Destination: ${input.destination}
               Dates: ${input.dates}
               Total Trip Duration: ${totalDays} days (${totalDays - 1} nights)
@@ -119,10 +119,10 @@ export async function generatePlan(input: UserInput): Promise<ActionState> {
 
               IMPORTANT: This is part ${i + 1} of ${chunks.length} of a multi-part itinerary for a ${totalDays}-day trip.
               Please create a travel itinerary ONLY for days ${chunk.start} to ${chunk.end} (${chunk.end - chunk.start + 1} days).
-              ${i === 0 ? `This is the beginning of the trip. In the "description" field, write an overview of the ENTIRE ${totalDays}-day trip.` : i === chunks.length - 1 ? "This is the end of the trip." : "This is a middle section of the trip."}
+              ${i === 0 ? `This is the beginning of the trip. In the "description" field, write an overview of the ENTIRE ${totalDays}-day trip.` : i === chunks.length - 1 ? "This is the end of the trip." : "This is a middle section of the trip."}${visitedPlacesInstruction}
             `;
-          } else {
-            prompt = `
+        } else {
+          prompt = `
               User has NOT decided on a specific destination yet.
               Preferred Region: ${input.region === "domestic" ? "Japan (Domestic)" : input.region === "overseas" ? "Overseas (International)" : "Anywhere"}
               Travel Vibe/Preference: ${input.travelVibe || "None specified"}
@@ -142,15 +142,23 @@ export async function generatePlan(input: UserInput): Promise<ActionState> {
 
               IMPORTANT: This is part ${i + 1} of ${chunks.length} of a multi-part itinerary for a ${totalDays}-day trip.
               Please create a travel itinerary ONLY for days ${chunk.start} to ${chunk.end} (${chunk.end - chunk.start + 1} days).
-              ${i === 0 ? `This is the beginning of the trip. In the "description" field, write an overview of the ENTIRE ${totalDays}-day trip.` : i === chunks.length - 1 ? "This is the end of the trip." : "This is a middle section of the trip."}
+              ${i === 0 ? `This is the beginning of the trip. In the "description" field, write an overview of the ENTIRE ${totalDays}-day trip.` : i === chunks.length - 1 ? "This is the end of the trip." : "This is a middle section of the trip."}${visitedPlacesInstruction}
             `;
-          }
+        }
 
-          return await ai.generateItinerary(prompt, contextArticles, chunk.start, chunk.end);
+        const chunkPlan = await ai.generateItinerary(prompt, contextArticles, chunk.start, chunk.end);
+        chunkPlans.push(chunkPlan);
+
+        // Extract visited places from this chunk to pass to the next chunk
+        chunkPlan.days.forEach(day => {
+          day.activities.forEach(activity => {
+            // Add the activity name (which usually contains the place name)
+            if (activity.activity) {
+              visitedPlaces.push(activity.activity);
+            }
+          });
         });
-
-        const batchResults = await Promise.all(batchPromises);
-        chunkPlans.push(...batchResults);
+        console.log(`[action] Chunk ${i + 1} complete. Total visited places so far: ${visitedPlaces.length}`);
       }
 
       console.log(`[action] All chunks generated. Merging results...`);
