@@ -267,6 +267,33 @@ export default function ResultView({
         </div>
       </div>
 
+      {/* AI Disclaimer Notice */}
+      <div className="w-full max-w-4xl mx-auto mt-8 mb-8 px-4">
+        <div className="bg-amber-50 border-l-4 border-amber-400 p-6 rounded-lg shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 text-2xl">⚠️</div>
+            <div className="flex-1">
+              <h3 className="font-bold text-amber-900 mb-2 text-lg">
+                AI生成プランに関する重要なお知らせ
+              </h3>
+              <div className="text-amber-800 text-sm leading-relaxed space-y-2">
+                <p>
+                  このプランはAIによって自動生成されています。以下の点にご注意ください：
+                </p>
+                <ul className="list-disc list-inside space-y-1 ml-2">
+                  <li>施設の営業時間、料金、住所などの情報は必ず公式サイトで最新情報をご確認ください</li>
+                  <li>AIは時に事実と異なる情報を生成する可能性があります（ハルシネーション）</li>
+                  <li>季節や天候、予約の必要性など、実際の旅行計画では追加の確認が必要です</li>
+                </ul>
+                <p className="font-semibold mt-3">
+                  このプランはあくまで旅行のアイデアとしてご活用ください。実際の旅行では必ず最新情報を確認し、安全で楽しい旅をお楽しみください。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 lg:gap-12 overflow-x-clip">
         {/* Timeline */}
         <div className="space-y-16" data-itinerary-section>
