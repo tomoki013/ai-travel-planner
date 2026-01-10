@@ -44,22 +44,28 @@ export default function PDFDownloadButton({
       const blob = await pdf(pdfElement as any).toBlob();
       console.log("PDF blob generated successfully", blob.size, "bytes");
 
-      // Create download link
+      // Create URL and open in new tab
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
 
-      // Create filename from destination and date
-      const filename = `${itinerary.destination.replace(/[/\\?%*:|"<>]/g, "-")}_旅程.pdf`;
-      link.download = filename;
+      // Open PDF in new tab
+      const newWindow = window.open(url, '_blank');
 
-      // Trigger download
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (!newWindow) {
+        // If popup was blocked, fall back to download
+        const link = document.createElement("a");
+        link.href = url;
+        const filename = `${itinerary.destination.replace(/[/\\?%*:|"<>]/g, "-")}_旅程.pdf`;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        alert("ポップアップがブロックされたため、ダウンロードを開始しました。");
+      }
 
-      // Clean up
-      URL.revokeObjectURL(url);
+      // Clean up URL after a delay to ensure the new tab loads
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
     } catch (error) {
       console.error("PDF generation failed:", error);
 
