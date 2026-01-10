@@ -10,19 +10,34 @@ import {
 import { Itinerary } from "@/lib/types";
 
 // Register Japanese font (Noto Sans JP from Google Fonts)
-Font.register({
-  family: "Noto Sans JP",
-  fonts: [
-    {
-      src: "https://fonts.gstatic.com/s/notosansjp/v52/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEi75vY0rw-oME.ttf",
-      fontWeight: 400,
-    },
-    {
-      src: "https://fonts.gstatic.com/s/notosansjp/v52/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj7pfY0rw-oME.ttf",
-      fontWeight: 700,
-    },
-  ],
-});
+// Track if font has been registered to prevent duplicate registrations
+let fontRegistered = false;
+
+const registerFont = () => {
+  if (fontRegistered) return;
+
+  try {
+    Font.register({
+      family: "Noto Sans JP",
+      fonts: [
+        {
+          src: "https://fonts.gstatic.com/s/notosansjp/v52/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEi75vY0rw-oME.ttf",
+          fontWeight: 400,
+        },
+        {
+          src: "https://fonts.gstatic.com/s/notosansjp/v52/-F6jfjtqLzI2JPCgQBnw7HFyzSD-AsregP8VFBEj7pfY0rw-oME.ttf",
+          fontWeight: 700,
+        },
+      ],
+    });
+    fontRegistered = true;
+  } catch (error) {
+    console.warn("Failed to register Noto Sans JP font:", error);
+  }
+};
+
+// Register font immediately
+registerFont();
 
 // Create styles
 const styles = StyleSheet.create({

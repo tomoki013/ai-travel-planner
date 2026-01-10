@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { Itinerary } from "@/lib/types";
 import { FaFilePdf, FaSpinner } from "react-icons/fa";
-import { pdf } from "@react-pdf/renderer";
-import ItineraryPDF from "./ItineraryPDF";
 
 interface PDFDownloadButtonProps {
   itinerary: Itinerary;
@@ -20,9 +18,22 @@ export default function PDFDownloadButton({
   const handleDownloadPDF = async () => {
     try {
       setIsGenerating(true);
+      console.log("Starting PDF generation...");
 
-      // Generate PDF blob
-      const blob = await pdf(<ItineraryPDF itinerary={itinerary} />).toBlob();
+      // Dynamically import PDF libraries to avoid SSR issues
+      console.log("Importing PDF libraries...");
+      const { pdf } = await import("@react-pdf/renderer");
+      const React = await import("react");
+      const ItineraryPDFModule = await import("./ItineraryPDF");
+      const ItineraryPDF = ItineraryPDFModule.default;
+      console.log("PDF libraries imported successfully");
+
+      // Generate PDF blob using createElement to avoid JSX typing issues
+      console.log("Creating PDF element...");
+      const pdfElement = React.createElement(ItineraryPDF, { itinerary });
+      console.log("Generating PDF blob...");
+      const blob = await pdf(pdfElement as any).toBlob();
+      console.log("PDF blob generated successfully", blob.size, "bytes");
 
       // Create download link
       const url = URL.createObjectURL(blob);
@@ -42,7 +53,14 @@ export default function PDFDownloadButton({
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("PDF generation failed:", error);
-      alert("PDFの生成に失敗しました。もう一度お試しください。");
+
+      // Provide more detailed error message
+      const errorMessage =
+        error instanceof Error
+          ? `PDFの生成に失敗しました: ${error.message}`
+          : "PDFの生成に失敗しました。もう一度お試しください。";
+
+      alert(errorMessage);
     } finally {
       setIsGenerating(false);
     }
