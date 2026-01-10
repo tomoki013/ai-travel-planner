@@ -34,9 +34,11 @@ const roadmapData: RoadmapItem[] = [
       "ログインすることで、複数のデバイスでプランを同期したり、過去の履歴を管理できるようになります。",
   },
   {
-    status: "planned",
-    title: "PDF出力",
-    description: "生成されたプランをPDFで出力できるようになります。",
+    status: "done",
+    date: "2026.01.10",
+    version: "0.3.5",
+    title: "PDF出力機能の実装",
+    description: "生成された旅行プランをPDF形式でダウンロードできるようになりました。オフラインでの閲覧や印刷に便利です。",
   },
   {
     status: "planned",
