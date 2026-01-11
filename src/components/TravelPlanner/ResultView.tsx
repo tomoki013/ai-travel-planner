@@ -42,7 +42,7 @@ export default function ResultView({
   onEditRequest,
 }: ResultViewProps) {
   // Use heroImage if available, else a fallback
-  const heroImg = result.heroImage || "/images/eiffel-tower-and-sunset.jpg";
+  const heroImg = result.heroImage;
 
   const [isEditing, setIsEditing] = useState(false);
   const [editingResult, setEditingResult] = useState<Itinerary | null>(null);
@@ -275,40 +275,42 @@ export default function ResultView({
 
       {/* Journal Header Section */}
       <div className="relative mb-16 overflow-x-hidden">
-        <div className="relative aspect-video sm:aspect-21/9 w-full rounded-sm overflow-hidden shadow-xl border-8 border-white bg-white rotate-1">
-          <Image
-            src={heroImg}
-            alt={result.destination}
-            fill
-            className="object-cover"
-            priority
-          />
-          {/* Unsplash Credit - Only show if photographer info exists */}
-          {result.heroImagePhotographer && result.heroImagePhotographerUrl && (
-            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded">
-              Photo by{" "}
-              <a
-                href={result.heroImagePhotographerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-stone-300 transition-colors"
-              >
-                {result.heroImagePhotographer}
-              </a>
-              {" "}on{" "}
-              <a
-                href="https://unsplash.com/?utm_source=Tabidea&utm_medium=referral"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-stone-300 transition-colors"
-              >
-                Unsplash
-              </a>
-            </div>
-          )}
-          {/* Tape Effect */}
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 bg-yellow-100/80 -rotate-2 shadow-sm backdrop-blur-sm"></div>
-        </div>
+        {heroImg ? (
+          <div className="relative aspect-video sm:aspect-21/9 w-full rounded-sm overflow-hidden shadow-xl border-8 border-white bg-white rotate-1">
+            <Image
+              src={heroImg}
+              alt={result.destination}
+              fill
+              className="object-cover"
+              priority
+            />
+            {/* Unsplash Credit - Only show if photographer info exists */}
+            {result.heroImagePhotographer && result.heroImagePhotographerUrl && (
+              <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded">
+                Photo by{" "}
+                <a
+                  href={result.heroImagePhotographerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-stone-300 transition-colors"
+                >
+                  {result.heroImagePhotographer}
+                </a>{" "}
+                on{" "}
+                <a
+                  href="https://unsplash.com/?utm_source=Tabidea&utm_medium=referral"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-stone-300 transition-colors"
+                >
+                  Unsplash
+                </a>
+              </div>
+            )}
+            {/* Tape Effect */}
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 bg-yellow-100/80 -rotate-2 shadow-sm backdrop-blur-sm"></div>
+          </div>
+        ) : null}
 
         <div className="mt-8 text-center relative z-10">
           <div className="inline-block bg-white/80 backdrop-blur-sm px-8 py-6 rounded-sm shadow-sm border border-stone-100 -rotate-1 relative group max-w-full">
