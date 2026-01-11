@@ -35,6 +35,13 @@ const roadmapData: RoadmapItem[] = [
   },
   {
     status: "done",
+    date: "2026.01.11",
+    version: "0.3.6",
+    title: "プランの手動修正機能",
+    description: "プラン生成後に手動でプランの修正ができるようになりました。",
+  },
+  {
+    status: "done",
     date: "2026.01.10",
     version: "0.3.5",
     title: "PDF出力機能の実装",
