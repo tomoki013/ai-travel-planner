@@ -60,6 +60,42 @@ export default function TravelPlanner({ initialInput, initialStep, onClose }: Tr
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Check if all required inputs are filled (for showing "Generate" button from any step)
+  const isAllInputsComplete = (): boolean => {
+    // Step 0: Initial choice
+    if (input.isDestinationDecided === undefined) return false;
+
+    // Step 1: Destination or Region
+    if (input.isDestinationDecided) {
+      if (!input.destination.trim()) return false;
+    } else {
+      if (!input.region && !input.travelVibe?.trim()) return false;
+    }
+
+    // Step 2: Must-visit places
+    if (input.hasMustVisitPlaces === undefined) return false;
+    if (input.hasMustVisitPlaces === true && (!input.mustVisitPlaces || input.mustVisitPlaces.length === 0)) return false;
+
+    // Step 3: Companions
+    if (!input.companions) return false;
+
+    // Step 4: Themes
+    if (input.theme.length === 0) return false;
+
+    // Step 5: Budget
+    if (!input.budget) return false;
+
+    // Step 6: Dates
+    if (!input.dates) return false;
+
+    // Step 7: Pace
+    if (!input.pace) return false;
+
+    // Step 8: FreeText (optional, no check needed)
+
+    return true;
+  };
+
   const validateStep = (currentStep: number) => {
     switch (currentStep) {
       case 0: // Initial Choice
@@ -284,8 +320,8 @@ export default function TravelPlanner({ initialInput, initialStep, onClose }: Tr
         </p>
         <button
           onClick={() => {
-            setStatus("idle");
             setErrorMessage("");
+            handlePlan();
           }}
           className="px-6 py-3 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors font-bold"
         >
@@ -338,6 +374,7 @@ export default function TravelPlanner({ initialInput, initialStep, onClose }: Tr
       onJumpToStep={handleJumpToStep}
       widthClass={step === 8 ? "max-w-3xl" : "max-w-lg"}
       onClose={onClose}
+      canComplete={isAllInputsComplete()}
     >
       {step === 1 && input.isDestinationDecided === true && (
         <StepDestination

@@ -19,6 +19,7 @@ interface StepContainerProps {
   onJumpToStep?: (step: number) => void;
   widthClass?: string;
   onClose?: () => void;
+  canComplete?: boolean;
 }
 
 export default function StepContainer({
@@ -34,6 +35,7 @@ export default function StepContainer({
   onJumpToStep,
   widthClass = "max-w-lg",
   onClose,
+  canComplete = false,
 }: StepContainerProps) {
   const [showSummary, setShowSummary] = useState(false);
   const isLastStep = step === totalSteps - 1;
@@ -174,12 +176,25 @@ export default function StepContainer({
         )}
       </AnimatePresence>
 
-      {/* Footer / Action Button */}
+      {/* Footer / Action Buttons */}
       <div className="relative z-10 p-6 pt-4 bg-linear-to-t from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent">
+        {/* Show "Generate Plan" button when all inputs are complete (even if not on last step) */}
+        {canComplete && !isLastStep && (
+          <button
+            onClick={onComplete}
+            className="w-full py-4 rounded-full font-bold text-lg tracking-wide shadow-lg transition-all transform active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 mb-3"
+          >
+            プランを作成する ✨
+          </button>
+        )}
         <button
           onClick={isLastStep ? onComplete : onNext}
           disabled={isNextDisabled}
-          className={`w-full py-4 rounded-full font-bold text-lg tracking-wide shadow-lg transition-all transform active:scale-95 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed`}
+          className={`w-full py-4 rounded-full font-bold text-lg tracking-wide shadow-lg transition-all transform active:scale-95 ${
+            canComplete && !isLastStep
+              ? "bg-stone-200 text-stone-600 hover:bg-stone-300"
+              : "bg-primary text-primary-foreground hover:bg-primary/90"
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
           {isLastStep ? "プランを作成する ✨" : "次へ"}
         </button>
