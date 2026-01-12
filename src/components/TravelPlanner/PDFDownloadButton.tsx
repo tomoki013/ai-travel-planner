@@ -53,10 +53,13 @@ export default function PDFDownloadButton({
     const ItineraryPDF = ItineraryPDFModule.default;
 
     const pdfElement = React.createElement(ItineraryPDF, { itinerary });
-    const blob = await pdf(pdfElement as any).toBlob();
-    console.log("PDF blob generated successfully", blob.size, "bytes");
+    const pdfBlob = await pdf(pdfElement as any).toBlob();
+    console.log("PDF blob generated successfully", pdfBlob.size, "bytes");
 
-    const url = URL.createObjectURL(blob);
+    // Force download by changing MIME type to octet-stream
+    // This prevents browsers from opening PDF inline instead of downloading
+    const downloadBlob = new Blob([pdfBlob], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(downloadBlob);
     const link = document.createElement("a");
     link.href = url;
     const filename = `${itinerary.destination.replace(/[/\\?%*:|"<>]/g, "-")}_旅程.pdf`;
