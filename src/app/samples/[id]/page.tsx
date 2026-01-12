@@ -12,7 +12,8 @@ import {
   FaComments,
   FaArrowLeft,
 } from "react-icons/fa";
-import { FaWandMagicSparkles, FaPenToSquare } from "react-icons/fa6";
+import SamplePlanActions from "@/components/SamplePlanActions";
+import { UserInput } from "@/lib/types";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -170,33 +171,13 @@ export default async function SamplePlanDetailPage({ params }: Props) {
           </section>
 
           {/* Action Buttons */}
-          <section className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Generate Button */}
-              <Link
-                href={`/plan?sample=${plan.id}`}
-                className="group flex items-center justify-center gap-3 px-6 py-4 bg-[#e67e22] text-white font-bold rounded-xl hover:bg-[#d35400] transition-all hover:scale-[1.02] shadow-md hover:shadow-lg"
-              >
-                <FaWandMagicSparkles className="text-lg group-hover:rotate-12 transition-transform" />
-                <span>この条件でプランを生成する</span>
-              </Link>
-
-              {/* Customize Button */}
-              <Link
-                href={`/?sample=${plan.id}`}
-                className="group flex items-center justify-center gap-3 px-6 py-4 bg-white text-[#e67e22] font-bold rounded-xl border-2 border-[#e67e22] hover:bg-[#e67e22]/5 transition-all hover:scale-[1.02] shadow-sm hover:shadow-md"
-              >
-                <FaPenToSquare className="text-lg group-hover:rotate-12 transition-transform" />
-                <span>条件をカスタマイズする</span>
-              </Link>
-            </div>
-
-            <p className="text-center text-stone-500 text-sm">
-              「プランを生成する」をクリックすると、AIがこの条件を元に詳細な旅行プランを作成します。
-              <br className="hidden md:block" />
-              カスタマイズを選ぶと、条件を自由に変更してからプランを作成できます。
-            </p>
-          </section>
+          <SamplePlanActions
+            sampleInput={{
+              ...input,
+              hasMustVisitPlaces: input.hasMustVisitPlaces ?? false,
+              mustVisitPlaces: input.mustVisitPlaces ?? [],
+            } as UserInput}
+          />
 
           {/* Back Link */}
           <div className="mt-12 pt-8 border-t border-stone-200 text-center">
