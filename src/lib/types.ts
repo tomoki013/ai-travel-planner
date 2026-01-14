@@ -31,6 +31,7 @@ export interface DayPlan {
   day: number;
   title: string;
   activities: Activity[];
+  reference_indices?: number[];
 }
 
 export interface Reference {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useSyncExternalStore } from "react";
 import { Itinerary, UserInput } from "@/lib/types";
 import { encodePlanData } from "@/lib/urlUtils";
 import { FaFacebook, FaLine, FaLink, FaShareAlt } from "react-icons/fa";
@@ -12,14 +12,14 @@ interface ShareButtonsProps {
   className?: string;
 }
 
+const emptySubscribe = () => () => {};
+
 export default function ShareButtons({
   input,
   result,
   className = "",
 }: ShareButtonsProps) {
-  const [shareUrl, setShareUrl] = useState<string>("");
   const [copied, setCopied] = useState(false);
-  const [canShare, setCanShare] = useState(false);
 
   // Memoize the encoded plan data to avoid recalculating on every render
   const encodedData = useMemo(
@@ -27,13 +27,17 @@ export default function ShareButtons({
     [input, result]
   );
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const url = `${window.location.origin}/plan?q=${encodedData}`;
-      setShareUrl(url);
-      setCanShare(!!navigator.share);
-    }
-  }, [encodedData]);
+  const shareUrl = useSyncExternalStore(
+    emptySubscribe,
+    () => `${window.location.origin}/plan?q=${encodedData}`,
+    () => ""
+  );
+
+  const canShare = useSyncExternalStore(
+    emptySubscribe,
+    () => !!navigator.share,
+    () => false
+  );
 
   const shareText = `AIに旅行プランを作ってもらいました！\n目的地: ${
     result.destination
