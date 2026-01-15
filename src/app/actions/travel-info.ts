@@ -1,6 +1,6 @@
 "use server";
 
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createGoogleGenerativeAI, type GoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 import type {
   TravelInfoCategory,
@@ -18,6 +18,19 @@ import {
   type TravelInfoPromptResult,
   type ParsedSource,
 } from "@/lib/ai/prompts/travel-info-prompt";
+
+// ============================================
+// AI Client Initialization
+// ============================================
+
+let google: GoogleGenerativeAI;
+
+function getGoogleAI(apiKey: string): GoogleGenerativeAI {
+  if (!google) {
+    google = createGoogleGenerativeAI({ apiKey });
+  }
+  return google;
+}
 
 // ============================================
 // 型定義
@@ -384,7 +397,7 @@ async function fetchFromGemini<T extends TravelInfoCategory>(
   travelDates: { start: Date; end: Date } | undefined,
   apiKey: string
 ): Promise<CategoryFetchResult<T>> {
-  const google = createGoogleGenerativeAI({ apiKey });
+  const google = getGoogleAI(apiKey);
   const modelName = process.env.GOOGLE_MODEL_NAME || "gemini-2.5-flash";
 
   // カテゴリ専用プロンプトを生成
@@ -607,7 +620,7 @@ async function extractCountryFromDestination(
 
   // AIで国名を推測
   try {
-    const google = createGoogleGenerativeAI({ apiKey });
+    const google = getGoogleAI(apiKey);
     const modelName = process.env.GOOGLE_MODEL_NAME || "gemini-2.5-flash";
 
     const { text } = await generateText({
@@ -992,7 +1005,7 @@ export async function getLegacyTravelInfo(
   }
 
   try {
-    const google = createGoogleGenerativeAI({ apiKey });
+    const google = getGoogleAI(apiKey);
     const modelName = process.env.GOOGLE_MODEL_NAME || "gemini-2.5-flash";
 
     const prompt = `
