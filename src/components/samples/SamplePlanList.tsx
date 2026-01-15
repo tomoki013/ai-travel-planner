@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDebounce } from "@/hooks/use-debounce";
 import {
   FaFilter,
   FaTimes,
@@ -299,6 +300,8 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
   const [selectedDays, setSelectedDays] = useState<number | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const [displayLimit, setDisplayLimit] = useState(20);
 
   const allTags = useMemo(() => getAllTags(), []);
   const allRegions = useMemo(() => getAllRegions(), []);
@@ -313,8 +316,8 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
       }
 
       // Search Query Filter
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase().trim();
+      if (debouncedSearchQuery.trim()) {
+        const query = debouncedSearchQuery.toLowerCase().trim();
         const searchTargets = [
           plan.title,
           plan.description,
@@ -343,7 +346,16 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
 
       return tagMatch && regionMatch && daysMatch;
     });
-  }, [plans, selectedTags, selectedRegions, selectedDays, selectedTab, searchQuery]);
+  }, [plans, selectedTags, selectedRegions, selectedDays, selectedTab, debouncedSearchQuery]);
+
+  // フィルタリング条件が変わったら表示件数をリセット
+  useEffect(() => {
+    setDisplayLimit(20);
+  }, [filteredPlans]);
+
+  const visiblePlans = useMemo(() => {
+    return filteredPlans.slice(0, displayLimit);
+  }, [filteredPlans, displayLimit]);
 
   // Group regions by area for display
   const groupedRegions = useMemo(() => {
@@ -485,14 +497,14 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
   return (
     <div className="space-y-8">
       {/* Sticky Header (Search & Tabs) */}
-      <div className="sticky top-4 z-40 -mx-2 px-2">
+      <div className="sticky top-4 z-40">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="bg-white/90 backdrop-blur-md border border-stone-200/60 shadow-lg rounded-2xl p-2 flex flex-col md:flex-row gap-3 md:items-center max-w-5xl mx-auto"
         >
           {/* Search Input */}
-          <div className="relative flex-1 group">
+          <div className="relative flex-1 group w-full">
             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-[#e67e22] transition-colors" />
             <input
               type="text"
@@ -507,46 +519,48 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
           <div className="hidden md:block w-px h-10 bg-stone-200" />
 
           {/* Controls Container */}
-          <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {/* Tabs */}
-            <div className="flex bg-stone-100 p-1 rounded-xl flex-shrink-0">
-              {(["all", "domestic", "overseas"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  data-testid={`tab-${tab}`}
-                  onClick={() => {
-                    setSelectedTab(tab);
-                    setSelectedRegions([]);
-                  }}
-                  className={`
-                    px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap
-                    ${
-                      selectedTab === tab
-                        ? "bg-white text-[#e67e22] shadow-sm"
-                        : "text-stone-500 hover:text-stone-700 hover:bg-stone-200/50"
-                    }
-                  `}
-                >
-                  {tab === "all" && <FaGlobe />}
-                  {tab === "domestic" && <FaTrain />}
-                  {tab === "overseas" && <FaPlane />}
-                  <span>
-                    {tab === "all"
-                      ? "すべて"
-                      : tab === "domestic"
-                      ? "国内"
-                      : "海外"}
-                  </span>
-                </button>
-              ))}
+          <div className="flex gap-2 items-center w-full md:w-auto">
+            {/* Tabs (Scrollable) */}
+            <div className="flex-1 overflow-x-auto pb-1 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex bg-stone-100 p-1 rounded-xl w-max">
+                {(["all", "domestic", "overseas"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    data-testid={`tab-${tab}`}
+                    onClick={() => {
+                      setSelectedTab(tab);
+                      setSelectedRegions([]);
+                    }}
+                    className={`
+                      px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap
+                      ${
+                        selectedTab === tab
+                          ? "bg-white text-[#e67e22] shadow-sm"
+                          : "text-stone-500 hover:text-stone-700 hover:bg-stone-200/50"
+                      }
+                    `}
+                  >
+                    {tab === "all" && <FaGlobe />}
+                    {tab === "domestic" && <FaTrain />}
+                    {tab === "overseas" && <FaPlane />}
+                    <span>
+                      {tab === "all"
+                        ? "すべて"
+                        : tab === "domestic"
+                        ? "国内"
+                        : "海外"}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Filter Toggle */}
+            {/* Filter Toggle (Fixed) */}
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               data-testid="filter-toggle"
               className={`
-                flex items-center gap-2 px-4 py-2 rounded-xl border transition-all font-bold text-sm whitespace-nowrap flex-shrink-0
+                flex items-center gap-2 px-4 py-2 rounded-xl border transition-all font-bold text-sm whitespace-nowrap flex-none
                 ${
                   isFilterOpen || hasActiveFilters
                     ? "bg-[#e67e22] text-white border-[#e67e22] shadow-md"
@@ -555,7 +569,7 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
               `}
             >
               <FaFilter />
-              <span>絞り込み</span>
+              <span className="hidden sm:inline">絞り込み</span>
               {hasActiveFilters && (
                 <span className="ml-1 px-1.5 py-0.5 bg-white/20 text-white rounded-full text-xs">
                   {activeFilterCount}
@@ -756,11 +770,23 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence mode="popLayout">
-            {filteredPlans.map((plan, index) => (
+            {visiblePlans.map((plan, index) => (
               <SamplePlanCard key={plan.id} plan={plan} index={index} />
             ))}
           </AnimatePresence>
         </div>
+
+        {/* Show More Button */}
+        {filteredPlans.length > displayLimit && (
+          <div className="flex justify-center mt-8">
+            <button
+              onClick={() => setDisplayLimit((prev) => prev + 20)}
+              className="px-8 py-3 bg-white text-stone-600 border border-stone-300 rounded-full font-bold hover:bg-stone-50 hover:border-stone-400 transition-all shadow-sm"
+            >
+              もっと見る ({filteredPlans.length - displayLimit}件)
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Empty State */}
@@ -772,12 +798,12 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
         >
           <div className="text-7xl mb-6 opacity-80">🗺️</div>
           <h3 className="text-xl font-bold text-stone-700 mb-2">
-            {searchQuery
-              ? `「${searchQuery}」のプランは見つかりませんでした`
+            {debouncedSearchQuery
+              ? `「${debouncedSearchQuery}」のプランは見つかりませんでした`
               : "プランが見つかりませんでした"}
           </h3>
           <p className="text-stone-500 mb-8 max-w-md mx-auto">
-            {searchQuery
+            {debouncedSearchQuery
               ? "キーワードを変えて、もう一度探してみてください。"
               : "選択した条件に一致する旅のプランがありませんでした。\n条件を少し緩めて、もう一度探してみてください。"}
           </p>
