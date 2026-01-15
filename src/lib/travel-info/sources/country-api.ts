@@ -188,16 +188,20 @@ export class CountryApiSource implements ITravelInfoSource<BasicCountryInfo> {
    * TODO: 実際のAPI呼び出し
    */
   private async fetchCountryData(
-    _countryName: string
+    countryName: string
   ): Promise<RestCountryResponse | null> {
-    // TODO: 実際のAPI呼び出しを実装
-    // const url = `${this.endpoint}/name/${encodeURIComponent(countryName)}`;
-    // const response = await fetch(url);
-    // const data = await response.json();
-    // return data[0];
+    const url = `${this.endpoint}/name/${encodeURIComponent(countryName)}`;
+    const response = await fetch(url);
 
-    console.warn('[country-api] Using placeholder - implement actual fetch');
-    return null;
+    if (!response.ok) {
+      if (response.status === 404) {
+        return null;
+      }
+      throw new Error(response.statusText);
+    }
+
+    const data = await response.json();
+    return data[0];
   }
 
   /**
