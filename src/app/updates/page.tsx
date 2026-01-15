@@ -10,6 +10,7 @@ type RoadmapItem = {
   status: "done" | "planned" | "developing";
   date?: string; // For done items
   version?: string;
+  updateType?: "major" | "minor" | "patch";
   title: string;
   description: string;
 };
@@ -37,6 +38,7 @@ const roadmapData: RoadmapItem[] = [
     status: "done",
     date: "2026.01.14",
     version: "0.3.1",
+    updateType: "patch",
     title: "サンプルの大幅追加と検索・絞り込み機能の実装",
     description:
       "旅程サンプルを大幅に追加し、地域やキーワードでプランを探せる検索・絞り込み機能を実装しました。よりスムーズに理想の旅程を見つけられるようになりました。",
@@ -45,13 +47,16 @@ const roadmapData: RoadmapItem[] = [
     status: "done",
     date: "2026.01.13",
     version: "0.3.0",
+    updateType: "minor",
     title: "旅程サンプル集の公開",
-    description: "様々な旅行プランのサンプルを閲覧できる旅程サンプル集を公開しました。プラン作成の参考にご活用ください。",
+    description:
+      "様々な旅行プランのサンプルを閲覧できる旅程サンプル集を公開しました。プラン作成の参考にご活用ください。",
   },
   {
     status: "done",
     date: "2026.01.11",
     version: "0.2.5",
+    updateType: "patch",
     title: "プランの手動修正機能",
     description: "プラン生成後に手動でプランの修正ができるようになりました。",
   },
@@ -59,8 +64,10 @@ const roadmapData: RoadmapItem[] = [
     status: "done",
     date: "2026.01.10",
     version: "0.2.4",
+    updateType: "patch",
     title: "PDF出力機能の実装",
-    description: "生成された旅行プランをPDF形式でダウンロードできるようになりました。オフラインでの閲覧や印刷に便利です。",
+    description:
+      "生成された旅行プランをPDF形式でダウンロードできるようになりました。オフラインでの閲覧や印刷に便利です。",
   },
   {
     status: "planned",
@@ -81,6 +88,7 @@ const roadmapData: RoadmapItem[] = [
     status: "done",
     date: "2026.01.10",
     version: "0.2.3",
+    updateType: "patch",
     title: "日程が長い場合のスケジュール生成改善",
     description:
       "日程が長くなると1日あたりの予定が少なくなる問題を修正しました。",
@@ -89,6 +97,7 @@ const roadmapData: RoadmapItem[] = [
     status: "done",
     date: "2026.01.09",
     version: "0.2.2",
+    updateType: "patch",
     title: "プラン生成精度の向上",
     description:
       "AIによるプラン生成の精度を向上させました。より具体的で実現性の高いプランが提案されるようになりました。",
@@ -97,6 +106,7 @@ const roadmapData: RoadmapItem[] = [
     status: "done",
     date: "2025.01.08", // Approximate date based on context
     version: "0.2.1",
+    updateType: "patch",
     title: "よくある質問および機能紹介・使い方ページを設置",
     description:
       "よくある質問ページと使い方ページを設置し、多くの人が利用しやすいサービスとするための改修を行いました。",
@@ -105,6 +115,7 @@ const roadmapData: RoadmapItem[] = [
     status: "done",
     date: "2025.12.23", // Approximate date based on context
     version: "0.2.0",
+    updateType: "minor",
     title: "β版サービス公開",
     description:
       "UIとUXの修正、および本格的なサービス開始に伴うページ整理を行いました。",
@@ -113,6 +124,7 @@ const roadmapData: RoadmapItem[] = [
     status: "done",
     date: "2025.12.13", // Approximate date based on context
     version: "0.1.0",
+    updateType: "minor",
     title: "α版サービス公開",
     description:
       "Tabideaのα版を公開しました。Gemini AIを活用した旅行プラン生成が可能です。",
@@ -197,11 +209,28 @@ export default function UpdatesPage() {
                   <div key={index} className="relative">
                     <div className="absolute -left-[41px] md:-left-[53px] top-1 w-6 h-6 rounded-full border-4 border-green-500 bg-[#fcfbf9] z-10"></div>
                     <div>
-                      <span className="text-sm font-bold text-stone-400 block mb-1 font-mono flex items-center gap-2">
+                      <span className="text-sm font-bold text-stone-400 block mb-1 font-mono flex items-center gap-2 flex-wrap">
                         {item.date}
                         {item.version && (
                           <span className="bg-stone-100 text-stone-600 px-2 py-0.5 rounded text-xs">
                             v{item.version}
+                          </span>
+                        )}
+                        {item.updateType && (
+                          <span
+                            className={`px-2 py-0.5 rounded text-xs border ${
+                              item.updateType === "major"
+                                ? "bg-orange-50 text-orange-600 border-orange-200"
+                                : item.updateType === "minor"
+                                ? "bg-blue-50 text-blue-600 border-blue-200"
+                                : "bg-stone-50 text-stone-500 border-stone-200"
+                            }`}
+                          >
+                            {item.updateType === "major"
+                              ? "Major Update"
+                              : item.updateType === "minor"
+                              ? "Minor Update"
+                              : "Patch Update"}
                           </span>
                         )}
                       </span>
