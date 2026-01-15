@@ -36,7 +36,7 @@ const roadmapData: RoadmapItem[] = [
   {
     status: "done",
     date: "2026.01.14",
-    version: "0.3.8",
+    version: "0.3.1",
     title: "サンプルの大幅追加と検索・絞り込み機能の実装",
     description:
       "旅程サンプルを大幅に追加し、地域やキーワードでプランを探せる検索・絞り込み機能を実装しました。よりスムーズに理想の旅程を見つけられるようになりました。",
@@ -44,21 +44,21 @@ const roadmapData: RoadmapItem[] = [
   {
     status: "done",
     date: "2026.01.13",
-    version: "0.3.7",
+    version: "0.3.0",
     title: "旅程サンプル集の公開",
     description: "様々な旅行プランのサンプルを閲覧できる旅程サンプル集を公開しました。プラン作成の参考にご活用ください。",
   },
   {
     status: "done",
     date: "2026.01.11",
-    version: "0.3.6",
+    version: "0.2.5",
     title: "プランの手動修正機能",
     description: "プラン生成後に手動でプランの修正ができるようになりました。",
   },
   {
     status: "done",
     date: "2026.01.10",
-    version: "0.3.5",
+    version: "0.2.4",
     title: "PDF出力機能の実装",
     description: "生成された旅行プランをPDF形式でダウンロードできるようになりました。オフラインでの閲覧や印刷に便利です。",
   },
@@ -80,7 +80,7 @@ const roadmapData: RoadmapItem[] = [
   {
     status: "done",
     date: "2026.01.10",
-    version: "0.3.0",
+    version: "0.2.3",
     title: "日程が長い場合のスケジュール生成改善",
     description:
       "日程が長くなると1日あたりの予定が少なくなる問題を修正しました。",
@@ -88,7 +88,7 @@ const roadmapData: RoadmapItem[] = [
   {
     status: "done",
     date: "2026.01.09",
-    version: "0.2.8",
+    version: "0.2.2",
     title: "プラン生成精度の向上",
     description:
       "AIによるプラン生成の精度を向上させました。より具体的で実現性の高いプランが提案されるようになりました。",
