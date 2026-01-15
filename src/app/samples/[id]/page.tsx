@@ -1,14 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  getSamplePlanById,
-  samplePlans,
-} from "@/lib/sample-plans";
+import { getSamplePlanById, samplePlans } from "@/lib/sample-plans";
 import { getSampleItinerary } from "@/lib/sample-itineraries";
-import {
-  FaArrowLeft,
-} from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 import { UserInput } from "@/lib/types";
 import AIPromotionBanner, {
   AIPromotionBannerCompact,
@@ -36,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const siteUrl = "https://tabidea.tomokichidiary.com";
+  const siteUrl = "https://ai.tomokichidiary.com";
   const pageUrl = `${siteUrl}/samples/${id}`;
   const ogImage = itinerary?.heroImage || `${siteUrl}/og-default.png`;
 

@@ -42,7 +42,7 @@ export default function AboutPage() {
             </h2>
             <div className="space-y-4 text-stone-700 leading-relaxed">
               <p>
-                Tabidea（タビディア）は、AIの力とリアルな旅行体験をかけ合わせた、新しい旅行プランニングサービスです。
+                Tabidea（タビデア）は、AIの力とリアルな旅行体験をかけ合わせた、新しい旅行プランニングサービスです。
               </p>
               <p>
                 「どこに行こうか」「何を見ようか」と悩む時間も旅の醍醐味。
