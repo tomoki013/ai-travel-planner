@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Sans_JP, Kaisei_Decol, Yomogi } from "next/font/google";
 import Script from "next/script";
 import Footer from "@/components/landing/Footer";
@@ -24,8 +24,48 @@ const yomogi = Yomogi({
 });
 
 export const metadata: Metadata = {
-  title: "Tabidea - Powered by ともきちの旅行日記",
-  description: "AIと一緒に、あなただけの旅の計画を。",
+  title: {
+    default: "Tabidea - Powered by ともきちの旅行日記",
+    template: "%s - Tabidea",
+  },
+  description:
+    "Tabideaは、AIの力とリアルな旅行体験をかけ合わせた、新しい旅行プランニングサービスです。",
+  authors: [{ name: "ともきち" }],
+  openGraph: {
+    title: "Tabidea - Powered by ともきちの旅行日記",
+    description:
+      "日本と世界の美しい風景、文化、食べ物を通じて、新しい旅の発見をお届けする旅行ブログ。",
+    url: "https://ai.tomokichidiary.com/",
+    siteName: "Tabidea",
+    type: "website",
+    images: [
+      {
+        url: "favicon.ico",
+        width: 1200,
+        height: 630,
+        alt: "Tabidea",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tabidea - Powered by ともきちの旅行日記",
+    description:
+      "Tabideaは、AIの力とリアルな旅行体験をかけ合わせた、新しい旅行プランニングサービスです。",
+    images: ["favicon.ico"],
+  },
+  metadataBase: new URL("https://ai.tomokichidiary.com"),
+  // manifest: "/manifest.json",
+  // appleWebApp: {
+  //   capable: true,
+  //   statusBarStyle: "default",
+  //   title: "Tabidea",
+  // },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
