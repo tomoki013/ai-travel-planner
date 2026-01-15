@@ -254,9 +254,13 @@ export default function UpdatesPage() {
                         <span
                           className={`px-2 py-0.5 rounded text-xs border ${
                             item.updateType === "release"
-                              ? "bg-orange-50 text-orange-600 border-orange-200"
+                              ? "bg-orange-50 text-red-600 border-orange-200"
                               : item.updateType === "pre_release"
                               ? "bg-blue-50 text-blue-600 border-blue-200"
+                              : item.updateType === "major"
+                              ? "bg-red-50 text-orange-600 border-red-200"
+                              : item.updateType === "minor"
+                              ? "bg-green-50 text-green-600 border-green-200"
                               : "bg-stone-50 text-stone-500 border-stone-200"
                           }`}
                         >
@@ -264,6 +268,10 @@ export default function UpdatesPage() {
                             ? "Release"
                             : item.updateType === "pre_release"
                             ? "Pre-release"
+                            : item.updateType === "major"
+                            ? "Major"
+                            : item.updateType === "minor"
+                            ? "Minor"
                             : "Patch"}
                         </span>
                       )}
