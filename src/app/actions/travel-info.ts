@@ -1,6 +1,6 @@
 "use server";
 
-import { createGoogleGenerativeAI, type GoogleGenerativeAI } from "@ai-sdk/google";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 import type {
   TravelInfoCategory,
@@ -23,9 +23,9 @@ import {
 // AI Client Initialization
 // ============================================
 
-let google: GoogleGenerativeAI;
+let google: ReturnType<typeof createGoogleGenerativeAI>;
 
-function getGoogleAI(apiKey: string): GoogleGenerativeAI {
+function getGoogleAI(apiKey: string): ReturnType<typeof createGoogleGenerativeAI> {
   if (!google) {
     google = createGoogleGenerativeAI({ apiKey });
   }
