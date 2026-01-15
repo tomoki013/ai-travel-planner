@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { FaFlag, FaCheck, FaTools } from "react-icons/fa";
 
 export const metadata: Metadata = {
-  title: "更新情報・ロードマップ - Tabidea",
+  title: "更新情報・ロードマップ",
   description: "Tabideaの更新情報と今後の開発ロードマップを掲載しています。",
 };
 

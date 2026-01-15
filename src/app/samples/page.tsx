@@ -4,7 +4,7 @@ import SamplePlanList from "@/components/samples/SamplePlanList";
 import { samplePlans } from "@/lib/sample-plans";
 
 export const metadata: Metadata = {
-  title: "サンプルプラン集 - Tabidea (タビデア)",
+  title: "サンプルプラン集",
   description:
     "AIが作成した旅行プランのサンプル集。家族旅行、カップル旅行、一人旅など、様々なシチュエーションに合わせたプラン例をご覧いただけます。",
 };

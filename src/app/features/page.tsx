@@ -4,7 +4,7 @@ import HowToUseSection from "@/components/landing/HowToUseSection";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "機能紹介・使い方 - Tabidea",
+  title: "機能紹介",
   description: "Tabideaの機能や使い方について詳しく説明します。AIを活用した旅行プランの作成方法をステップごとに紹介。",
 };
 
