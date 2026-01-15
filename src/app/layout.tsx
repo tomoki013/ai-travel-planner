@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_JP, Kaisei_Decol, Yomogi } from "next/font/google";
 import Script from "next/script";
+import Header from "@/components/layout/Header";
 import Footer from "@/components/landing/Footer";
 import CookieBanner from "@/components/ui/CookieBanner";
 import FloatingPlanButton from "@/components/ui/FloatingPlanButton";
@@ -96,6 +97,7 @@ export default function RootLayout({
       <body
         className={`${notoSansJP.variable} ${kaiseiDecol.variable} ${yomogi.variable} font-sans antialiased bg-background text-foreground`}
       >
+        <Header />
         {children}
         <FloatingPlanButton />
         <CookieBanner />
