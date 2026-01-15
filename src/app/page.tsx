@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import TravelPlanner from "@/components/TravelPlanner";
+import Header from "@/components/layout/Header";
 import HeroSection from "@/components/landing/HeroSection";
 import AboutSection from "@/components/landing/AboutSection";
 import FeaturesHeroSection from "@/components/landing/FeaturesHeroSection";
@@ -53,6 +54,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
         {/* Other Sections */}
         <AboutSection />
+        <Header forceShow={true} className="sticky top-0 left-0 right-0 z-50 border-b border-dashed border-stone-200/50" />
         <FeaturesHeroSection />
         <UsageGuideHero />
         <FeatureSection />
