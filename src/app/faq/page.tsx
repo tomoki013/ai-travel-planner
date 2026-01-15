@@ -2,7 +2,7 @@ import FAQContent from "@/components/faq/FAQContent";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "よくある質問 - Tabidea (タビデア)",
+  title: "よくある質問",
   description: "Tabideaの使い方、プラン作成、料金、AIの安全性などに関するよくある質問と回答をまとめています。",
 };
 

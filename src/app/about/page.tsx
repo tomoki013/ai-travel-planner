@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 
 export const metadata: Metadata = {
-  title: "Tabideaについて - Tabidea",
+  title: "Tabideaについて",
   description:
     "Tabideaは、AIがともきちの旅行日記を始めとするWeb上の膨大な知識を組み合わせて、あなただけの旅行プランを提案するサービスです。",
 };

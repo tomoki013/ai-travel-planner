@@ -5,7 +5,7 @@ import ContactForm from "@/components/ContactForm";
 import { FaX } from "react-icons/fa6";
 
 export const metadata: Metadata = {
-  title: "お問い合わせ - Tabidea",
+  title: "お問い合わせ",
   description:
     "Tabideaに関するお問い合わせ、機能リクエスト、不具合報告はこちらから。",
 };
