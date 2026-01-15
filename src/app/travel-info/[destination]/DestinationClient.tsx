@@ -218,9 +218,9 @@ export default function DestinationClient({
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-[#fcfbf9]">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-[#fcfbf9] pt-[100px]">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-stone-200">
+      <header className="sticky top-[88px] z-40 bg-white/80 backdrop-blur-sm border-b border-stone-200">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link
             href="/travel-info"
