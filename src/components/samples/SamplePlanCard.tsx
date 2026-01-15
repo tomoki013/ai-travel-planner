@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { FaCalendarAlt, FaUsers, FaMapMarkerAlt } from "react-icons/fa";
@@ -50,7 +51,7 @@ const defaultTagStyle = {
   border: "border-stone-200",
 };
 
-export default function SamplePlanCard({ plan, index }: SamplePlanCardProps) {
+const SamplePlanCard = memo(function SamplePlanCard({ plan, index }: SamplePlanCardProps) {
   // 地域タグとその他のタグを分離して表示順序を整理
   const regionTag = plan.tags.find(tag => regionTags.includes(tag));
   const otherTags = plan.tags.filter(tag => !regionTags.includes(tag));
@@ -130,4 +131,6 @@ export default function SamplePlanCard({ plan, index }: SamplePlanCardProps) {
       </Link>
     </motion.div>
   );
-}
+});
+
+export default SamplePlanCard;
