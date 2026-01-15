@@ -20,6 +20,19 @@ import {
 } from "@/lib/ai/prompts/travel-info-prompt";
 
 // ============================================
+// AI Client Initialization
+// ============================================
+
+let google: ReturnType<typeof createGoogleGenerativeAI>;
+
+function getGoogleAI(apiKey: string): ReturnType<typeof createGoogleGenerativeAI> {
+  if (!google) {
+    google = createGoogleGenerativeAI({ apiKey });
+  }
+  return google;
+}
+
+// ============================================
 // 型定義
 // ============================================
 
@@ -471,7 +484,7 @@ async function fetchFromGemini<T extends TravelInfoCategory>(
   travelDates: { start: Date; end: Date } | undefined,
   apiKey: string
 ): Promise<CategoryFetchResult<T>> {
-  const google = createGoogleGenerativeAI({ apiKey });
+  const google = getGoogleAI(apiKey);
   const modelName = process.env.GOOGLE_MODEL_NAME || "gemini-2.5-flash";
 
   // カテゴリ専用プロンプトを生成
@@ -1023,7 +1036,7 @@ export async function getLegacyTravelInfo(
   }
 
   try {
-    const google = createGoogleGenerativeAI({ apiKey });
+    const google = getGoogleAI(apiKey);
     const modelName = process.env.GOOGLE_MODEL_NAME || "gemini-2.5-flash";
 
     const prompt = `
