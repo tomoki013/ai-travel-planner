@@ -8,6 +8,8 @@ import type {
   CategoryDataEntry,
 } from "@/lib/types/travel-info";
 
+export type { TravelInfoCategory, CategoryDataEntry };
+
 // ============================================
 // カテゴリ情報定義
 // ============================================

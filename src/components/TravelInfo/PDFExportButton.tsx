@@ -84,8 +84,8 @@ export default function PDFExportButton({
       // Check for Web Share API support (Mobile)
       const canShare =
         typeof navigator !== "undefined" &&
-        navigator.share &&
-        navigator.canShare &&
+        'share' in navigator &&
+        'canShare' in navigator &&
         navigator.canShare({ files: [new File([blob], filename, { type: "application/pdf" })] });
 
       if (canShare) {
