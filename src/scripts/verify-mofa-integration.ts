@@ -1,6 +1,6 @@
 
 import { createDefaultTravelInfoService } from '@/lib/travel-info';
-import { TravelInfoCategory } from '@/lib/types/travel-info';
+import { TravelInfoCategory, SafetyInfo } from '@/lib/types/travel-info';
 
 async function verify() {
   const service = createDefaultTravelInfoService();
@@ -23,7 +23,11 @@ async function verify() {
 
   console.log('Source Type:', safetyData.source.sourceType);
   console.log('Source Name:', safetyData.source.sourceName);
-  console.log('Danger Level:', safetyData.data.dangerLevel);
+
+  if (safetyData.category === 'safety') {
+    const data = safetyData.data as SafetyInfo;
+    console.log('Danger Level:', data.dangerLevel);
+  }
 
   if (safetyData.source.sourceType === 'official_api' && safetyData.source.sourceName.includes('外務省')) {
     console.log('SUCCESS: MOFA API is being used.');
