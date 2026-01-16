@@ -84,7 +84,7 @@ export default function SafetyInfoSection({ data }: SectionBaseProps<SafetyInfo>
               <span
                 className={`px-3 py-1 rounded-full text-sm font-bold ${style.bg} ${style.text} border ${style.border}`}
               >
-                {data.isPartialCountryRisk ? '国別最大レベル' : 'レベル'} {data.dangerLevel}
+                レベル {data.dangerLevel}
               </span>
               <DangerLevelBar level={data.dangerLevel} />
             </div>
@@ -92,10 +92,13 @@ export default function SafetyInfoSection({ data }: SectionBaseProps<SafetyInfo>
               <p className={`font-bold text-xl leading-tight ${style.text}`}>
                 {data.dangerLevelDescription}
               </p>
-              {data.isPartialCountryRisk && (
-                <p className="text-sm text-stone-500 flex items-center gap-1">
-                  <AlertTriangle className="w-4 h-4 text-orange-500" />
-                  <span>地域により危険度が異なります。詳細は下記をご確認ください。</span>
+              {data.isPartialCountryRisk && data.maxCountryLevel !== undefined && (
+                <p className="text-sm text-stone-500 flex flex-col sm:flex-row sm:items-center gap-1">
+                  <span className="flex items-center gap-1">
+                    <AlertTriangle className="w-4 h-4 text-orange-500" />
+                    <span>国別最大レベルは {data.maxCountryLevel} です。</span>
+                  </span>
+                  <span>一部地域でより高い危険情報が出ています。</span>
                 </p>
               )}
             </div>

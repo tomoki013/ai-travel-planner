@@ -338,7 +338,7 @@ describe('MofaApiSource', () => {
   });
 
   describe('一部地域リスク判定', () => {
-    it('都市名での検索かつ「全土」キーワードが含まれない場合、isPartialCountryRiskがtrueになる', async () => {
+    it('都市名での検索かつ「全土」キーワードが含まれない場合、レベル0が返され、maxCountryLevelが維持される', async () => {
       const xml = `
         <opendata dataType="A" odType="04" lastModified="2025/01/16 00:00:00">
           <riskLevel2>1</riskLevel2>
@@ -354,15 +354,18 @@ describe('MofaApiSource', () => {
       });
 
       // バンコク (0066) で検索
+      // バンコクはテキストに含まれない -> レベル0
       const result = await source.fetch('バンコク');
 
       if (!result.success) throw new Error('Fetch failed');
 
+      expect(result.data.dangerLevel).toBe(0);
+      expect(result.data.maxCountryLevel).toBe(2);
       expect(result.data.isPartialCountryRisk).toBe(true);
       expect(result.data.lead).toBe('南部国境地域に危険情報が出ています。');
     });
 
-    it('国名での検索の場合、isPartialCountryRiskはfalseになる', async () => {
+    it('国名での検索の場合、最大レベルが返される', async () => {
       const xml = `
         <opendata dataType="A" odType="04" lastModified="2025/01/16 00:00:00">
           <riskLevel2>1</riskLevel2>
@@ -381,10 +384,12 @@ describe('MofaApiSource', () => {
 
       if (!result.success) throw new Error('Fetch failed');
 
+      expect(result.data.dangerLevel).toBe(2);
+      expect(result.data.maxCountryLevel).toBe(2);
       expect(result.data.isPartialCountryRisk).toBe(false);
     });
 
-    it('「全土」キーワードが含まれる場合、isPartialCountryRiskはfalseになる', async () => {
+    it('「全土」キーワードが含まれる場合、都市検索でも最大レベルが返される', async () => {
       const xml = `
         <opendata dataType="A" odType="04" lastModified="2025/01/16 00:00:00">
           <riskLevel4>1</riskLevel4>
@@ -403,7 +408,31 @@ describe('MofaApiSource', () => {
 
       if (!result.success) throw new Error('Fetch failed');
 
+      expect(result.data.dangerLevel).toBe(4);
+      expect(result.data.maxCountryLevel).toBe(4);
       expect(result.data.isPartialCountryRisk).toBe(false);
+    });
+
+    it('都市名がテキストに含まれる場合、最大レベル（保守的評価）が返される', async () => {
+       const xml = `
+        <opendata dataType="A" odType="04" lastModified="2025/01/16 00:00:00">
+          <riskLevel2>1</riskLevel2>
+          <riskLead>プーケットで注意が必要です。</riskLead>
+        </opendata>
+      `;
+
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve(xml),
+      });
+
+      // プーケット (0066) で検索
+      const result = await source.fetch('プーケット');
+
+      if (!result.success) throw new Error('Fetch failed');
+
+      expect(result.data.dangerLevel).toBe(2);
     });
   });
 });

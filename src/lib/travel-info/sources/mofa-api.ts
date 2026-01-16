@@ -844,26 +844,39 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
       const lead = opendata.riskLead?.trim();
       const subText = opendata.riskSubText?.trim();
 
-      // 国全体ではなく一部地域のみのリスクかどうかの判定
-      // 条件: 危険度が1以上 かつ 目的地が国名と一致しない かつ テキストに「全土」「全域」が含まれない
-      let isPartialCountryRisk = false;
-      if (dangerLevel > 0) {
-        const countryName = COUNTRY_CODE_TO_NAME[countryCode];
-        // 目的地が国名そのものでない場合（都市名などの場合）
-        if (countryName && destination !== countryName && !destination.includes(countryName)) {
-          const combinedText = (lead || '') + (subText || '');
-          const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
-          const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
+      // 目的地の特定危険レベルを判定
+      // デフォルトは国全体の最大レベル
+      let specificDangerLevel = dangerLevel;
+      const maxCountryLevel = dangerLevel;
 
-          if (!hasWholeCountryKeyword) {
-            isPartialCountryRisk = true;
+      // 都市名などの特定地域の場合の判定ロジック
+      const countryName = COUNTRY_CODE_TO_NAME[countryCode];
+      // 目的地が国名そのものでない場合（都市名などの場合）
+      if (countryName && destination !== countryName && !destination.includes(countryName)) {
+        const combinedText = (lead || '') + (subText || '');
+        const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
+        const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
+
+        if (!hasWholeCountryKeyword) {
+          // 「全土」キーワードがない場合
+          if (combinedText.includes(destination)) {
+             // テキストに目的地が含まれている場合 -> 念のため最大レベルを適用（安全サイド）
+             specificDangerLevel = maxCountryLevel;
+          } else {
+             // テキストに目的地が含まれておらず、全土指定でもない -> レベル0（安全）とみなす
+             specificDangerLevel = 0;
           }
         }
       }
 
+      // 部分的リスクフラグ（表示制御用）
+      // 特定レベルが最大レベルより低い場合 = 一部地域のみのリスク
+      const isPartialCountryRisk = specificDangerLevel < maxCountryLevel;
+
       return {
-        dangerLevel,
-        dangerLevelDescription: DANGER_LEVEL_DESCRIPTIONS[dangerLevel],
+        dangerLevel: specificDangerLevel,
+        maxCountryLevel,
+        dangerLevelDescription: DANGER_LEVEL_DESCRIPTIONS[specificDangerLevel],
         lead,
         subText,
         isPartialCountryRisk,
