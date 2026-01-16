@@ -5,6 +5,16 @@ import { MofaApiSource } from './mofa-api';
 const fetchMock = vi.fn();
 global.fetch = fetchMock;
 
+// Mock AI
+const generateObjectMock = vi.fn();
+vi.mock('ai', () => ({
+  generateObject: (...args: any[]) => generateObjectMock(...args),
+}));
+
+vi.mock('@ai-sdk/google', () => ({
+  createGoogleGenerativeAI: () => () => ({}),
+}));
+
 describe('MofaApiSource', () => {
   let source: MofaApiSource;
 
@@ -338,7 +348,11 @@ describe('MofaApiSource', () => {
   });
 
   describe('一部地域リスク判定', () => {
-    it('都市名での検索かつ「全土」キーワードが含まれない場合、レベル0が返され、maxCountryLevelが維持される', async () => {
+    it('都市名での検索かつ「全土」キーワードが含まれない場合、AIがなければレベル0が返される', async () => {
+      // API Keyがない場合やAIが失敗した場合のテスト
+      const originalApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+      delete process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
       const xml = `
         <opendata dataType="A" odType="04" lastModified="2025/01/16 00:00:00">
           <riskLevel2>1</riskLevel2>
@@ -363,6 +377,43 @@ describe('MofaApiSource', () => {
       expect(result.data.maxCountryLevel).toBe(2);
       expect(result.data.isPartialCountryRisk).toBe(true);
       expect(result.data.lead).toBe('南部国境地域に危険情報が出ています。');
+
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY = originalApiKey;
+    });
+
+    it('AIが特定レベルを判定した場合、その結果が使用される', async () => {
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY = 'test-key';
+
+      const xml = `
+        <opendata dataType="A" odType="04" lastModified="2025/01/16 00:00:00">
+          <riskLevel2>1</riskLevel2>
+          <riskLead>全土で注意が必要ですが、バンコクは安全です。</riskLead>
+        </opendata>
+      `;
+
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve(xml),
+      });
+
+      // AIのモックレスポンス
+      generateObjectMock.mockResolvedValue({
+        object: {
+          specificLevel: 0,
+          maxCountryLevel: 2,
+          reason: 'Bangkok is mentioned as safe.',
+        },
+      });
+
+      const result = await source.fetch('バンコク');
+
+      if (!result.success) throw new Error('Fetch failed');
+
+      expect(result.data.dangerLevel).toBe(0); // AI said 0
+      expect(result.data.maxCountryLevel).toBe(2);
+      expect(result.data.isPartialCountryRisk).toBe(true);
+      expect(generateObjectMock).toHaveBeenCalled();
     });
 
     it('国名での検索の場合、最大レベルが返される', async () => {

@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   AlertOctagon,
   ExternalLink,
+  Bot,
 } from 'lucide-react';
 import type { SafetyInfo, DangerLevel } from '@/lib/types/travel-info';
 import type { SectionBaseProps } from '../types';
@@ -63,12 +64,33 @@ const DANGER_LEVEL_STYLES: Record<
  *
  * 危険度レベル、警告、緊急連絡先を表示
  */
-export default function SafetyInfoSection({ data }: SectionBaseProps<SafetyInfo>) {
+export default function SafetyInfoSection({ data, source }: SectionBaseProps<SafetyInfo>) {
   const style = DANGER_LEVEL_STYLES[data.dangerLevel];
   const DangerIcon = style.icon;
+  const isAiGenerated = source?.sourceType === 'ai_generated';
 
   return (
     <div className="space-y-8">
+      {/* AI生成警告（フォールバック時） */}
+      {isAiGenerated && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-stone-100 border border-stone-300 rounded-xl flex items-start gap-3"
+        >
+          <Bot className="w-6 h-6 text-stone-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <h4 className="font-bold text-stone-800 text-sm">
+              AIによる生成情報です
+            </h4>
+            <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+              公式情報の取得に失敗したため、AIが一般的な情報を表示しています。
+              正確な情報は必ず外務省海外安全ホームページをご確認ください。
+            </p>
+          </div>
+        </motion.div>
+      )}
+
       {/* 危険度レベルインジケーター */}
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
