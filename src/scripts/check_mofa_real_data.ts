@@ -8,7 +8,8 @@ async function main() {
   // ロシア: 全土でレベル3-4の可能性がある
   // イスラエル: レベル3-4の可能性がある
   // ウクライナ: レベル4の可能性がある
-  const destinations = ['アメリカ', 'タイ', 'ロシア', 'イスラエル', 'ウクライナ'];
+  // パリ: ユーザー検証用（国コード0033）
+  const destinations = ['アメリカ', 'タイ', 'ロシア', 'イスラエル', 'ウクライナ', 'パリ'];
 
   console.log('=== Starting MOFA API Verification ===');
 
