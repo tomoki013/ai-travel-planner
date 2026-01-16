@@ -37,7 +37,6 @@ import {
 } from "./sections";
 import type { TravelInfoDisplayProps, CategoryState } from "./types";
 import { CATEGORY_INFO } from "./types";
-import PDFExportButton from "./PDFExportButton";
 
 /**
  * TravelInfoDisplay - 渡航情報表示メインコンポーネント
@@ -104,14 +103,6 @@ export default function TravelInfoDisplay({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
-        <PDFExportButton
-          destination={destination}
-          country={country}
-          categoryStates={categoryStates}
-        />
-      </div>
-
       {/* ヘッダー */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 sm:p-6 bg-white border border-stone-100 rounded-2xl shadow-sm">
         <div className="flex items-center gap-3">

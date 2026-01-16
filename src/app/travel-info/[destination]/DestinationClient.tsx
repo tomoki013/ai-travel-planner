@@ -17,6 +17,7 @@ import {
   CategorySelector,
   TravelInfoDisplay,
   ShareButton,
+  PDFExportButton,
 } from "@/components/TravelInfo";
 
 /**
@@ -221,27 +222,24 @@ export default function DestinationClient({
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-[#fcfbf9] pt-12 pb-20">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-[#fcfbf9] pb-20">
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4">
         <div className="space-y-8">
-          {/* Navigation & Actions */}
-          <div className="flex items-center justify-between mb-6">
-            <Link
-              href="/travel-info"
-              className="inline-flex items-center gap-2 text-stone-600 hover:text-primary transition-colors font-medium"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>渡航情報トップ</span>
-            </Link>
-
-            {!isLoading && (
-              <ShareButton
-                destination={destination}
-                categories={selectedCategories}
-                dates={dates}
-              />
-            )}
+          {/* Action Buttons (Centered) */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+            <PDFExportButton
+              destination={destination}
+              country={country}
+              categoryStates={categoryStates}
+              disabled={isLoading}
+              dates={dates}
+            />
+            <ShareButton
+              destination={destination}
+              categories={selectedCategories}
+              dates={dates}
+            />
           </div>
 
           {/* 目的地ヘッダー */}
