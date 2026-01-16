@@ -65,6 +65,18 @@ export interface TravelInfoSource {
 // ============================================
 
 /**
+ * 高リスク地域の情報
+ */
+export interface HighRiskRegion {
+  /** 地域名 */
+  regionName: string;
+  /** 危険度レベル */
+  level: DangerLevel;
+  /** レベルの説明 */
+  description?: string;
+}
+
+/**
  * 安全情報
  */
 export interface SafetyInfo {
@@ -80,6 +92,8 @@ export interface SafetyInfo {
   subText?: string;
   /** 国全体ではなく一部地域のみのリスクかどうかのフラグ */
   isPartialCountryRisk?: boolean;
+  /** 高リスク地域の一覧（主要観光地より高いレベルの地域） */
+  highRiskRegions?: HighRiskRegion[];
   /** 注意事項・警告一覧 */
   warnings: string[];
   /** 緊急連絡先リスト */
