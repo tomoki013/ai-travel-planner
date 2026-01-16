@@ -16,6 +16,7 @@ import type {
 } from '@/lib/types/travel-info';
 import { CATEGORY_LABELS } from '@/lib/types/travel-info';
 import { getTravelInfoGenerator } from '@/lib/ai/travel-info-generator';
+import { createMofaApiSource } from '@/lib/travel-info/sources/mofa-api';
 import { extractCountryFromDestination } from './country-extractor';
 import {
   getSourceName,
@@ -200,9 +201,23 @@ export async function getTravelInfo(
           confidenceScores.push(result.confidence);
 
           // ソース情報を変換して追加
-          if (Array.isArray(result.sources)) {
+          // MofaApiSourceの場合はすでにTravelInfoSourceオブジェクトなのでそのまま使う
+          const isOfficial =
+            category === 'safety' &&
+            Array.isArray(result.sources) &&
+            result.sources.length === 1 &&
+            (result.sources[0] as TravelInfoSource).sourceType ===
+              'official_api';
+
+          if (isOfficial) {
+            allSources.push(result.sources[0] as TravelInfoSource);
+          } else if (Array.isArray(result.sources)) {
             const convertedSources = convertParsedSourcesToTravelInfoSources(
-              result.sources as { name: string; url: string; type: 'official' | 'news' | 'commercial' | 'personal' }[],
+              result.sources as {
+                name: string;
+                url: string;
+                type: 'official' | 'news' | 'commercial' | 'personal';
+              }[],
               'ai_generated'
             );
             allSources.push(...convertedSources);
@@ -214,7 +229,9 @@ export async function getTravelInfo(
           });
         }
       } else {
-        logError('getTravelInfo', 'Promise rejected', settledResult.reason, { requestId });
+        logError('getTravelInfo', 'Promise rejected', settledResult.reason, {
+          requestId,
+        });
       }
     }
 
@@ -234,15 +251,26 @@ export async function getTravelInfo(
     const categoriesMap = new Map<TravelInfoCategory, CategoryDataEntry>();
     for (const [category, result] of categoryResults) {
       if (result.success) {
+        // MofaApiSourceの場合はすでにTravelInfoSourceオブジェクトなのでそれを使う
+        const isOfficial =
+          category === 'safety' &&
+          Array.isArray(result.sources) &&
+          result.sources.length === 1 &&
+          (result.sources[0] as TravelInfoSource).sourceType === 'official_api';
+
+        const source = isOfficial
+          ? (result.sources[0] as TravelInfoSource)
+          : {
+              sourceType: 'ai_generated' as SourceType,
+              sourceName: getSourceName('ai_generated'),
+              retrievedAt: new Date(),
+              reliabilityScore: result.confidence,
+            };
+
         categoriesMap.set(category, {
           category,
           data: result.data,
-          source: {
-            sourceType: 'ai_generated' as SourceType,
-            sourceName: getSourceName('ai_generated'),
-            retrievedAt: new Date(),
-            reliabilityScore: result.confidence,
-          },
+          source,
         });
       }
     }
@@ -317,6 +345,41 @@ async function fetchCategoryInfoWithRetry(
   country: string,
   travelDates?: { start: Date; end: Date }
 ): Promise<CategoryFetchResult> {
+  // 安全情報の場合は、AIではなく外務省APIを優先使用する
+  if (category === 'safety') {
+    try {
+      const mofaSource = createMofaApiSource();
+      // 国名を使って取得を試みる（destinationよりもcountryの方が正確な場合があるため）
+      // ただし、MofaApiSourceのマップは国名や主要都市名に対応している
+      // AI抽出された国名(country)を優先的に使用する
+      const searchKey = country || destination;
+      const mofaResult = await mofaSource.fetch(searchKey);
+
+      if (mofaResult.success) {
+        return {
+          success: true,
+          data: mofaResult.data as AnyCategoryData,
+          confidence: 100, // 公式情報なので信頼度100
+          sources: [mofaResult.source], // TravelInfoSourceオブジェクトをそのまま渡す
+        };
+      }
+
+      // 外務省APIで取得できなかった場合は、AIフォールバックを行わずにエラーとする
+      // 要件: "外務省の海外安全情報のレベル以外は表示しないように徹底"
+      return {
+        success: false,
+        error:
+          mofaResult.error ||
+          '外務省の安全情報を取得できませんでした。公式情報を確認してください。',
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
   let lastError: string = '';
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {

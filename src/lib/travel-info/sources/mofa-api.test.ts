@@ -44,7 +44,39 @@ describe('MofaApiSource', () => {
     }
 
     // Expect Level 0 (Safe)
-    // Currently, this test is expected to FAIL because the code defaults to 1
     expect(result.data.dangerLevel).toBe(0);
+  });
+
+  it('should return failure for unknown destination', async () => {
+    // Unknown destination that is not in the map
+    const result = await source.fetch('未知の国');
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('Unknown destination');
+  });
+
+  it('should return failure for network error', async () => {
+    // Known destination but network fails
+    fetchMock.mockRejectedValue(new Error('Network error'));
+
+    const result = await source.fetch('アメリカ');
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('Failed to fetch MOFA data');
+  });
+
+  it('should return failure for 404', async () => {
+    // Known destination but API returns 404 (e.g. data missing)
+    fetchMock.mockResolvedValue({
+      ok: false,
+      status: 404,
+      statusText: 'Not Found',
+    });
+
+    const result = await source.fetch('アメリカ');
+
+    expect(result.success).toBe(false);
+    // 404 case returns null from fetchFromOpenData, so fetch returns "Safety info not found"
+    expect(result.error).toContain('Safety info not found');
   });
 });

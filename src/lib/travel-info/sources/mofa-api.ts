@@ -552,10 +552,11 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
       // 1. 目的地から国コードを取得
       const countryCode = this.resolveCountryCode(destination);
       if (!countryCode) {
-        console.warn(
-          `[mofa-api] Unknown destination: ${destination}, will use default safety info`
-        );
-        return this.getDefaultSafetyInfo(destination);
+        console.warn(`[mofa-api] Unknown destination: ${destination}`);
+        return {
+          success: false,
+          error: `Unknown destination: ${destination}`,
+        };
       }
 
       // 2. キャッシュをチェック
@@ -587,7 +588,10 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
       }
 
       if (!safetyInfo) {
-        return this.getDefaultSafetyInfo(destination);
+        return {
+          success: false,
+          error: `Safety info not found for ${destination}`,
+        };
       }
 
       return {
@@ -598,8 +602,10 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
     } catch (error) {
       console.error('[mofa-api] Error:', error);
 
-      // エラー時はデフォルトの安全情報を返す（フォールバック）
-      return this.getDefaultSafetyInfo(destination);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
@@ -882,37 +888,6 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
     ];
   }
 
-  /**
-   * デフォルトの安全情報を返す
-   */
-  private getDefaultSafetyInfo(
-    destination: string
-  ): SourceResult<SafetyInfo> {
-    console.log(`[mofa-api] Using default safety info for: ${destination}`);
-
-    const defaultInfo: SafetyInfo = {
-      dangerLevel: 1,
-      dangerLevelDescription: DANGER_LEVEL_DESCRIPTIONS[1],
-      warnings: [
-        '最新の渡航情報は外務省海外安全ホームページでご確認ください',
-        '海外旅行保険への加入を強くお勧めします',
-        '「たびレジ」への登録をお勧めします',
-      ],
-      emergencyContacts: this.getDefaultEmergencyContacts(),
-    };
-
-    return {
-      success: true,
-      data: defaultInfo,
-      source: {
-        sourceType: 'ai_generated', // フォールバックのため
-        sourceName: `${this.sourceName}（デフォルト）`,
-        sourceUrl: MOFA_ANZEN_BASE_URL,
-        retrievedAt: new Date(),
-        reliabilityScore: 50, // デフォルトデータは信頼性低め
-      },
-    };
-  }
 
   /**
    * 遅延処理
