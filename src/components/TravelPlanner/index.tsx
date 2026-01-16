@@ -298,7 +298,14 @@ export default function TravelPlanner({ initialInput, initialStep, onClose }: Tr
     } catch (e: any) {
       console.error(e);
       setStatus("error");
-      setErrorMessage(e.message || "ネットワークエラーまたはサーバータイムアウトが発生しました。");
+      const msg = e.message || "ネットワークエラーまたはサーバータイムアウトが発生しました。";
+      // Check for stale deployment error
+      // Error: Server Action "..." was not found on the server
+      if (msg.includes("Server Action") && msg.includes("not found")) {
+         setErrorMessage("DEPLOYMENT_UPDATE_ERROR");
+      } else {
+         setErrorMessage(msg);
+      }
     }
   };
 
@@ -312,20 +319,29 @@ export default function TravelPlanner({ initialInput, initialStep, onClose }: Tr
   }
 
   if (status === "error") {
+    const isDeploymentError = errorMessage === "DEPLOYMENT_UPDATE_ERROR";
+    const displayMessage = isDeploymentError
+        ? "新しいバージョンが公開されました。ページを更新して最新の状態にしてください。"
+        : (errorMessage || "エラーが発生しました");
+
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 text-center p-8">
         <div className="text-6xl mb-4">😢</div>
         <p className="text-destructive font-medium text-lg">
-          {errorMessage || "エラーが発生しました"}
+          {displayMessage}
         </p>
         <button
           onClick={() => {
-            setErrorMessage("");
-            handlePlan();
+            if (isDeploymentError) {
+                window.location.reload();
+            } else {
+                setErrorMessage("");
+                handlePlan();
+            }
           }}
           className="px-6 py-3 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-colors font-bold"
         >
-          もう一度試す
+          {isDeploymentError ? "ページを更新" : "もう一度試す"}
         </button>
         <p className="text-stone-600 text-sm mt-2">
           問題が解決しない場合は、
