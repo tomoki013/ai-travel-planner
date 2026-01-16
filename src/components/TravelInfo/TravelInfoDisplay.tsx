@@ -31,6 +31,7 @@ import {
 } from "./sections";
 import type { TravelInfoDisplayProps, CategoryState } from "./types";
 import { CATEGORY_INFO } from "./types";
+import PDFExportButton from "./PDFExportButton";
 
 /**
  * TravelInfoDisplay - 渡航情報表示メインコンポーネント
@@ -95,59 +96,6 @@ export default function TravelInfoDisplay({
     );
   }, [categoryStates]);
 
-  // データなし（全てローディング中）
-  if (allLoading && categoryStates.size > 0) {
-    return <LoadingState categoryCount={selectedCategories.length} />;
-  }
-
-  // 全エラー状態
-  if (allError && categoryStates.size > 0) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-8 bg-red-50 border border-red-200 rounded-3xl text-center"
-      >
-        <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-red-800 mb-2">
-          情報の取得に失敗しました
-        </h3>
-        <p className="text-red-600 mb-4">
-          申し訳ありません。渡航情報の取得中にエラーが発生しました。
-          <br />
-          しばらく経ってから再度お試しください。
-        </p>
-        {onRetryCategory && (
-          <button
-            type="button"
-            onClick={() =>
-              selectedCategories.forEach((cat) => onRetryCategory(cat))
-            }
-            className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors"
-          >
-            <RefreshCw className="w-5 h-5" />
-            すべて再取得
-          </button>
-        )}
-      </motion.div>
-    );
-  }
-
-  // データなし（カテゴリ未選択時）
-  if (categoryStates.size === 0) {
-    return (
-      <div className="p-8 bg-stone-50 border border-stone-200 rounded-3xl text-center">
-        <Info className="w-12 h-12 text-stone-400 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-stone-600 mb-2">
-          情報を取得するには
-        </h3>
-        <p className="text-stone-500">
-          目的地を入力し、カテゴリを選択して検索してください
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* ヘッダー */}
@@ -157,6 +105,14 @@ export default function TravelInfoDisplay({
             <MapPin className="w-6 h-6 text-primary" />
           </div>
           <div>
+            <div className="mb-2">
+              <PDFExportButton
+                destination={destination}
+                country={country}
+                categoryStates={categoryStates}
+                className="!px-3 !py-1.5 !text-xs bg-stone-700 hover:bg-stone-600"
+              />
+            </div>
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#2c2c2c]">
               {destination}
             </h2>
@@ -184,65 +140,126 @@ export default function TravelInfoDisplay({
         </div>
       </div>
 
-      {/* カテゴリセクション */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          className="space-y-8"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: { staggerChildren: 0.1 },
-            },
-          }}
-        >
-          {selectedCategories.map((category) => {
-            const state = categoryStates.get(category);
-            if (!state) return null;
+      {(() => {
+        // データなし（全てローディング中）
+        if (allLoading && categoryStates.size > 0) {
+          return <LoadingState categoryCount={selectedCategories.length} />;
+        }
 
-            return (
-              <CategorySection
-                key={category}
-                category={category}
-                state={state}
-                isExpanded={expandedCategories.has(category)}
-                onToggle={() => toggleCategory(category)}
-                onRetry={
-                  onRetryCategory ? () => onRetryCategory(category) : undefined
-                }
-              />
-            );
-          })}
-        </motion.div>
-      </AnimatePresence>
-
-      {/* 免責事項 */}
-      {successCount > 0 && (
-        <div className="p-5 sm:p-6 bg-white border border-stone-200 rounded-2xl shadow-sm">
-          <h4 className="flex items-center gap-2 font-bold text-stone-800 mb-2">
-            <AlertCircle className="w-5 h-5 text-stone-500" />
-            免責事項
-          </h4>
-          <p className="text-sm text-stone-600 leading-relaxed">
-            この情報はAIによって生成されたものであり、正確性を保証するものではありません。
-            渡航に関する最終的な判断は、必ず公式情報に基づいてご自身の責任で行ってください。
-          </p>
-          <p className="text-sm text-stone-500 mt-3">
-            渡航前には必ず{" "}
-            <a
-              href="https://www.anzen.mofa.go.jp/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline font-medium"
+        // 全エラー状態
+        if (allError && categoryStates.size > 0) {
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-8 bg-red-50 border border-red-200 rounded-3xl text-center"
             >
-              外務省海外安全ホームページ
-            </a>{" "}
-            等の公式情報をご確認ください。
-          </p>
-        </div>
-      )}
+              <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-red-800 mb-2">
+                情報の取得に失敗しました
+              </h3>
+              <p className="text-red-600 mb-4">
+                申し訳ありません。渡航情報の取得中にエラーが発生しました。
+                <br />
+                しばらく経ってから再度お試しください。
+              </p>
+              {onRetryCategory && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    selectedCategories.forEach((cat) => onRetryCategory(cat))
+                  }
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors"
+                >
+                  <RefreshCw className="w-5 h-5" />
+                  すべて再取得
+                </button>
+              )}
+            </motion.div>
+          );
+        }
+
+        // データなし（カテゴリ未選択時）
+        if (categoryStates.size === 0) {
+          return (
+            <div className="p-8 bg-stone-50 border border-stone-200 rounded-3xl text-center">
+              <Info className="w-12 h-12 text-stone-400 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-stone-600 mb-2">
+                情報を取得するには
+              </h3>
+              <p className="text-stone-500">
+                目的地を入力し、カテゴリを選択して検索してください
+              </p>
+            </div>
+          );
+        }
+
+        return (
+          <>
+            {/* カテゴリセクション */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                className="space-y-8"
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: {
+                    opacity: 1,
+                    transition: { staggerChildren: 0.1 },
+                  },
+                }}
+              >
+                {selectedCategories.map((category) => {
+                  const state = categoryStates.get(category);
+                  if (!state) return null;
+
+                  return (
+                    <CategorySection
+                      key={category}
+                      category={category}
+                      state={state}
+                      isExpanded={expandedCategories.has(category)}
+                      onToggle={() => toggleCategory(category)}
+                      onRetry={
+                        onRetryCategory
+                          ? () => onRetryCategory(category)
+                          : undefined
+                      }
+                    />
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* 免責事項 */}
+            {successCount > 0 && (
+              <div className="p-5 sm:p-6 bg-white border border-stone-200 rounded-2xl shadow-sm">
+                <h4 className="flex items-center gap-2 font-bold text-stone-800 mb-2">
+                  <AlertCircle className="w-5 h-5 text-stone-500" />
+                  免責事項
+                </h4>
+                <p className="text-sm text-stone-600 leading-relaxed">
+                  この情報はAIによって生成されたものであり、正確性を保証するものではありません。
+                  渡航に関する最終的な判断は、必ず公式情報に基づいてご自身の責任で行ってください。
+                </p>
+                <p className="text-sm text-stone-500 mt-3">
+                  渡航前には必ず{" "}
+                  <a
+                    href="https://www.anzen.mofa.go.jp/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline font-medium"
+                  >
+                    外務省海外安全ホームページ
+                  </a>{" "}
+                  等の公式情報をご確認ください。
+                </p>
+              </div>
+            )}
+          </>
+        );
+      })()}
     </div>
   );
 }
