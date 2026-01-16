@@ -22,7 +22,7 @@ async function main() {
 
       console.log(`\nResult for ${destination}:`);
       console.log(`Success: ${result.success}`);
-      if (result.data) {
+      if (result.success) {
         console.log(`Danger Level: ${result.data.dangerLevel}`);
         console.log(`Description: ${result.data.dangerLevelDescription}`);
         console.log(`Warnings (first 2):`, result.data.warnings.slice(0, 2));
