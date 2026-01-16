@@ -2,7 +2,7 @@
  * 国情報API
  * Country Information API
  *
- * TODO: REST Countries API を使用
+ * REST Countries API を使用
  * https://restcountries.com/
  */
 
@@ -71,21 +71,24 @@ export class CountryApiSource implements ITravelInfoSource<BasicCountryInfo> {
    */
   async fetch(
     destination: string,
-    _options?: SourceOptions
+    options?: SourceOptions
   ): Promise<SourceResult<BasicCountryInfo>> {
-    console.log(`[country-api] Fetching country info for: ${destination}`);
+    console.log(`[country-api] Fetching country info for: ${destination}, context: ${options?.country || 'none'}`);
 
     try {
-      // TODO: 目的地から国名を推測
-      const countryName = this.extractCountryName(destination);
+      // オプションの国名を優先、なければ目的地をそのまま使用
+      // NOTE: 以前はハードコードされたマップを使用していましたが、
+      // 上流(Gemini)で国名抽出が行われるため、options.countryの使用を優先します。
+      const countryName = options?.country || destination;
+      const shouldUseFullText = !!options?.country; // コンテキストがある場合は完全一致検索を試みる
 
-      // TODO: REST Countries APIを呼び出し
-      const countryData = await this.fetchCountryData(countryName);
+      // REST Countries APIを呼び出し
+      const countryData = await this.fetchCountryData(countryName, shouldUseFullText);
 
       if (!countryData) {
         return {
           success: false,
-          error: `国情報が見つかりませんでした: ${destination}`,
+          error: `国情報が見つかりませんでした: ${countryName}`,
         };
       }
 
@@ -118,90 +121,48 @@ export class CountryApiSource implements ITravelInfoSource<BasicCountryInfo> {
    */
   async isAvailable(): Promise<boolean> {
     // REST Countries APIは公開APIのため常に利用可能
-    // TODO: ヘルスチェック実装
     return true;
   }
 
   /**
-   * 目的地から国名を抽出
-   * TODO: より高度なジオコーディング
-   */
-  private extractCountryName(destination: string): string {
-    // 都市名と国名のマッピング
-    const cityToCountry: Record<string, string> = {
-      '東京': 'Japan',
-      '京都': 'Japan',
-      '大阪': 'Japan',
-      'バンコク': 'Thailand',
-      'プーケット': 'Thailand',
-      'ソウル': 'South Korea',
-      '釜山': 'South Korea',
-      '台北': 'Taiwan',
-      '高雄': 'Taiwan',
-      'パリ': 'France',
-      'ニース': 'France',
-      'ロンドン': 'United Kingdom',
-      'ニューヨーク': 'United States',
-      'ロサンゼルス': 'United States',
-      'シドニー': 'Australia',
-      'メルボルン': 'Australia',
-      'ローマ': 'Italy',
-      'ミラノ': 'Italy',
-      'ベルリン': 'Germany',
-      'ミュンヘン': 'Germany',
-    };
-
-    // 日本語の国名を英語に変換
-    const countryNameMap: Record<string, string> = {
-      'アメリカ': 'United States',
-      '韓国': 'South Korea',
-      '台湾': 'Taiwan',
-      'タイ': 'Thailand',
-      'フランス': 'France',
-      'イギリス': 'United Kingdom',
-      'ドイツ': 'Germany',
-      'イタリア': 'Italy',
-      'オーストラリア': 'Australia',
-      '日本': 'Japan',
-    };
-
-    // 都市名から国を取得
-    for (const [city, country] of Object.entries(cityToCountry)) {
-      if (destination.includes(city)) {
-        return country;
-      }
-    }
-
-    // 国名から変換
-    for (const [ja, en] of Object.entries(countryNameMap)) {
-      if (destination.includes(ja)) {
-        return en;
-      }
-    }
-
-    // そのまま返す（英語の国名の場合）
-    return destination;
-  }
-
-  /**
    * REST Countries APIからデータを取得
-   * TODO: 実際のAPI呼び出し
    */
   private async fetchCountryData(
-    countryName: string
+    countryName: string,
+    fullText: boolean
   ): Promise<RestCountryResponse | null> {
-    const url = `${this.endpoint}/name/${encodeURIComponent(countryName)}`;
-    const response = await fetch(url);
+    let url = `${this.endpoint}/name/${encodeURIComponent(countryName)}`;
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error(response.statusText);
+    // 完全一致検索パラメータ
+    if (fullText) {
+      url += '?fullText=true';
     }
 
-    const data = await response.json();
-    return data[0];
+    try {
+      let response = await fetch(url);
+
+      // 完全一致で失敗した場合、部分一致で再試行（オプション）
+      // しかし、fullText=trueを指定している場合、通常は正確な国名を持っているはず
+      if (!response.ok && fullText && response.status === 404) {
+         // フォールバック: 部分一致検索
+         const fallbackUrl = `${this.endpoint}/name/${encodeURIComponent(countryName)}`;
+         console.log(`[country-api] Full text search failed, retrying partial: ${fallbackUrl}`);
+         response = await fetch(fallbackUrl);
+      }
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null;
+        }
+        throw new Error(`API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data[0]; // 最も可能性の高い結果（最初の要素）を返す
+    } catch (e) {
+      console.error(`[country-api] Fetch error for ${countryName}:`, e);
+      throw e;
+    }
   }
 
   /**
@@ -224,6 +185,7 @@ export class CountryApiSource implements ITravelInfoSource<BasicCountryInfo> {
     const languages = Object.values(data.languages || {});
 
     // タイムゾーンと時差を計算
+    // APIは "UTC+09:00" のような形式で返す
     const timezone = data.timezones[0] || 'UTC';
     const timeDifference = this.calculateTimeDifference(timezone);
 
@@ -237,32 +199,59 @@ export class CountryApiSource implements ITravelInfoSource<BasicCountryInfo> {
 
   /**
    * 日本との時差を計算
-   * TODO: より正確な計算
    */
-  private calculateTimeDifference(timezone: string): string {
-    // 簡易実装（実際はタイムゾーンライブラリを使用）
-    const offsetMap: Record<string, number> = {
-      'Asia/Tokyo': 0,
-      'Asia/Bangkok': -2,
-      'Asia/Seoul': 0,
-      'Asia/Taipei': -1,
-      'Europe/Paris': -8,
-      'Europe/London': -9,
-      'America/New_York': -14,
-      'America/Los_Angeles': -17,
-      'Australia/Sydney': 1,
-    };
+  private calculateTimeDifference(timezoneStr: string): string {
+    // 日本標準時 (JST) = UTC+9
+    const JST_OFFSET = 9;
 
-    const offset = offsetMap[timezone];
-    if (offset === undefined) {
+    try {
+      let offsetHours = 0;
+      let offsetMinutes = 0;
+
+      if (timezoneStr === 'UTC') {
+        offsetHours = 0;
+      } else if (timezoneStr.startsWith('UTC')) {
+        // UTC+09:00 形式をパース
+        // regex: UTC([+-])(\d{1,2}):(\d{2})
+        const match = timezoneStr.match(/^UTC([+-])(\d{1,2}):(\d{2})$/);
+        if (match) {
+          const sign = match[1] === '+' ? 1 : -1;
+          const hours = parseInt(match[2], 10);
+          const minutes = parseInt(match[3], 10);
+
+          offsetHours = sign * hours;
+
+          // 分単位の時差がある場合（例: UTC+05:45, UTC-03:30）は小数で表現して計算
+          if (minutes > 0) {
+             offsetHours += (sign * minutes) / 60;
+          }
+        } else {
+            // パース失敗時はそのまま
+            console.warn(`[country-api] Unknown timezone format: ${timezoneStr}`);
+            return '時差情報なし';
+        }
+      } else {
+          // その他の形式（APIは基本的にUTCオフセットを返すはずだが念のため）
+          return '時差情報なし';
+      }
+
+      // 日本との時差 = 現地時間 - 日本時間
+      // 例: 日本(UTC+9) vs NY(UTC-5) -> -5 - 9 = -14時間
+      const diff = offsetHours - JST_OFFSET;
+
+      if (diff === 0) {
+        return '時差なし';
+      }
+
+      // 整数なら整数表示、小数なら小数表示（最大1桁）
+      const formattedDiff = Number.isInteger(diff) ? diff.toString() : diff.toFixed(1);
+
+      return diff > 0 ? `+${formattedDiff}時間` : `${formattedDiff}時間`;
+
+    } catch (e) {
+      console.error(`[country-api] Time diff calculation error: ${e}`);
       return '時差情報なし';
     }
-
-    if (offset === 0) {
-      return '時差なし';
-    }
-
-    return offset > 0 ? `+${offset}時間` : `${offset}時間`;
   }
 }
 
