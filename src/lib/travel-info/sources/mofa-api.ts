@@ -129,11 +129,11 @@ const DESTINATION_TO_COUNTRY_CODE: Record<string, string> = {
   ケアンズ: '0061',
   ニュージーランド: '0064',
   オークランド: '0064',
-  グアム: '1671',
-  サイパン: '1670',
+  グアム: '1002', // 外務省コード: 1002 (米領)
+  サイパン: '1001', // 外務省コード: 1001 (北マリアナ諸島)
   フィジー: '0679',
   パラオ: '0680',
-  タヒチ: '0689',
+  タヒチ: '9689', // 外務省コード: 9689 (仏領ポリネシア)
   ニューカレドニア: '0687',
 
   // ヨーロッパ
@@ -189,13 +189,14 @@ const DESTINATION_TO_COUNTRY_CODE: Record<string, string> = {
   アイルランド: '0353',
   ダブリン: '0353',
   アイスランド: '0354',
-  ロシア: '0007',
-  モスクワ: '0007',
+  ロシア: '9007', // 外務省コード: 9007
+  モスクワ: '9007',
 
   // 北米
-  // 外務省オープンデータでは、アメリカは "1000"、カナダは "1001" を使用
-  // ハワイ、グアム、サイパンはアメリカの一部として同じコード
-  アメリカ: '1000',
+  // 外務省オープンデータの国コード一覧に基づく
+  // アメリカ本土: 1000, ハワイ: 1808, 北マリアナ諸島: 1001, グアム: 1002
+  // カナダ: 9001
+  アメリカ: '1000', // 外務省コード: 1000 (本土)
   ニューヨーク: '1000',
   ロサンゼルス: '1000',
   サンフランシスコ: '1000',
@@ -206,12 +207,12 @@ const DESTINATION_TO_COUNTRY_CODE: Record<string, string> = {
   マイアミ: '1000',
   ワシントンDC: '1000',
   サンディエゴ: '1000',
-  ハワイ: '1000', // ハワイはアメリカの一部
-  ホノルル: '1000',
-  カナダ: '1001',
-  バンクーバー: '1001',
-  トロント: '1001',
-  モントリオール: '1001',
+  ハワイ: '1808', // 外務省コード: 1808 (ハワイ)
+  ホノルル: '1808',
+  カナダ: '9001', // 外務省コード: 9001
+  バンクーバー: '9001',
+  トロント: '9001',
+  モントリオール: '9001',
 
   // 中南米
   メキシコ: '0052',
@@ -285,11 +286,11 @@ const COUNTRY_CODE_TO_NAME: Record<string, string> = {
   '0976': 'モンゴル',
   '0061': 'オーストラリア',
   '0064': 'ニュージーランド',
-  '1671': 'グアム',
-  '1670': 'サイパン',
+  '1002': 'グアム', // 外務省コード
+  '1001': '北マリアナ諸島', // 外務省コード (サイパン等)
   '0679': 'フィジー',
   '0680': 'パラオ',
-  '0689': 'タヒチ',
+  '9689': 'タヒチ', // 外務省コード (仏領ポリネシア)
   '0687': 'ニューカレドニア',
   '0044': 'イギリス',
   '0033': 'フランス',
@@ -313,10 +314,11 @@ const COUNTRY_CODE_TO_NAME: Record<string, string> = {
   '0045': 'デンマーク',
   '0353': 'アイルランド',
   '0354': 'アイスランド',
-  '0007': 'ロシア',
+  '9007': 'ロシア', // 外務省コード
   '0380': 'ウクライナ',
-  '1000': 'アメリカ',
-  '1001': 'カナダ',
+  '1000': 'アメリカ', // 外務省コード: 本土
+  '1808': 'ハワイ', // 外務省コード: ハワイ
+  '9001': 'カナダ', // 外務省コード
   '0052': 'メキシコ',
   '0055': 'ブラジル',
   '0054': 'アルゼンチン',
@@ -388,10 +390,22 @@ const EMERGENCY_CONTACTS_BY_COUNTRY: Record<string, EmergencyContact[]> = {
     { name: '救急・消防', number: '119' },
   ],
   '1000': [
-    // アメリカ
+    // アメリカ本土
+    { name: '緊急通報（警察・消防・救急）', number: '911' },
+  ],
+  '1808': [
+    // ハワイ
+    { name: '緊急通報（警察・消防・救急）', number: '911' },
+  ],
+  '1002': [
+    // グアム
     { name: '緊急通報（警察・消防・救急）', number: '911' },
   ],
   '1001': [
+    // 北マリアナ諸島（サイパン）
+    { name: '緊急通報（警察・消防・救急）', number: '911' },
+  ],
+  '9001': [
     // カナダ
     { name: '緊急通報（警察・消防・救急）', number: '911' },
   ],
@@ -464,7 +478,17 @@ const EMBASSIES_BY_COUNTRY: Record<string, Embassy> = {
     address: '2520 Massachusetts Avenue, N.W., Washington, D.C. 20008',
     phone: '+1-202-238-6700',
   },
-  '1001': {
+  '1808': {
+    name: '在ホノルル日本国総領事館',
+    address: '1742 Nuuanu Avenue, Honolulu, HI 96817',
+    phone: '+1-808-543-3111',
+  },
+  '1002': {
+    name: '在ハガッニャ日本国総領事館',
+    address: 'Suite 604, ITC Building, 590 South Marine Corps Drive, Tamuning, Guam 96913',
+    phone: '+1-671-646-1290',
+  },
+  '9001': {
     name: '在カナダ日本国大使館',
     address: '255 Sussex Drive, Ottawa, Ontario K1N 9E6',
     phone: '+1-613-241-8541',
@@ -708,13 +732,14 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
     // Gemini等から英語の国名が渡される場合に対応（例: "United States" -> "0001"）
     // 注: COUNTRY_CODE_TO_NAME は "0001": "アメリカ" のようなマップ
     // 英語名を解決するには別途英語名マップが必要だが、簡易的に英語名対応を追加
+    // 外務省オープンデータの国コード一覧に基づく英語名マッピング
     const englishToCode: Record<string, string> = {
-      'United States': '1000',
+      'United States': '1000', // 本土
       'United States of America': '1000',
       'USA': '1000',
       'America': '1000',
-      'Hawaii': '1000',
-      'Canada': '1001',
+      'Hawaii': '1808', // 外務省コード: ハワイ
+      'Canada': '9001', // 外務省コード
       'Korea': '0082',
       'South Korea': '0082',
       'Republic of Korea': '0082',
@@ -758,8 +783,8 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
       'Denmark': '0045',
       'Ireland': '0353',
       'Iceland': '0354',
-      'Russia': '0007',
-      'Russian Federation': '0007',
+      'Russia': '9007', // 外務省コード
+      'Russian Federation': '9007',
       'Ukraine': '0380',
       'Mexico': '0052',
       'Brazil': '0055',
@@ -787,11 +812,13 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
       'Nigeria': '0234',
       'Tunisia': '0216',
       'Senegal': '0221',
-      'Guam': '1671',
-      'Saipan': '1670',
+      'Guam': '1002', // 外務省コード
+      'Saipan': '1001', // 外務省コード (北マリアナ諸島)
+      'Northern Mariana Islands': '1001',
       'Fiji': '0679',
       'Palau': '0680',
-      'French Polynesia': '0689',
+      'French Polynesia': '9689', // 外務省コード (タヒチ)
+      'Tahiti': '9689',
       'New Caledonia': '0687',
       'Hong Kong': '0852',
       'Macau': '0853',
