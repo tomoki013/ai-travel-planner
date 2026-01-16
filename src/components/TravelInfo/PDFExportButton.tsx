@@ -11,6 +11,8 @@ interface PDFExportButtonProps {
   country: string;
   categoryStates: Map<TravelInfoCategory, CategoryState>;
   className?: string;
+  disabled?: boolean;
+  dates?: { start: string; end: string };
 }
 
 export default function PDFExportButton({
@@ -18,6 +20,8 @@ export default function PDFExportButton({
   country,
   categoryStates,
   className = "",
+  disabled = false,
+  dates,
 }: PDFExportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,6 +72,7 @@ export default function PDFExportButton({
       destination,
       country,
       categoryStates,
+      dates,
     });
 
     // @ts-expect-error - complex type mismatch often happens with dynamic react-pdf imports
@@ -114,7 +119,7 @@ export default function PDFExportButton({
         <button
           type="button"
           onClick={handleExportPDF}
-          disabled={isGenerating}
+          disabled={disabled || isGenerating}
           className={`flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#DC2626] hover:bg-[#B91C1C] text-white transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed font-bold ${className}`}
           aria-label="PDFとして出力"
         >

@@ -21,20 +21,29 @@ import {
   DANGER_LEVEL_DESCRIPTIONS,
 } from "@/lib/types/travel-info";
 
+const theme = {
+  primary: "#e67e22", // Orange
+  text: "#2c2c2c", // Dark Grey
+  textLight: "#6b7280", // Light Grey
+  bg: "#fcfbf9", // Cream
+  border: "#e5e7eb", // Light Border
+  sectionBg: "#ffffff", // White
+};
+
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    padding: 40,
     fontFamily: "Noto Sans JP",
-    fontSize: 10,
-    backgroundColor: "#fcfbf9",
-    color: "#2c2c2c",
+    fontSize: 9,
+    backgroundColor: theme.bg,
+    color: theme.text,
   },
+  // Header
   header: {
-    marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e67e22",
-    borderBottomStyle: "dashed",
+    marginBottom: 25,
+    borderBottomWidth: 2,
+    borderBottomColor: theme.primary,
+    paddingBottom: 15,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
@@ -42,135 +51,142 @@ const styles = StyleSheet.create({
   headerLeft: {
     flex: 1,
   },
+  brandTitle: {
+    fontSize: 10,
+    color: theme.primary,
+    letterSpacing: 2,
+    marginBottom: 8,
+    fontWeight: "bold",
+  },
+  destinationTitle: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: theme.text,
+    lineHeight: 1,
+  },
+  countrySubtitle: {
+    fontSize: 12,
+    color: theme.textLight,
+    marginTop: 4,
+  },
   headerRight: {
     alignItems: "flex-end",
   },
-  brandText: {
-    fontSize: 8,
-    color: "#e67e22",
-    marginBottom: 4,
-    letterSpacing: 2,
-    textTransform: "uppercase",
-  },
-  destinationBox: {
-    marginTop: 10,
-    padding: 10,
-    borderWidth: 2,
-    borderColor: "#2c2c2c",
-    alignSelf: "flex-start",
-    backgroundColor: "#ffffff",
-  },
-  destination: {
-    fontSize: 24,
-    fontWeight: 700,
-    color: "#2c2c2c",
-  },
-  metaInfo: {
-    fontSize: 9,
-    color: "#6b7280",
-    marginTop: 4,
-  },
-
-  // Layout Columns
-  columnsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  columnLeft: {
-    width: "48%",
-  },
-  columnRight: {
-    width: "48%",
-  },
-
-  // Section Styles
-  section: {
-    marginBottom: 20,
-    breakInside: "avoid",
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
+  dateBox: {
+    backgroundColor: theme.sectionBg,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     borderRadius: 4,
+    borderWidth: 1,
+    borderColor: theme.border,
   },
-  sectionHeader: {
+  dateText: {
+    fontSize: 9,
+    color: theme.textLight,
+  },
+
+  // Layout
+  columns: {
+    flexDirection: "row",
+    gap: 15,
+  },
+  column: {
+    flex: 1,
+    flexDirection: "column",
+    gap: 15,
+  },
+
+  // Section
+  section: {
+    backgroundColor: theme.sectionBg,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: theme.border,
+    padding: 12,
+  },
+  sectionTitleBox: {
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+    paddingBottom: 6,
+    marginBottom: 8,
     flexDirection: "row",
     alignItems: "center",
-    padding: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f3f4f6",
-    backgroundColor: "#f9fafb",
+    gap: 6,
+  },
+  sectionIcon: {
+    width: 4,
+    height: 12,
+    backgroundColor: theme.primary,
+    borderRadius: 2,
   },
   sectionTitle: {
     fontSize: 11,
-    fontWeight: 700,
-    color: "#e67e22",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-  },
-  contentPadding: {
-    padding: 10,
+    fontWeight: "bold",
+    color: theme.text,
   },
 
-  // Content Helpers
+  // Content
   row: {
     flexDirection: "row",
-    marginBottom: 6,
+    marginBottom: 5,
+    paddingBottom: 5,
     borderBottomWidth: 0.5,
     borderBottomColor: "#f3f4f6",
-    paddingBottom: 2,
+  },
+  rowLast: {
+    borderBottomWidth: 0,
+    marginBottom: 0,
+    paddingBottom: 0,
   },
   label: {
-    width: "35%",
-    fontSize: 9,
-    fontWeight: 700,
-    color: "#9ca3af",
+    width: "30%",
+    color: theme.textLight,
+    fontSize: 8,
+    fontWeight: "bold",
   },
   value: {
     flex: 1,
+    color: theme.text,
     fontSize: 9,
-    color: "#2c2c2c",
   },
-  textBlock: {
+  text: {
     fontSize: 9,
-    lineHeight: 1.6,
+    lineHeight: 1.5,
+    color: theme.text,
     marginBottom: 6,
-    color: "#4b5563",
   },
   subHeader: {
     fontSize: 9,
-    fontWeight: 700,
-    color: "#4b5563",
+    fontWeight: "bold",
+    color: theme.text,
     marginTop: 8,
     marginBottom: 4,
     backgroundColor: "#f3f4f6",
-    paddingVertical: 2,
-    paddingHorizontal: 4,
-    alignSelf: "flex-start",
+    padding: 3,
+    borderRadius: 2,
   },
-
-  // Specific
-  dangerBadge: {
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4,
+  badge: {
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+    borderRadius: 3,
     alignSelf: "flex-start",
-    marginBottom: 8,
+    marginBottom: 6,
   },
-  dangerBadgeText: {
-    color: "#ffffff",
-    fontSize: 9,
+  badgeText: {
+    color: "#fff",
+    fontSize: 8,
     fontWeight: "bold",
   },
-  warningItem: {
+  bulletItem: {
     flexDirection: "row",
-    marginBottom: 4,
+    marginBottom: 3,
     paddingLeft: 4,
   },
   bullet: {
     width: 3,
     height: 3,
     borderRadius: 1.5,
-    backgroundColor: "#e67e22",
+    backgroundColor: theme.primary,
     marginRight: 6,
     marginTop: 5,
   },
@@ -179,22 +195,17 @@ const styles = StyleSheet.create({
   footer: {
     position: "absolute",
     bottom: 20,
-    left: 30,
-    right: 30,
+    left: 40,
+    right: 40,
+    borderTopWidth: 1,
+    borderTopColor: theme.border,
+    paddingTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
-    paddingTop: 10,
   },
   footerText: {
     fontSize: 8,
-    color: "#9ca3af",
-  },
-  footerBrand: {
-    fontSize: 8,
-    color: "#e67e22",
-    fontWeight: 700,
+    color: theme.textLight,
   },
 });
 
@@ -202,12 +213,27 @@ interface TravelInfoPDFProps {
   destination: string;
   country: string;
   categoryStates: Map<TravelInfoCategory, CategoryState>;
+  dates?: { start: string; end: string };
 }
 
-// --- Render Helpers ---
+// Helpers
+const DangerBadge = ({ level }: { level: number }) => {
+  const colors = ["#10b981", "#f59e0b", "#f97316", "#ef4444", "#7f1d1d"];
+  const safeLevel = (level >= 0 && level <= 4 ? level : 0) as 0 | 1 | 2 | 3 | 4;
+  const color = colors[safeLevel] || "#6b7280";
+  return (
+    <View style={[styles.badge, { backgroundColor: color }]}>
+      <Text style={styles.badgeText}>
+        LV.{level} {DANGER_LEVEL_DESCRIPTIONS[safeLevel]}
+      </Text>
+    </View>
+  );
+};
+
+// --- Section Renderers ---
 
 const BasicInfoView = ({ data }: { data: BasicCountryInfo }) => (
-  <View style={styles.contentPadding}>
+  <View>
     <View style={styles.row}>
       <Text style={styles.label}>通貨</Text>
       <Text style={styles.value}>{data.currency.name} ({data.currency.code})</Text>
@@ -220,86 +246,55 @@ const BasicInfoView = ({ data }: { data: BasicCountryInfo }) => (
       <Text style={styles.label}>時差</Text>
       <Text style={styles.value}>{data.timeDifference}</Text>
     </View>
-    <View style={[styles.row, { borderBottomWidth: 0 }]}>
+    <View style={[styles.row, styles.rowLast]}>
       <Text style={styles.label}>タイムゾーン</Text>
       <Text style={styles.value}>{data.timezone}</Text>
     </View>
   </View>
 );
 
-const SafetyInfoView = ({ data }: { data: SafetyInfo }) => {
-  const getDangerColor = (level: number) => {
-    switch (level) {
-      case 0: return "#10b981";
-      case 1: return "#f59e0b";
-      case 2: return "#f97316";
-      case 3: return "#ef4444";
-      case 4: return "#7f1d1d";
-      default: return "#6b7280";
-    }
-  };
+const SafetyInfoView = ({ data }: { data: SafetyInfo }) => (
+  <View>
+    <DangerBadge level={data.dangerLevel} />
+    <Text style={styles.text}>{data.dangerLevelDescription}</Text>
 
-  return (
-    <View style={styles.contentPadding}>
-      <View style={[styles.dangerBadge, { backgroundColor: getDangerColor(data.dangerLevel) }]}>
-        <Text style={styles.dangerBadgeText}>
-          レベル{data.dangerLevel}: {DANGER_LEVEL_DESCRIPTIONS[data.dangerLevel]}
-        </Text>
+    <Text style={styles.subHeader}>緊急連絡先</Text>
+    {data.emergencyContacts.map((c, i) => (
+      <View key={i} style={[styles.row, i === data.emergencyContacts.length - 1 ? styles.rowLast : {}]}>
+        <Text style={styles.label}>{c.name}</Text>
+        <Text style={styles.value}>{c.number}</Text>
       </View>
-      <Text style={styles.textBlock}>{data.dangerLevelDescription}</Text>
-
-      <Text style={styles.subHeader}>緊急連絡先</Text>
-      {data.emergencyContacts.map((contact, i) => (
-        <View key={i} style={styles.row}>
-          <Text style={styles.label}>{contact.name}</Text>
-          <Text style={styles.value}>{contact.number}</Text>
-        </View>
-      ))}
-    </View>
-  );
-};
+    ))}
+  </View>
+);
 
 const ClimateInfoView = ({ data }: { data: ClimateInfo }) => (
-  <View style={styles.contentPadding}>
-    <Text style={[styles.textBlock, { marginBottom: 10 }]}>{data.seasonDescription}</Text>
-
-    <Text style={styles.subHeader}>おすすめの服装</Text>
+  <View>
+    <Text style={styles.text}>{data.seasonDescription}</Text>
+    <Text style={styles.subHeader}>服装アドバイス</Text>
     {data.recommendedClothing.map((item, i) => (
-       <View key={i} style={styles.warningItem}>
+      <View key={i} style={styles.bulletItem}>
         <View style={styles.bullet} />
         <Text style={styles.value}>{item}</Text>
       </View>
     ))}
-
-    {data.forecast && data.forecast.length > 0 && (
-       <View style={{ marginTop: 8 }}>
-         <Text style={styles.subHeader}>天気予報</Text>
-         {data.forecast.slice(0, 3).map((f, i) => (
-           <View key={i} style={styles.row}>
-             <Text style={[styles.label, { width: '40%' }]}>{f.date.slice(5)}</Text>
-             <Text style={styles.value}>{f.condition} ({f.high}/{f.low}°C)</Text>
-           </View>
-         ))}
-       </View>
-    )}
   </View>
 );
 
 const VisaInfoView = ({ data }: { data: VisaInfo }) => (
-  <View style={styles.contentPadding}>
-    <View style={[styles.row, { borderBottomWidth: 0 }]}>
-      <Text style={styles.label}>ビザ必要性</Text>
-      <Text style={[styles.value, { fontWeight: 'bold', color: data.required ? '#ef4444' : '#10b981' }]}>
+  <View>
+    <View style={[styles.row, styles.rowLast]}>
+      <Text style={styles.label}>ビザ要否</Text>
+      <Text style={[styles.value, { color: data.required ? '#ef4444' : '#10b981', fontWeight: 'bold' }]}>
         {data.required ? "必要" : "不要"}
         {data.visaFreeStayDays ? ` (${data.visaFreeStayDays}日以内)` : ""}
       </Text>
     </View>
-
     {data.requirements.length > 0 && (
-      <View>
-        <Text style={styles.subHeader}>入国要件</Text>
+      <View style={{ marginTop: 6 }}>
+        <Text style={styles.subHeader}>要件</Text>
         {data.requirements.map((req, i) => (
-          <View key={i} style={styles.warningItem}>
+          <View key={i} style={styles.bulletItem}>
             <View style={styles.bullet} />
             <Text style={styles.value}>{req}</Text>
           </View>
@@ -310,50 +305,39 @@ const VisaInfoView = ({ data }: { data: VisaInfo }) => (
 );
 
 const MannerInfoView = ({ data }: { data: MannerInfo }) => (
-  <View style={styles.contentPadding}>
+  <View>
     <Text style={styles.subHeader}>チップ: {data.tipping.required ? "必須" : data.tipping.customary ? "慣習" : "不要"}</Text>
-    <Text style={styles.textBlock}>{data.tipping.guideline}</Text>
+    <Text style={styles.text}>{data.tipping.guideline}</Text>
 
     <Text style={styles.subHeader}>マナー・習慣</Text>
-    {data.customs.slice(0, 3).map((custom, i) => (
-      <View key={i} style={styles.warningItem}>
+    {data.customs.slice(0, 3).map((c, i) => (
+      <View key={i} style={styles.bulletItem}>
         <View style={styles.bullet} />
-        <Text style={styles.value}>{custom}</Text>
-      </View>
-    ))}
-
-    <Text style={styles.subHeader}>タブー・注意点</Text>
-    {data.taboos.slice(0, 3).map((taboo, i) => (
-      <View key={i} style={styles.warningItem}>
-        <View style={styles.bullet} />
-        <Text style={styles.value}>{taboo}</Text>
+        <Text style={styles.value}>{c}</Text>
       </View>
     ))}
   </View>
 );
 
 const TransportInfoView = ({ data }: { data: TransportInfo }) => (
-  <View style={styles.contentPadding}>
-    <Text style={styles.subHeader}>公共交通機関</Text>
+  <View>
+    <Text style={styles.subHeader}>交通機関</Text>
     {data.publicTransport.slice(0, 3).map((pt, i) => (
-       <View key={i} style={styles.warningItem}>
+      <View key={i} style={styles.bulletItem}>
         <View style={styles.bullet} />
         <Text style={styles.value}>{pt}</Text>
       </View>
     ))}
-
-    <View style={[styles.row, { marginTop: 8, borderBottomWidth: 0 }]}>
-      <Text style={styles.label}>ライドシェア</Text>
-      <Text style={styles.value}>
-        {data.rideshare.available ? `利用可 (${data.rideshare.services.join(", ")})` : "利用不可"}
-      </Text>
+    <View style={{ marginTop: 6 }}>
+        <Text style={styles.subHeader}>ライドシェア</Text>
+        <Text style={styles.value}>
+            {data.rideshare.available ? `利用可 (${data.rideshare.services.join(", ")})` : "利用不可"}
+        </Text>
     </View>
   </View>
 );
 
-// --- Main Component ---
-
-const TravelInfoPDF: React.FC<TravelInfoPDFProps> = ({ destination, country, categoryStates }) => {
+const TravelInfoPDF: React.FC<TravelInfoPDFProps> = ({ destination, country, categoryStates, dates }) => {
 
   const renderSection = (category: TravelInfoCategory) => {
     const state = categoryStates.get(category);
@@ -369,11 +353,13 @@ const TravelInfoPDF: React.FC<TravelInfoPDFProps> = ({ destination, country, cat
       case "visa": content = <VisaInfoView data={data as VisaInfo} />; break;
       case "manner": content = <MannerInfoView data={data as MannerInfo} />; break;
       case "transport": content = <TransportInfoView data={data as TransportInfo} />; break;
+      default: return null;
     }
 
     return (
       <View key={category} style={styles.section}>
-        <View style={styles.sectionHeader}>
+        <View style={styles.sectionTitleBox}>
+          <View style={styles.sectionIcon} />
           <Text style={styles.sectionTitle}>{CATEGORY_LABELS[category]}</Text>
         </View>
         {content}
@@ -387,28 +373,32 @@ const TravelInfoPDF: React.FC<TravelInfoPDFProps> = ({ destination, country, cat
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.brandText}>TRAVEL INFO GUIDE</Text>
-            <View style={styles.destinationBox}>
-              <Text style={styles.destination}>{destination}</Text>
-            </View>
-            <Text style={styles.metaInfo}>{country}</Text>
+            <Text style={styles.brandTitle}>TRAVEL SUPPORT GUIDE</Text>
+            <Text style={styles.destinationTitle}>{destination}</Text>
+            <Text style={styles.countrySubtitle}>{country}</Text>
           </View>
           <View style={styles.headerRight}>
-             <Text style={styles.metaInfo}>{new Date().toLocaleDateString('ja-JP')}</Text>
+            <View style={styles.dateBox}>
+                <Text style={styles.dateText}>
+                    作成日: {new Date().toLocaleDateString("ja-JP")}
+                </Text>
+                {dates && (
+                    <Text style={[styles.dateText, { marginTop: 2 }]}>
+                        渡航予定: {dates.start} - {dates.end}
+                    </Text>
+                )}
+            </View>
           </View>
         </View>
 
-        {/* 2-Column Layout */}
-        <View style={styles.columnsContainer}>
-          {/* Left Column */}
-          <View style={styles.columnLeft}>
+        {/* Content Layout */}
+        <View style={styles.columns}>
+          <View style={styles.column}>
             {renderSection("basic")}
             {renderSection("visa")}
             {renderSection("transport")}
           </View>
-
-          {/* Right Column */}
-          <View style={styles.columnRight}>
+          <View style={styles.column}>
             {renderSection("safety")}
             {renderSection("climate")}
             {renderSection("manner")}
@@ -417,10 +407,8 @@ const TravelInfoPDF: React.FC<TravelInfoPDFProps> = ({ destination, country, cat
 
         {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text style={styles.footerText} render={({ pageNumber, totalPages }) =>
-            `${pageNumber} / ${totalPages}`
-          } />
-          <Text style={styles.footerBrand}>Powered by Tabidea</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
+          <Text style={[styles.footerText, { color: theme.primary, fontWeight: 'bold' }]}>Powered by Tabidea</Text>
         </View>
       </Page>
     </Document>

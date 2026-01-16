@@ -38,6 +38,7 @@ import {
 import type { TravelInfoDisplayProps, CategoryState } from "./types";
 import { CATEGORY_INFO } from "./types";
 import PDFExportButton from "./PDFExportButton";
+import ShareButton from "./ShareButton";
 
 /**
  * TravelInfoDisplay - 渡航情報表示メインコンポーネント
@@ -51,6 +52,7 @@ export default function TravelInfoDisplay({
   categoryStates,
   selectedCategories,
   sources,
+  dates,
   onRetryCategory,
 }: TravelInfoDisplayProps) {
   // 展開状態を管理（デフォルトは最初のカテゴリを展開）
@@ -104,11 +106,18 @@ export default function TravelInfoDisplay({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
         <PDFExportButton
           destination={destination}
           country={country}
           categoryStates={categoryStates}
+          disabled={allLoading}
+          dates={dates}
+        />
+        <ShareButton
+          destination={destination}
+          categories={selectedCategories}
+          dates={dates}
         />
       </div>
 

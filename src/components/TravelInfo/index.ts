@@ -12,6 +12,7 @@ export { default as InfoSection } from './InfoSection';
 export { default as SourceBadge } from './SourceBadge';
 export { default as LoadingState } from './LoadingState';
 export { default as ShareButton } from './ShareButton';
+export { default as PDFExportButton } from './PDFExportButton';
 
 // セクションコンポーネント
 export {
