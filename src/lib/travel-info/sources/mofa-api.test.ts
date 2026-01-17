@@ -402,6 +402,7 @@ describe('MofaApiSource', () => {
         object: {
           specificLevel: 0,
           maxCountryLevel: 2,
+          highRiskRegions: [],
           reason: 'Bangkok is mentioned as safe.',
         },
       });

@@ -11,8 +11,10 @@ import {
   AlertOctagon,
   ExternalLink,
   Bot,
+  MapPinned,
 } from 'lucide-react';
-import type { SafetyInfo, DangerLevel } from '@/lib/types/travel-info';
+import type { SafetyInfo, DangerLevel, HighRiskRegion } from '@/lib/types/travel-info';
+import { DANGER_LEVEL_DESCRIPTIONS } from '@/lib/types/travel-info';
 import type { SectionBaseProps } from '../types';
 
 /**
@@ -118,15 +120,36 @@ export default function SafetyInfoSection({ data, source }: SectionBaseProps<Saf
                 <p className="text-sm text-stone-500 flex flex-col sm:flex-row sm:items-center gap-1">
                   <span className="flex items-center gap-1">
                     <AlertTriangle className="w-4 h-4 text-orange-500" />
-                    <span>国別最大レベルは {data.maxCountryLevel} です。</span>
+                    <span>一部地域でより高い危険情報（レベル {data.maxCountryLevel}）が出ています。</span>
                   </span>
-                  <span>一部地域でより高い危険情報が出ています。</span>
                 </p>
               )}
             </div>
           </div>
         </div>
       </motion.div>
+
+      {/* 高リスク地域の情報 */}
+      {data.highRiskRegions && data.highRiskRegions.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-amber-50 p-5 rounded-xl border border-amber-200"
+        >
+          <h4 className="flex items-center gap-2 font-serif font-bold text-[#2c2c2c] mb-3">
+            <MapPinned className="w-5 h-5 text-amber-600" />
+            注意が必要な地域
+          </h4>
+          <p className="text-sm text-stone-600 mb-3">
+            以下の地域では、主要観光地より高い危険レベルが報告されています。
+          </p>
+          <ul className="space-y-2">
+            {data.highRiskRegions.map((region, index) => (
+              <HighRiskRegionItem key={index} region={region} />
+            ))}
+          </ul>
+        </motion.div>
+      )}
 
       {/* 詳細情報（リード・詳細テキスト） */}
       {(data.lead || data.subText) && (
@@ -282,5 +305,37 @@ function DangerLevelBar({ level }: { level: DangerLevel }) {
         />
       ))}
     </div>
+  );
+}
+
+/**
+ * 高リスク地域の表示アイテム
+ */
+function HighRiskRegionItem({ region }: { region: HighRiskRegion }) {
+  const levelColors: Record<DangerLevel, string> = {
+    0: 'bg-stone-100 text-stone-800',
+    1: 'bg-yellow-100 text-yellow-800',
+    2: 'bg-orange-100 text-orange-800',
+    3: 'bg-red-100 text-red-800',
+    4: 'bg-purple-100 text-purple-800',
+  };
+
+  return (
+    <li className="flex items-start gap-3 p-3 bg-white border border-amber-100 rounded-lg">
+      <span
+        className={`flex-shrink-0 px-2 py-0.5 rounded text-xs font-bold ${levelColors[region.level]}`}
+      >
+        Lv.{region.level}
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-stone-800 text-sm">{region.regionName}</p>
+        {region.description && (
+          <p className="text-xs text-stone-500 mt-0.5">{region.description}</p>
+        )}
+        <p className="text-xs text-stone-400 mt-1">
+          {DANGER_LEVEL_DESCRIPTIONS[region.level]}
+        </p>
+      </div>
+    </li>
   );
 }

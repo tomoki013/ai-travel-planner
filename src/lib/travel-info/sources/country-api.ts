@@ -31,6 +31,158 @@ export interface CountryApiConfig {
 }
 
 /**
+ * 日本語の国名から英語名へのマッピング
+ * REST Countries APIは英語名を期待するため、日本語から変換する
+ */
+const JAPANESE_TO_ENGLISH_COUNTRY: Record<string, string> = {
+  // アジア
+  日本: 'Japan',
+  韓国: 'South Korea',
+  中国: 'China',
+  台湾: 'Taiwan',
+  香港: 'Hong Kong',
+  マカオ: 'Macau',
+  タイ: 'Thailand',
+  ベトナム: 'Vietnam',
+  シンガポール: 'Singapore',
+  マレーシア: 'Malaysia',
+  インドネシア: 'Indonesia',
+  フィリピン: 'Philippines',
+  カンボジア: 'Cambodia',
+  ミャンマー: 'Myanmar',
+  ラオス: 'Laos',
+  ブルネイ: 'Brunei',
+  インド: 'India',
+  ネパール: 'Nepal',
+  スリランカ: 'Sri Lanka',
+  バングラデシュ: 'Bangladesh',
+  パキスタン: 'Pakistan',
+  モンゴル: 'Mongolia',
+  // オセアニア
+  オーストラリア: 'Australia',
+  ニュージーランド: 'New Zealand',
+  フィジー: 'Fiji',
+  パラオ: 'Palau',
+  タヒチ: 'French Polynesia',
+  'フランス領ポリネシア': 'French Polynesia',
+  グアム: 'Guam',
+  サイパン: 'Northern Mariana Islands',
+  '北マリアナ諸島': 'Northern Mariana Islands',
+  ニューカレドニア: 'New Caledonia',
+  // ヨーロッパ
+  イギリス: 'United Kingdom',
+  フランス: 'France',
+  ドイツ: 'Germany',
+  イタリア: 'Italy',
+  スペイン: 'Spain',
+  ポルトガル: 'Portugal',
+  オランダ: 'Netherlands',
+  ベルギー: 'Belgium',
+  スイス: 'Switzerland',
+  オーストリア: 'Austria',
+  チェコ: 'Czech Republic',
+  ポーランド: 'Poland',
+  ハンガリー: 'Hungary',
+  ギリシャ: 'Greece',
+  トルコ: 'Turkey',
+  クロアチア: 'Croatia',
+  フィンランド: 'Finland',
+  スウェーデン: 'Sweden',
+  ノルウェー: 'Norway',
+  デンマーク: 'Denmark',
+  アイルランド: 'Ireland',
+  アイスランド: 'Iceland',
+  ロシア: 'Russia',
+  ウクライナ: 'Ukraine',
+  // 北米
+  アメリカ: 'United States',
+  カナダ: 'Canada',
+  メキシコ: 'Mexico',
+  // 中南米
+  ブラジル: 'Brazil',
+  アルゼンチン: 'Argentina',
+  ペルー: 'Peru',
+  チリ: 'Chile',
+  キューバ: 'Cuba',
+  コスタリカ: 'Costa Rica',
+  // 中東
+  'アラブ首長国連邦': 'United Arab Emirates',
+  カタール: 'Qatar',
+  イスラエル: 'Israel',
+  ヨルダン: 'Jordan',
+  オマーン: 'Oman',
+  バーレーン: 'Bahrain',
+  クウェート: 'Kuwait',
+  'サウジアラビア': 'Saudi Arabia',
+  // 中東（追加）
+  イラン: 'Iran',
+  イラク: 'Iraq',
+  シリア: 'Syria',
+  レバノン: 'Lebanon',
+  イエメン: 'Yemen',
+  アフガニスタン: 'Afghanistan',
+  パレスチナ: 'Palestine',
+  // アフリカ - 北部
+  エジプト: 'Egypt',
+  モロッコ: 'Morocco',
+  アルジェリア: 'Algeria',
+  リビア: 'Libya',
+  スーダン: 'Sudan',
+  南スーダン: 'South Sudan',
+  チュニジア: 'Tunisia',
+  // アフリカ - 西部
+  セネガル: 'Senegal',
+  ガンビア: 'Gambia',
+  マリ: 'Mali',
+  ギニア: 'Guinea',
+  コートジボワール: 'Ivory Coast',
+  ブルキナファソ: 'Burkina Faso',
+  ニジェール: 'Niger',
+  トーゴ: 'Togo',
+  ベナン: 'Benin',
+  モーリタニア: 'Mauritania',
+  リベリア: 'Liberia',
+  シエラレオネ: 'Sierra Leone',
+  ガーナ: 'Ghana',
+  ナイジェリア: 'Nigeria',
+  カーボベルデ: 'Cape Verde',
+  ギニアビサウ: 'Guinea-Bissau',
+  // アフリカ - 中部
+  チャド: 'Chad',
+  中央アフリカ: 'Central African Republic',
+  カメルーン: 'Cameroon',
+  赤道ギニア: 'Equatorial Guinea',
+  ガボン: 'Gabon',
+  コンゴ共和国: 'Republic of the Congo',
+  コンゴ民主共和国: 'Democratic Republic of the Congo',
+  アンゴラ: 'Angola',
+  // アフリカ - 東部
+  エチオピア: 'Ethiopia',
+  ソマリア: 'Somalia',
+  ジブチ: 'Djibouti',
+  ケニア: 'Kenya',
+  タンザニア: 'Tanzania',
+  ウガンダ: 'Uganda',
+  ブルンジ: 'Burundi',
+  モザンビーク: 'Mozambique',
+  ルワンダ: 'Rwanda',
+  セーシェル: 'Seychelles',
+  エリトリア: 'Eritrea',
+  // アフリカ - 南部
+  南アフリカ: 'South Africa',
+  ザンビア: 'Zambia',
+  マダガスカル: 'Madagascar',
+  ジンバブエ: 'Zimbabwe',
+  ナミビア: 'Namibia',
+  マラウイ: 'Malawi',
+  レソト: 'Lesotho',
+  ボツワナ: 'Botswana',
+  エスワティニ: 'Eswatini',
+  コモロ: 'Comoros',
+  モーリシャス: 'Mauritius',
+};
+
+/**
  * REST Countries APIレスポンス型（部分）
  */
 interface RestCountryResponse {
@@ -79,8 +231,16 @@ export class CountryApiSource implements ITravelInfoSource<BasicCountryInfo> {
       // オプションの国名を優先、なければ目的地をそのまま使用
       // NOTE: 以前はハードコードされたマップを使用していましたが、
       // 上流(Gemini)で国名抽出が行われるため、options.countryの使用を優先します。
-      const countryName = options?.country || destination;
-      const shouldUseFullText = !!options?.country; // コンテキストがある場合は完全一致検索を試みる
+      let countryName = options?.country || destination;
+
+      // 日本語の国名を英語に変換（REST Countries APIは英語名を期待）
+      const englishName = this.convertToEnglishCountryName(countryName);
+      if (englishName) {
+        console.log(`[country-api] Converted Japanese "${countryName}" to English "${englishName}"`);
+        countryName = englishName;
+      }
+
+      const shouldUseFullText = !!options?.country || !!englishName; // コンテキストがある場合は完全一致検索を試みる
 
       // REST Countries APIを呼び出し
       const countryData = await this.fetchCountryData(countryName, shouldUseFullText);
@@ -252,6 +412,15 @@ export class CountryApiSource implements ITravelInfoSource<BasicCountryInfo> {
       console.error(`[country-api] Time diff calculation error: ${e}`);
       return '時差情報なし';
     }
+  }
+
+  /**
+   * 日本語の国名を英語名に変換
+   * @param japaneseName - 日本語の国名
+   * @returns 英語名（変換できない場合はnull）
+   */
+  private convertToEnglishCountryName(japaneseName: string): string | null {
+    return JAPANESE_TO_ENGLISH_COUNTRY[japaneseName] || null;
   }
 }
 

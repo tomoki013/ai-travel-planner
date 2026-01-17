@@ -23,6 +23,7 @@ import {
   DangerLevel,
   EmergencyContact,
   Embassy,
+  HighRiskRegion,
   DANGER_LEVEL_DESCRIPTIONS,
 } from '@/lib/types/travel-info';
 
@@ -128,11 +129,11 @@ const DESTINATION_TO_COUNTRY_CODE: Record<string, string> = {
   ケアンズ: '0061',
   ニュージーランド: '0064',
   オークランド: '0064',
-  グアム: '1671',
-  サイパン: '1670',
+  グアム: '1002', // 外務省コード: 1002 (米領)
+  サイパン: '1001', // 外務省コード: 1001 (北マリアナ諸島)
   フィジー: '0679',
   パラオ: '0680',
-  タヒチ: '0689',
+  タヒチ: '9689', // 外務省コード: 9689 (仏領ポリネシア)
   ニューカレドニア: '0687',
 
   // ヨーロッパ
@@ -188,20 +189,30 @@ const DESTINATION_TO_COUNTRY_CODE: Record<string, string> = {
   アイルランド: '0353',
   ダブリン: '0353',
   アイスランド: '0354',
-  ロシア: '0007',
-  モスクワ: '0007',
+  ロシア: '9007', // 外務省コード: 9007
+  モスクワ: '9007',
 
   // 北米
-  アメリカ: '1000',
+  // 外務省オープンデータの国コード一覧に基づく
+  // アメリカ本土: 1000, ハワイ: 1808, 北マリアナ諸島: 1001, グアム: 1002
+  // カナダ: 9001
+  アメリカ: '1000', // 外務省コード: 1000 (本土)
   ニューヨーク: '1000',
   ロサンゼルス: '1000',
   サンフランシスコ: '1000',
   ラスベガス: '1000',
-  ハワイ: '1808', // ハワイは別コードの可能性あり、一旦1808（ログ参照）
+  シアトル: '1000',
+  シカゴ: '1000',
+  ボストン: '1000',
+  マイアミ: '1000',
+  ワシントンDC: '1000',
+  サンディエゴ: '1000',
+  ハワイ: '1808', // 外務省コード: 1808 (ハワイ)
   ホノルル: '1808',
-  カナダ: '9001', // ログ参照
+  カナダ: '9001', // 外務省コード: 9001
   バンクーバー: '9001',
   トロント: '9001',
+  モントリオール: '9001',
 
   // 中南米
   メキシコ: '0052',
@@ -221,6 +232,7 @@ const DESTINATION_TO_COUNTRY_CODE: Record<string, string> = {
 
   // 中東
   UAE: '0971',
+  アラブ首長国連邦: '0971',
   ドバイ: '0971',
   アブダビ: '0971',
   カタール: '0974',
@@ -231,21 +243,89 @@ const DESTINATION_TO_COUNTRY_CODE: Record<string, string> = {
   バーレーン: '0973',
   クウェート: '0965',
   サウジアラビア: '0966',
+  イラン: '0098',
+  テヘラン: '0098',
+  イラク: '0964',
+  シリア: '0963',
+  レバノン: '0961',
+  イエメン: '0967',
+  アフガニスタン: '0093',
+  パレスチナ: '0970',
+
+  // アフリカ - 北部
   エジプト: '0020',
   カイロ: '0020',
   モロッコ: '0212',
   マラケシュ: '0212',
+  アルジェリア: '0213',
+  チュニジア: '0216',
+  リビア: '0218',
+  スーダン: '0249',
+  南スーダン: '0211',
 
-  // アフリカ
-  南アフリカ: '0027',
-  ケープタウン: '0027',
-  ケニア: '0254',
-  タンザニア: '0255',
-  エチオピア: '0251',
+  // アフリカ - 西部
+  セネガル: '0221',
+  ダカール: '0221',
+  ガンビア: '0220',
+  マリ: '0223',
+  ギニア: '0224',
+  コートジボワール: '0225',
+  ブルキナファソ: '0226',
+  ニジェール: '0227',
+  トーゴ: '0228',
+  ベナン: '0229',
+  モーリタニア: '0222',
+  リベリア: '0231',
+  シエラレオネ: '0232',
   ガーナ: '0233',
   ナイジェリア: '0234',
-  チュニジア: '0216',
-  セネガル: '0221',
+  ラゴス: '0234',
+  カーボベルデ: '0238',
+  ギニアビサウ: '0245',
+
+  // アフリカ - 中部
+  チャド: '0235',
+  中央アフリカ: '0236',
+  カメルーン: '0237',
+  'サントメ・プリンシペ': '0239',
+  赤道ギニア: '0240',
+  ガボン: '0241',
+  コンゴ共和国: '0242',
+  コンゴ民主共和国: '0243',
+  アンゴラ: '0244',
+
+  // アフリカ - 東部
+  エチオピア: '0251',
+  アディスアベバ: '0251',
+  ソマリア: '0252',
+  ジブチ: '0253',
+  ケニア: '0254',
+  ナイロビ: '0254',
+  タンザニア: '0255',
+  ダルエスサラーム: '0255',
+  ウガンダ: '0256',
+  カンパラ: '0256',
+  ブルンジ: '0257',
+  モザンビーク: '0258',
+  ルワンダ: '0250',
+  キガリ: '0250',
+  セーシェル: '0248',
+  エリトリア: '0291',
+
+  // アフリカ - 南部
+  南アフリカ: '0027',
+  ケープタウン: '0027',
+  ヨハネスブルグ: '0027',
+  ザンビア: '0260',
+  マダガスカル: '0261',
+  ジンバブエ: '0263',
+  ナミビア: '0264',
+  マラウイ: '0265',
+  レソト: '0266',
+  ボツワナ: '0267',
+  エスワティニ: '0268',
+  コモロ: '0269',
+  モーリシャス: '0230',
 };
 
 /**
@@ -275,11 +355,11 @@ const COUNTRY_CODE_TO_NAME: Record<string, string> = {
   '0976': 'モンゴル',
   '0061': 'オーストラリア',
   '0064': 'ニュージーランド',
-  '1671': 'グアム',
-  '1670': 'サイパン',
+  '1002': 'グアム', // 外務省コード
+  '1001': '北マリアナ諸島', // 外務省コード (サイパン等)
   '0679': 'フィジー',
   '0680': 'パラオ',
-  '0689': 'タヒチ',
+  '9689': 'タヒチ', // 外務省コード (仏領ポリネシア)
   '0687': 'ニューカレドニア',
   '0044': 'イギリス',
   '0033': 'フランス',
@@ -303,8 +383,11 @@ const COUNTRY_CODE_TO_NAME: Record<string, string> = {
   '0045': 'デンマーク',
   '0353': 'アイルランド',
   '0354': 'アイスランド',
-  '0007': 'ロシア',
-  '0001': 'アメリカ',
+  '9007': 'ロシア', // 外務省コード
+  '0380': 'ウクライナ',
+  '1000': 'アメリカ', // 外務省コード: 本土
+  '1808': 'ハワイ', // 外務省コード: ハワイ
+  '9001': 'カナダ', // 外務省コード
   '0052': 'メキシコ',
   '0055': 'ブラジル',
   '0054': 'アルゼンチン',
@@ -320,14 +403,67 @@ const COUNTRY_CODE_TO_NAME: Record<string, string> = {
   '0973': 'バーレーン',
   '0965': 'クウェート',
   '0966': 'サウジアラビア',
+  // 中東
+  '0098': 'イラン',
+  '0964': 'イラク',
+  '0963': 'シリア',
+  '0961': 'レバノン',
+  '0967': 'イエメン',
+  '0093': 'アフガニスタン',
+  '0970': 'パレスチナ',
+  // アフリカ
   '0020': 'エジプト',
   '0212': 'モロッコ',
+  '0213': 'アルジェリア',
+  '0218': 'リビア',
+  '0249': 'スーダン',
+  '0211': '南スーダン',
   '0027': '南アフリカ',
   '0254': 'ケニア',
   '0255': 'タンザニア',
+  '0256': 'ウガンダ',
+  '0250': 'ルワンダ',
   '0251': 'エチオピア',
+  '0252': 'ソマリア',
+  '0253': 'ジブチ',
+  '0257': 'ブルンジ',
+  '0258': 'モザンビーク',
+  '0260': 'ザンビア',
+  '0261': 'マダガスカル',
+  '0263': 'ジンバブエ',
+  '0264': 'ナミビア',
+  '0265': 'マラウイ',
+  '0266': 'レソト',
+  '0267': 'ボツワナ',
+  '0268': 'エスワティニ',
+  '0269': 'コモロ',
+  '0291': 'エリトリア',
+  '0248': 'セーシェル',
+  '0230': 'モーリシャス',
+  '0220': 'ガンビア',
+  '0222': 'モーリタニア',
+  '0223': 'マリ',
+  '0224': 'ギニア',
+  '0225': 'コートジボワール',
+  '0226': 'ブルキナファソ',
+  '0227': 'ニジェール',
+  '0228': 'トーゴ',
+  '0229': 'ベナン',
+  '0231': 'リベリア',
+  '0232': 'シエラレオネ',
   '0233': 'ガーナ',
   '0234': 'ナイジェリア',
+  '0235': 'チャド',
+  '0236': '中央アフリカ',
+  '0237': 'カメルーン',
+  '0238': 'カーボベルデ',
+  '0239': 'サントメ・プリンシペ',
+  '0240': '赤道ギニア',
+  '0241': 'ガボン',
+  '0242': 'コンゴ共和国',
+  '0243': 'コンゴ民主共和国',
+  '0244': 'アンゴラ',
+  '0245': 'ギニアビサウ',
   '0216': 'チュニジア',
   '0221': 'セネガル',
 };
@@ -375,8 +511,24 @@ const EMERGENCY_CONTACTS_BY_COUNTRY: Record<string, EmergencyContact[]> = {
     { name: '警察', number: '110' },
     { name: '救急・消防', number: '119' },
   ],
-  '0001': [
-    // アメリカ
+  '1000': [
+    // アメリカ本土
+    { name: '緊急通報（警察・消防・救急）', number: '911' },
+  ],
+  '1808': [
+    // ハワイ
+    { name: '緊急通報（警察・消防・救急）', number: '911' },
+  ],
+  '1002': [
+    // グアム
+    { name: '緊急通報（警察・消防・救急）', number: '911' },
+  ],
+  '1001': [
+    // 北マリアナ諸島（サイパン）
+    { name: '緊急通報（警察・消防・救急）', number: '911' },
+  ],
+  '9001': [
+    // カナダ
     { name: '緊急通報（警察・消防・救急）', number: '911' },
   ],
   '0044': [
@@ -443,10 +595,25 @@ const EMBASSIES_BY_COUNTRY: Record<string, Embassy> = {
     address: '1 Liangmaqiao Dongjie, Chaoyang District, Beijing 100600',
     phone: '+86-10-8531-9800',
   },
-  '0001': {
+  '1000': {
     name: '在アメリカ合衆国日本国大使館',
     address: '2520 Massachusetts Avenue, N.W., Washington, D.C. 20008',
     phone: '+1-202-238-6700',
+  },
+  '1808': {
+    name: '在ホノルル日本国総領事館',
+    address: '1742 Nuuanu Avenue, Honolulu, HI 96817',
+    phone: '+1-808-543-3111',
+  },
+  '1002': {
+    name: '在ハガッニャ日本国総領事館',
+    address: 'Suite 604, ITC Building, 590 South Marine Corps Drive, Tamuning, Guam 96913',
+    phone: '+1-671-646-1290',
+  },
+  '9001': {
+    name: '在カナダ日本国大使館',
+    address: '255 Sussex Drive, Ottawa, Ontario K1N 9E6',
+    phone: '+1-613-241-8541',
   },
   '0044': {
     name: '在英国日本国大使館',
@@ -687,15 +854,23 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
     // Gemini等から英語の国名が渡される場合に対応（例: "United States" -> "0001"）
     // 注: COUNTRY_CODE_TO_NAME は "0001": "アメリカ" のようなマップ
     // 英語名を解決するには別途英語名マップが必要だが、簡易的に英語名対応を追加
+    // 外務省オープンデータの国コード一覧に基づく英語名マッピング
     const englishToCode: Record<string, string> = {
-      'United States': '1000',
+      'United States': '1000', // 本土
+      'United States of America': '1000',
       'USA': '1000',
+      'America': '1000',
+      'Hawaii': '1808', // 外務省コード: ハワイ
+      'Canada': '9001', // 外務省コード
       'Korea': '0082',
       'South Korea': '0082',
+      'Republic of Korea': '0082',
       'China': '0086',
+      "People's Republic of China": '0086',
       'Taiwan': '0886',
       'Thailand': '0066',
       'Vietnam': '0084',
+      'Viet Nam': '0084',
       'Singapore': '0065',
       'Malaysia': '0060',
       'Indonesia': '0062',
@@ -706,13 +881,80 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
       'New Zealand': '0064',
       'UK': '0044',
       'United Kingdom': '0044',
+      'Great Britain': '0044',
       'France': '0033',
       'Germany': '0049',
       'Italy': '0039',
       'Spain': '0034',
-      'Canada': '9001',
-      'Hawaii': '1808',
-      'Guam': '1671',
+      'Portugal': '0351',
+      'Netherlands': '0031',
+      'Belgium': '0032',
+      'Switzerland': '0041',
+      'Austria': '0043',
+      'Czech Republic': '0420',
+      'Czechia': '0420',
+      'Poland': '0048',
+      'Hungary': '0036',
+      'Greece': '0030',
+      'Turkey': '0090',
+      'Türkiye': '0090',
+      'Croatia': '0385',
+      'Finland': '0358',
+      'Sweden': '0046',
+      'Norway': '0047',
+      'Denmark': '0045',
+      'Ireland': '0353',
+      'Iceland': '0354',
+      'Russia': '9007', // 外務省コード
+      'Russian Federation': '9007',
+      'Ukraine': '0380',
+      'Mexico': '0052',
+      'Brazil': '0055',
+      'Argentina': '0054',
+      'Peru': '0051',
+      'Chile': '0056',
+      'Cuba': '0053',
+      'Costa Rica': '0506',
+      'United Arab Emirates': '0971',
+      'UAE': '0971',
+      'Qatar': '0974',
+      'Israel': '0972',
+      'Jordan': '0962',
+      'Oman': '0968',
+      'Bahrain': '0973',
+      'Kuwait': '0965',
+      'Saudi Arabia': '0966',
+      'Egypt': '0020',
+      'Morocco': '0212',
+      'South Africa': '0027',
+      'Kenya': '0254',
+      'Tanzania': '0255',
+      'Ethiopia': '0251',
+      'Ghana': '0233',
+      'Nigeria': '0234',
+      'Tunisia': '0216',
+      'Senegal': '0221',
+      'Guam': '1002', // 外務省コード
+      'Saipan': '1001', // 外務省コード (北マリアナ諸島)
+      'Northern Mariana Islands': '1001',
+      'Fiji': '0679',
+      'Palau': '0680',
+      'French Polynesia': '9689', // 外務省コード (タヒチ)
+      'Tahiti': '9689',
+      'New Caledonia': '0687',
+      'Hong Kong': '0852',
+      'Macau': '0853',
+      'Macao': '0853',
+      'Myanmar': '0095',
+      'Burma': '0095',
+      'Laos': '0856',
+      "Lao People's Democratic Republic": '0856',
+      'Brunei': '0673',
+      'Nepal': '0977',
+      'Sri Lanka': '0094',
+      'Bangladesh': '0880',
+      'Pakistan': '0092',
+      'Mongolia': '0976',
     };
 
     if (englishToCode[destination]) {
@@ -851,16 +1093,23 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
       let specificDangerLevel = dangerLevel;
       let maxCountryLevel = dangerLevel;
       let isPartialCountryRisk = false;
+      let highRiskRegions: HighRiskRegion[] | undefined;
 
       const countryName = COUNTRY_CODE_TO_NAME[countryCode];
 
-      // 目的地が国名そのものでない場合（都市名などの場合）、かつ危険レベルが1以上の場合
-      if (dangerLevel > 0 && countryName && destination !== countryName && !destination.includes(countryName)) {
+      // 危険レベルが1以上の場合、AIを使用して主要観光地のレベルを判定
+      // 国名で検索された場合も、主要観光地（首都など）のレベルを表示する
+      if (dangerLevel > 0 && countryName) {
+        // 目的地が国名の場合は、「主要観光地・首都」として扱う
+        const targetDestination = (destination === countryName || destination.includes(countryName))
+          ? `${countryName}の主要観光地（首都など）`
+          : destination;
+
         // AIを使用して特定レベルを判定
         try {
           const aiResult = await this.determineRiskWithAI(
             (lead || '') + '\n' + (subText || ''),
-            destination,
+            targetDestination,
             countryName,
             dangerLevel
           );
@@ -868,39 +1117,56 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
           if (aiResult) {
             specificDangerLevel = aiResult.specificLevel as DangerLevel;
             maxCountryLevel = aiResult.maxCountryLevel as DangerLevel;
-            console.log(`[mofa-api] AI Determined Risk for ${destination}: ${specificDangerLevel} (Country Max: ${maxCountryLevel})`);
-          } else {
-            // AI判定失敗時のフォールバック（ヒューリスティック）
-             const combinedText = (lead || '') + (subText || '');
-             const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
-             const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
 
-             if (!hasWholeCountryKeyword) {
-               // 「全土」キーワードがない場合
-               if (combinedText.includes(destination)) {
-                  // テキストに目的地が含まれている場合 -> 念のため最大レベルを適用（安全サイド）
-                  specificDangerLevel = maxCountryLevel;
-               } else {
-                  // テキストに目的地が含まれておらず、全土指定でもない -> レベル0（安全）とみなす
-                  specificDangerLevel = 0;
-               }
-             }
-             console.log(`[mofa-api] Heuristic Risk for ${destination}: ${specificDangerLevel} (Country Max: ${maxCountryLevel})`);
+            // 高リスク地域の情報を設定
+            if (aiResult.highRiskRegions && aiResult.highRiskRegions.length > 0) {
+              highRiskRegions = aiResult.highRiskRegions.map(region => ({
+                regionName: region.regionName,
+                level: region.level as DangerLevel,
+                description: region.description,
+              }));
+            }
+
+            console.log(`[mofa-api] AI Determined Risk for ${destination}: ${specificDangerLevel} (Country Max: ${maxCountryLevel}, High Risk Regions: ${highRiskRegions?.length || 0})`);
+          } else {
+            // AI判定がnullの場合（APIキーがないなど）
+            // ヒューリスティックで判定
+            const isCountrySearch = destination === countryName || destination.includes(countryName) || targetDestination.includes('主要観光地');
+            const combinedText = (lead || '') + (subText || '');
+            const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
+            const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
+
+            if (isCountrySearch) {
+              // 国名検索の場合：安全のため最大レベルを使用
+              console.log(`[mofa-api] AI null (country search), using max level for ${destination}: ${maxCountryLevel}`);
+              specificDangerLevel = maxCountryLevel;
+            } else if (hasWholeCountryKeyword) {
+              // 「全土」キーワードがある場合：最大レベルを適用
+              console.log(`[mofa-api] AI null (whole country keyword found), using max level for ${destination}: ${maxCountryLevel}`);
+              specificDangerLevel = maxCountryLevel;
+            } else if (combinedText.includes(destination)) {
+              // テキストに目的地が含まれている場合：最大レベルを適用（安全サイド）
+              console.log(`[mofa-api] AI null (destination mentioned in text), using max level for ${destination}: ${maxCountryLevel}`);
+              specificDangerLevel = maxCountryLevel;
+            } else {
+              // 都市検索でテキストに言及がない場合：安全（レベル0）とみなす
+              console.log(`[mofa-api] AI null (city not in text), assuming safe for ${destination}: 0`);
+              specificDangerLevel = 0;
+            }
           }
         } catch (e) {
-          console.warn('[mofa-api] AI analysis failed, using fallback:', e);
-           // AI判定失敗時のフォールバック（ヒューリスティック）- 同上
-             const combinedText = (lead || '') + (subText || '');
-             const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
-             const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
+          console.warn('[mofa-api] AI analysis failed:', e);
+          // AI判定失敗時もヒューリスティックで判定
+          const isCountrySearch = destination === countryName || destination.includes(countryName) || targetDestination.includes('主要観光地');
+          const combinedText = (lead || '') + (subText || '');
+          const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
+          const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
 
-             if (!hasWholeCountryKeyword) {
-               if (combinedText.includes(destination)) {
-                  specificDangerLevel = maxCountryLevel;
-               } else {
-                  specificDangerLevel = 0;
-               }
-             }
+          if (isCountrySearch || hasWholeCountryKeyword || combinedText.includes(destination)) {
+            specificDangerLevel = maxCountryLevel;
+          } else {
+            specificDangerLevel = 0;
+          }
         }
       }
 
@@ -914,6 +1180,7 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
         lead,
         subText,
         isPartialCountryRisk,
+        highRiskRegions,
         warnings,
         emergencyContacts:
           EMERGENCY_CONTACTS_BY_COUNTRY[countryCode] ||
@@ -934,6 +1201,20 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
   }
 
   /**
+   * AI分析結果の型
+   */
+  private aiResultSchema = z.object({
+    specificLevel: z.number().min(0).max(4).describe('The danger level (0-4) specifically for the target destination.'),
+    maxCountryLevel: z.number().min(0).max(4).describe('The maximum danger level mentioned for the entire country.'),
+    highRiskRegions: z.array(z.object({
+      regionName: z.string().describe('Name of the high-risk region in Japanese.'),
+      level: z.number().min(1).max(4).describe('Danger level for this region.'),
+      description: z.string().optional().describe('Brief description of the risk in Japanese.'),
+    })).describe('List of regions with danger levels higher than the target destination. Only include regions explicitly mentioned in the text with specific danger levels.'),
+    reason: z.string().describe('The reasoning for the decision.'),
+  });
+
+  /**
    * AIを使用してリスクレベルを判定
    */
   private async determineRiskWithAI(
@@ -941,19 +1222,17 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
     destination: string,
     country: string,
     xmlMaxLevel: number
-  ): Promise<{ specificLevel: number; maxCountryLevel: number } | null> {
+  ): Promise<{
+    specificLevel: number;
+    maxCountryLevel: number;
+    highRiskRegions?: Array<{ regionName: string; level: number; description?: string }>;
+  } | null> {
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
     if (!apiKey) return null;
 
     try {
       const google = createGoogleGenerativeAI({ apiKey });
       const modelName = process.env.GOOGLE_MODEL_NAME || 'gemini-2.5-flash';
-
-      const schema = z.object({
-        specificLevel: z.number().min(0).max(4).describe(`The danger level (0-4) specifically for ${destination}.`),
-        maxCountryLevel: z.number().min(0).max(4).describe(`The maximum danger level mentioned for ${country}.`),
-        reason: z.string().describe("The reasoning for the decision."),
-      });
 
       const prompt = `
         You are a travel safety analyst. Analyze the following safety information text from the Ministry of Foreign Affairs of Japan (MOFA).
@@ -970,24 +1249,43 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
 
         Task:
         1. Determine the specific danger level (0-4) for the 'Target Destination' based on the text.
-           - If the text explicitly mentions the destination with a level, use that.
-           - If the text says the "Whole Country" or "All areas" has a certain level, apply that.
-           - If the text specifies high risks for *other* regions but does NOT mention the destination or "Whole Country", assume the destination is safe (likely Level 0 or 1, refer to context).
-           - Major tourist cities often have lower risks than border regions.
-        2. Determine the maximum danger level mentioned for the entire country in the text.
+           - Level 0: No danger information (危険情報なし)
+           - Level 1: Exercise caution (十分注意してください)
+           - Level 2: Avoid non-essential travel (不要不急の渡航は止めてください)
+           - Level 3: Do not travel (渡航は止めてください)
+           - Level 4: Evacuate (退避してください)
+
+           **IMPORTANT RULES for determining the level:**
+           - If the target is "主要観光地（首都など）" or a major city like New Delhi, Bangkok, Cairo, etc., find the level that applies to that specific area.
+           - If the text explicitly mentions "全土" (whole country) with a level, apply that level.
+           - If the text specifies high risks for border regions, conflict zones, or specific dangerous areas, but does NOT mention the capital/major tourist cities, assume major tourist areas are safer (often Level 0 or 1).
+           - Example: India may have Level 4 for Kashmir region, Level 3 for some northeastern states, but New Delhi and major tourist cities like Jaipur, Agra are typically Level 1.
+
+        2. Determine the maximum danger level mentioned for the entire country.
+
+        3. Extract high-risk regions that have danger levels HIGHER than the target destination.
+           - Only include regions explicitly mentioned in the text with specific danger levels.
+           - Provide the region name in Japanese.
+           - Include a brief description of the risk.
+           - If the target destination's level equals the max level, return an empty array.
 
         Constraint:
         - The 'maxCountryLevel' should generally match or exceed the 'specificLevel'.
-        - If the text is ambiguous, prefer the safer side (higher level), but do not incorrectly flag safe cities as dangerous if the text clearly targets specific other zones.
+        - For ambiguous cases about tourist areas, prefer the LOWER (safer) level - tourists typically visit safe areas.
+        - Only list high-risk regions if they have a HIGHER level than the target destination.
       `;
 
       const { object } = await generateObject({
         model: google(modelName),
-        schema,
+        schema: this.aiResultSchema,
         prompt,
       });
 
-      return object;
+      return {
+        specificLevel: object.specificLevel,
+        maxCountryLevel: object.maxCountryLevel,
+        highRiskRegions: object.highRiskRegions.length > 0 ? object.highRiskRegions : undefined,
+      };
     } catch (error) {
       console.error('[mofa-api] AI determination error:', error);
       return null;
