@@ -34,7 +34,7 @@ export interface CountryApiConfig {
  * 日本語の国名から英語名へのマッピング
  * REST Countries APIは英語名を期待するため、日本語から変換する
  */
-const JAPANESE_TO_ENGLISH_COUNTRY: Record<string, string> = {
+export const JAPANESE_TO_ENGLISH_COUNTRY: Record<string, string> = {
   // アジア
   日本: 'Japan',
   韓国: 'South Korea',

@@ -51,6 +51,29 @@ export default function ApiResponseDebugPage() {
     }
   };
 
+  // Function to prettify body content based on format
+  const getFormattedBody = () => {
+    if (!result?.body) return result?.message || 'No content';
+
+    // Check if it's JSON
+    try {
+      if (result.body.trim().startsWith('{') || result.body.trim().startsWith('[')) {
+        const json = JSON.parse(result.body);
+        return JSON.stringify(json, null, 2);
+      }
+    } catch {
+      // Not valid JSON, return as is
+    }
+
+    // Check if it's XML (simple heuristic)
+    if (result.body.trim().startsWith('<')) {
+        // Return as is, maybe syntax highlight later?
+        return result.body;
+    }
+
+    return result.body;
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -99,6 +122,7 @@ export default function ApiResponseDebugPage() {
                 className="block w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               >
                 <option value="mofa">Ministry of Foreign Affairs (MOFA)</option>
+                <option value="restcountries">REST Countries API</option>
                 <option value="weather" disabled>Weather API (Not Implemented)</option>
                 <option value="exchange" disabled>Exchange API (Not Implemented)</option>
               </select>
@@ -151,10 +175,12 @@ export default function ApiResponseDebugPage() {
                     <dt className="font-medium text-gray-500">Method</dt>
                     <dd className="col-span-2 text-gray-900">{result.method || 'GET'}</dd>
                   </div>
+                  {result.countryCode && (
                   <div className="grid grid-cols-3 gap-4">
                     <dt className="font-medium text-gray-500">Country Code</dt>
-                    <dd className="col-span-2 font-mono text-gray-900">{result.countryCode || 'N/A'}</dd>
+                    <dd className="col-span-2 font-mono text-gray-900">{result.countryCode}</dd>
                   </div>
+                  )}
                   <div className="grid grid-cols-3 gap-4">
                     <dt className="font-medium text-gray-500">Target Destination</dt>
                     <dd className="col-span-2 text-gray-900">{result.destination || selectedDestination}</dd>
@@ -192,7 +218,7 @@ export default function ApiResponseDebugPage() {
               </div>
               <div className="p-0">
                 <pre className="max-h-[600px] w-full overflow-auto bg-slate-900 p-6 text-xs text-green-400 font-mono leading-relaxed rounded-b-lg">
-                  {result.body || result.message || 'No content'}
+                  {getFormattedBody()}
                 </pre>
               </div>
             </div>
