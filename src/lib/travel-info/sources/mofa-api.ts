@@ -287,7 +287,7 @@ const DESTINATION_TO_COUNTRY_CODE: Record<string, string> = {
   チャド: '0235',
   中央アフリカ: '0236',
   カメルーン: '0237',
-  サントメ・プリンシペ: '0239',
+  'サントメ・プリンシペ': '0239',
   赤道ギニア: '0240',
   ガボン: '0241',
   コンゴ共和国: '0242',
@@ -1097,13 +1097,19 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
 
       const countryName = COUNTRY_CODE_TO_NAME[countryCode];
 
-      // 目的地が国名そのものでない場合（都市名などの場合）、かつ危険レベルが1以上の場合
-      if (dangerLevel > 0 && countryName && destination !== countryName && !destination.includes(countryName)) {
+      // 危険レベルが1以上の場合、AIを使用して主要観光地のレベルを判定
+      // 国名で検索された場合も、主要観光地（首都など）のレベルを表示する
+      if (dangerLevel > 0 && countryName) {
+        // 目的地が国名の場合は、「主要観光地・首都」として扱う
+        const targetDestination = (destination === countryName || destination.includes(countryName))
+          ? `${countryName}の主要観光地（首都など）`
+          : destination;
+
         // AIを使用して特定レベルを判定
         try {
           const aiResult = await this.determineRiskWithAI(
             (lead || '') + '\n' + (subText || ''),
-            destination,
+            targetDestination,
             countryName,
             dangerLevel
           );
@@ -1123,37 +1129,44 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
 
             console.log(`[mofa-api] AI Determined Risk for ${destination}: ${specificDangerLevel} (Country Max: ${maxCountryLevel}, High Risk Regions: ${highRiskRegions?.length || 0})`);
           } else {
-            // AI判定失敗時のフォールバック（ヒューリスティック）
-             const combinedText = (lead || '') + (subText || '');
-             const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
-             const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
+            // AI判定がnullの場合（APIキーがないなど）
+            // ヒューリスティックで判定
+            const isCountrySearch = destination === countryName || destination.includes(countryName) || targetDestination.includes('主要観光地');
+            const combinedText = (lead || '') + (subText || '');
+            const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
+            const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
 
-             if (!hasWholeCountryKeyword) {
-               // 「全土」キーワードがない場合
-               if (combinedText.includes(destination)) {
-                  // テキストに目的地が含まれている場合 -> 念のため最大レベルを適用（安全サイド）
-                  specificDangerLevel = maxCountryLevel;
-               } else {
-                  // テキストに目的地が含まれておらず、全土指定でもない -> レベル0（安全）とみなす
-                  specificDangerLevel = 0;
-               }
-             }
-             console.log(`[mofa-api] Heuristic Risk for ${destination}: ${specificDangerLevel} (Country Max: ${maxCountryLevel})`);
+            if (isCountrySearch) {
+              // 国名検索の場合：安全のため最大レベルを使用
+              console.log(`[mofa-api] AI null (country search), using max level for ${destination}: ${maxCountryLevel}`);
+              specificDangerLevel = maxCountryLevel;
+            } else if (hasWholeCountryKeyword) {
+              // 「全土」キーワードがある場合：最大レベルを適用
+              console.log(`[mofa-api] AI null (whole country keyword found), using max level for ${destination}: ${maxCountryLevel}`);
+              specificDangerLevel = maxCountryLevel;
+            } else if (combinedText.includes(destination)) {
+              // テキストに目的地が含まれている場合：最大レベルを適用（安全サイド）
+              console.log(`[mofa-api] AI null (destination mentioned in text), using max level for ${destination}: ${maxCountryLevel}`);
+              specificDangerLevel = maxCountryLevel;
+            } else {
+              // 都市検索でテキストに言及がない場合：安全（レベル0）とみなす
+              console.log(`[mofa-api] AI null (city not in text), assuming safe for ${destination}: 0`);
+              specificDangerLevel = 0;
+            }
           }
         } catch (e) {
-          console.warn('[mofa-api] AI analysis failed, using fallback:', e);
-           // AI判定失敗時のフォールバック（ヒューリスティック）- 同上
-             const combinedText = (lead || '') + (subText || '');
-             const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
-             const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
+          console.warn('[mofa-api] AI analysis failed:', e);
+          // AI判定失敗時もヒューリスティックで判定
+          const isCountrySearch = destination === countryName || destination.includes(countryName) || targetDestination.includes('主要観光地');
+          const combinedText = (lead || '') + (subText || '');
+          const wholeCountryKeywords = ['全土', '全域', '国全土', '国内全域'];
+          const hasWholeCountryKeyword = wholeCountryKeywords.some(keyword => combinedText.includes(keyword));
 
-             if (!hasWholeCountryKeyword) {
-               if (combinedText.includes(destination)) {
-                  specificDangerLevel = maxCountryLevel;
-               } else {
-                  specificDangerLevel = 0;
-               }
-             }
+          if (isCountrySearch || hasWholeCountryKeyword || combinedText.includes(destination)) {
+            specificDangerLevel = maxCountryLevel;
+          } else {
+            specificDangerLevel = 0;
+          }
         }
       }
 
@@ -1236,24 +1249,29 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
 
         Task:
         1. Determine the specific danger level (0-4) for the 'Target Destination' based on the text.
-           - Level 0: No danger information
-           - Level 1: Exercise caution (十分注意)
-           - Level 2: Avoid non-essential travel (不要不急の渡航中止)
-           - Level 3: Do not travel (渡航中止勧告)
-           - Level 4: Evacuate (退避勧告)
-           - If the text explicitly mentions the destination with a level, use that.
-           - If the text says the "Whole Country" (全土/全域) has a certain level, apply that.
-           - If the text specifies high risks for *other* regions but does NOT mention the destination or "Whole Country", assume the destination is safe (likely Level 0 or 1).
-           - Major tourist cities (首都、主要観光地) often have lower risks than border regions.
-        2. Determine the maximum danger level mentioned for the entire country in the text.
+           - Level 0: No danger information (危険情報なし)
+           - Level 1: Exercise caution (十分注意してください)
+           - Level 2: Avoid non-essential travel (不要不急の渡航は止めてください)
+           - Level 3: Do not travel (渡航は止めてください)
+           - Level 4: Evacuate (退避してください)
+
+           **IMPORTANT RULES for determining the level:**
+           - If the target is "主要観光地（首都など）" or a major city like New Delhi, Bangkok, Cairo, etc., find the level that applies to that specific area.
+           - If the text explicitly mentions "全土" (whole country) with a level, apply that level.
+           - If the text specifies high risks for border regions, conflict zones, or specific dangerous areas, but does NOT mention the capital/major tourist cities, assume major tourist areas are safer (often Level 0 or 1).
+           - Example: India may have Level 4 for Kashmir region, Level 3 for some northeastern states, but New Delhi and major tourist cities like Jaipur, Agra are typically Level 1.
+
+        2. Determine the maximum danger level mentioned for the entire country.
+
         3. Extract high-risk regions that have danger levels HIGHER than the target destination.
            - Only include regions explicitly mentioned in the text with specific danger levels.
            - Provide the region name in Japanese.
+           - Include a brief description of the risk.
            - If the target destination's level equals the max level, return an empty array.
 
         Constraint:
         - The 'maxCountryLevel' should generally match or exceed the 'specificLevel'.
-        - If the text is ambiguous for the target destination, prefer assuming it's safer than high-risk border regions.
+        - For ambiguous cases about tourist areas, prefer the LOWER (safer) level - tourists typically visit safe areas.
         - Only list high-risk regions if they have a HIGHER level than the target destination.
       `;
 

@@ -63,7 +63,12 @@ const JAPANESE_TO_ENGLISH_COUNTRY: Record<string, string> = {
   ニュージーランド: 'New Zealand',
   フィジー: 'Fiji',
   パラオ: 'Palau',
+  タヒチ: 'French Polynesia',
   'フランス領ポリネシア': 'French Polynesia',
+  グアム: 'Guam',
+  サイパン: 'Northern Mariana Islands',
+  '北マリアナ諸島': 'Northern Mariana Islands',
+  ニューカレドニア: 'New Caledonia',
   // ヨーロッパ
   イギリス: 'United Kingdom',
   フランス: 'France',
