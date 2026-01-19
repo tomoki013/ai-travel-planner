@@ -15,6 +15,7 @@ import {
   FaSearch,
 } from "react-icons/fa";
 import SamplePlanCard from "./SamplePlanCard";
+import SamplePlanSkeleton from "./SamplePlanSkeleton";
 import {
   SamplePlan,
   getAllTags,
@@ -302,6 +303,7 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [displayLimit, setDisplayLimit] = useState(20);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const allTags = useMemo(() => getAllTags(), []);
   const allRegions = useMemo(() => getAllRegions(), []);
@@ -356,6 +358,15 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
   const visiblePlans = useMemo(() => {
     return filteredPlans.slice(0, displayLimit);
   }, [filteredPlans, displayLimit]);
+
+  const handleShowMore = () => {
+    setIsLoadingMore(true);
+    // スケルトンを表示するための擬似的な遅延
+    setTimeout(() => {
+      setDisplayLimit((prev) => prev + 20);
+      setIsLoadingMore(false);
+    }, 600);
+  };
 
   // Group regions by area for display
   const groupedRegions = useMemo(() => {
@@ -497,7 +508,7 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
   return (
     <div className="space-y-8">
       {/* Sticky Header (Search & Tabs) */}
-      <div className="sticky top-4 z-40">
+      <div className="sticky top-24 md:top-28 z-40">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -521,7 +532,7 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
           {/* Controls Container */}
           <div className="flex gap-2 items-center w-full md:w-auto">
             {/* Tabs (Scrollable) */}
-            <div className="flex-1 overflow-x-auto pb-1 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex-1 min-w-0 overflow-x-auto pb-1 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               <div className="flex bg-stone-100 p-1 rounded-xl w-max">
                 {(["all", "domestic", "overseas"] as const).map((tab) => (
                   <button
@@ -580,131 +591,162 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
         </motion.div>
       </div>
 
-      {/* Filters Area */}
+      {/* Filters Modal */}
       <AnimatePresence>
         {isFilterOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-8">
-              <div className="flex items-center justify-between pb-4 border-b border-stone-100">
-                <h3 className="text-lg font-bold text-[#2c2c2c] flex items-center gap-2">
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsFilterOpen(false)}
+              className="fixed inset-0 bg-black/50 z-50 backdrop-blur-sm"
+            />
+            {/* Modal Content */}
+            <motion.div
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              className="fixed inset-x-0 bottom-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 bg-white md:rounded-2xl rounded-t-3xl shadow-2xl w-full md:w-[90%] md:max-w-4xl max-h-[85vh] overflow-y-auto flex flex-col"
+            >
+              <div className="sticky top-0 bg-white/95 backdrop-blur-sm p-6 border-b border-stone-100 flex items-center justify-between z-10">
+                <h3 className="text-xl font-bold text-[#2c2c2c] flex items-center gap-2">
                   <FaFilter className="text-[#e67e22]" />
                   条件検索
                 </h3>
-                {hasActiveFilters && (
-                  <motion.button
-                    onClick={clearFilters}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-stone-500 hover:text-white hover:bg-red-500 rounded-lg transition-all"
-                  >
-                    <FaTimes />
-                    <span className="font-medium">すべてクリア</span>
-                  </motion.button>
-                )}
+                <button
+                  onClick={() => setIsFilterOpen(false)}
+                  className="p-2 hover:bg-stone-100 rounded-full transition-colors"
+                >
+                  <FaTimes size={20} className="text-stone-500" />
+                </button>
               </div>
 
-              {/* Days Filter */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-bold text-stone-700 flex items-center gap-2">
-                  <FaCalendarAlt className="text-[#e67e22]" />
-                  日数
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {dayOptions.map((option) => (
+              <div className="p-6 space-y-8 overflow-y-auto">
+                <div className="flex justify-end">
+                  {hasActiveFilters && (
                     <motion.button
-                      key={option.label}
-                      onClick={() => setSelectedDays(option.value)}
+                      onClick={clearFilters}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className={`px-4 py-2 text-sm rounded-xl border font-medium transition-all ${
-                        selectedDays === option.value
-                          ? "bg-[#e67e22] text-white border-[#e67e22] shadow-md"
-                          : "bg-white text-stone-600 border-stone-200 hover:border-[#e67e22] hover:text-[#e67e22]"
-                      }`}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-stone-500 hover:text-white hover:bg-red-500 rounded-lg transition-all border border-stone-200 hover:border-red-500"
                     >
-                      {option.label}
+                      <FaTimes />
+                      <span className="font-medium">すべてクリア</span>
                     </motion.button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Region Filter (Grouped) */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold text-stone-700 flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-[#e67e22]" />
-                  エリア
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {Object.entries(groupedRegions).map(([area, regions]) => (
-                     regions.length > 0 && (
-                      <div key={area} className="space-y-2">
-                        <h5 className="text-xs font-bold text-stone-400 uppercase tracking-wider pl-1">{area}</h5>
-                        <div className="flex flex-wrap gap-2">
-                          {regions.map(region => renderRegionButton(region, selectedRegions.includes(region)))}
-                        </div>
-                      </div>
-                     )
-                  ))}
-                </div>
-              </div>
-
-              {/* Tag Filters */}
-              <div className="space-y-6 pt-4 border-t border-stone-100">
-                <h4 className="text-sm font-bold text-stone-700 flex items-center gap-2">
-                  <FaTag className="text-[#e67e22]" />
-                  タグ
-                </h4>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Theme */}
-                  {categorizedTags.themes.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-                        旅のテーマ
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {categorizedTags.themes.map((tag) =>
-                          renderTagButton(tag, selectedTags.includes(tag))
-                        )}
-                      </div>
-                    </div>
                   )}
+                </div>
 
-                  {/* Companion & Season */}
-                  <div className="space-y-6">
-                    {categorizedTags.companions.length > 0 && (
+                {/* Days Filter */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-bold text-stone-700 flex items-center gap-2">
+                    <FaCalendarAlt className="text-[#e67e22]" />
+                    日数
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {dayOptions.map((option) => (
+                      <motion.button
+                        key={option.label}
+                        onClick={() => setSelectedDays(option.value)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`px-4 py-2 text-sm rounded-xl border font-medium transition-all ${
+                          selectedDays === option.value
+                            ? "bg-[#e67e22] text-white border-[#e67e22] shadow-md"
+                            : "bg-white text-stone-600 border-stone-200 hover:border-[#e67e22] hover:text-[#e67e22]"
+                        }`}
+                      >
+                        {option.label}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Region Filter (Grouped) */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-bold text-stone-700 flex items-center gap-2">
+                    <FaMapMarkerAlt className="text-[#e67e22]" />
+                    エリア
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {Object.entries(groupedRegions).map(([area, regions]) => (
+                      regions.length > 0 && (
+                        <div key={area} className="space-y-2">
+                          <h5 className="text-xs font-bold text-stone-400 uppercase tracking-wider pl-1">{area}</h5>
+                          <div className="flex flex-wrap gap-2">
+                            {regions.map(region => renderRegionButton(region, selectedRegions.includes(region)))}
+                          </div>
+                        </div>
+                      )
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tag Filters */}
+                <div className="space-y-6 pt-4 border-t border-stone-100">
+                  <h4 className="text-sm font-bold text-stone-700 flex items-center gap-2">
+                    <FaTag className="text-[#e67e22]" />
+                    タグ
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Theme */}
+                    {categorizedTags.themes.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-                          同行者
+                          旅のテーマ
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {categorizedTags.companions.map((tag) =>
+                          {categorizedTags.themes.map((tag) =>
                             renderTagButton(tag, selectedTags.includes(tag))
                           )}
                         </div>
                       </div>
                     )}
-                    {categorizedTags.seasons.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-                          おすすめの季節
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {categorizedTags.seasons.map((tag) =>
-                            renderTagButton(tag, selectedTags.includes(tag))
-                          )}
+
+                    {/* Companion & Season */}
+                    <div className="space-y-6">
+                      {categorizedTags.companions.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+                            同行者
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {categorizedTags.companions.map((tag) =>
+                              renderTagButton(tag, selectedTags.includes(tag))
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                      {categorizedTags.seasons.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+                            おすすめの季節
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {categorizedTags.seasons.map((tag) =>
+                              renderTagButton(tag, selectedTags.includes(tag))
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+
+              {/* Footer / Close Button */}
+              <div className="p-4 border-t border-stone-100 sticky bottom-0 bg-white z-10">
+                <button
+                  onClick={() => setIsFilterOpen(false)}
+                  className="w-full py-3 bg-[#e67e22] text-white font-bold rounded-xl shadow-md hover:bg-[#d35400] transition-colors"
+                >
+                  条件を適用して閉じる
+                </button>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
 
@@ -774,13 +816,25 @@ export default function SamplePlanList({ plans }: SamplePlanListProps) {
               <SamplePlanCard key={plan.id} plan={plan} index={index} />
             ))}
           </AnimatePresence>
+          {/* Skeletons when loading more */}
+          {isLoadingMore &&
+            Array.from({ length: 3 }).map((_, i) => (
+              <motion.div
+                key={`skeleton-${i}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <SamplePlanSkeleton />
+              </motion.div>
+            ))}
         </div>
 
         {/* Show More Button */}
-        {filteredPlans.length > displayLimit && (
+        {!isLoadingMore && filteredPlans.length > displayLimit && (
           <div className="flex justify-center mt-8">
             <button
-              onClick={() => setDisplayLimit((prev) => prev + 20)}
+              onClick={handleShowMore}
               className="px-8 py-3 bg-white text-stone-600 border border-stone-300 rounded-full font-bold hover:bg-stone-50 hover:border-stone-400 transition-all shadow-sm"
             >
               もっと見る ({filteredPlans.length - displayLimit}件)
