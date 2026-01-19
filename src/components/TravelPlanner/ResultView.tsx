@@ -396,7 +396,7 @@ export default function ResultView({
           {displayResult.days.map((day, dayIndex) => (
             <div key={day.day} className="relative">
               {/* Day Header - Sticky at top when scrolled */}
-              <div className="sticky top-0 z-30 mb-8 flex items-center gap-4">
+              <div className="sticky top-24 md:top-28 z-30 mb-8 flex items-center gap-4">
                 <div className="inline-flex items-center gap-4 bg-white py-3 px-6 rounded-r-full shadow-md border border-stone-200 border-l-4 border-l-primary">
                   <span className="text-4xl font-serif text-primary">
                     {day.day}

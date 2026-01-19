@@ -2,7 +2,7 @@
 
 import React, { useActionState } from 'react';
 import Link from 'next/link';
-import { FaEnvelope } from 'react-icons/fa';
+import { FaEnvelope, FaStamp } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { sendContactEmail, ContactState } from '@/app/actions/contact';
 
@@ -18,13 +18,43 @@ export default function ContactForm() {
   );
 
   return (
-    <section className="bg-white p-8 rounded-xl shadow-sm border border-stone-100">
-      <h2 className="text-xl font-bold text-[#2c2c2c] mb-6 font-serif flex items-center gap-2">
-        <FaEnvelope className="text-[#e67e22]" />
-        <span>お問い合わせフォーム</span>
-      </h2>
+    <section className="relative bg-[#fffdfa] p-8 md:p-12 rounded-lg shadow-lg border border-stone-200 overflow-hidden max-w-4xl mx-auto">
+      {/* Texture Overlay */}
+      <div className="absolute inset-0 bg-[url('/images/cream-paper.png')] opacity-50 pointer-events-none mix-blend-multiply" />
 
-      {state.success ? (
+      {/* Stamp & Postmark (Desktop) */}
+      <div className="absolute top-6 right-8 hidden md:block pointer-events-none opacity-80 rotate-6">
+        <div className="w-24 h-28 border-4 border-double border-stone-300 p-2 flex items-center justify-center bg-stone-50 shadow-sm relative z-10">
+          <div className="w-full h-full border border-stone-200 flex items-center justify-center">
+            <FaStamp className="text-4xl text-stone-300" />
+          </div>
+        </div>
+        <div className="absolute -left-12 top-6 w-32 h-32 rounded-full border-2 border-stone-300/50 flex items-center justify-center -rotate-12 z-0">
+          <div className="text-[10px] font-mono text-stone-300 uppercase tracking-widest text-center">
+            Tabidea
+            <br />
+            Post Service
+            <br />
+            {new Date().getFullYear()}
+          </div>
+        </div>
+        {/* Postcard Lines */}
+        <div className="absolute top-36 right-4 w-48 space-y-4 opacity-30">
+          <div className="h-px bg-stone-400 w-full" />
+          <div className="h-px bg-stone-400 w-full" />
+          <div className="h-px bg-stone-400 w-full" />
+        </div>
+      </div>
+
+      <div className="relative z-10">
+        <h2 className="text-3xl font-bold text-[#2c2c2c] mb-8 font-hand flex items-center gap-3">
+          <span className="border-b-4 border-[#e67e22]/20 pb-1">Contact</span>
+          <span className="text-base font-serif text-stone-500 font-normal mt-1">
+            お問い合わせ
+          </span>
+        </h2>
+
+        {state.success ? (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -174,6 +204,7 @@ export default function ContactForm() {
           </p>
         </form>
       )}
+      </div>
     </section>
   );
 }
