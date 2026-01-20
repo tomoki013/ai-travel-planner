@@ -18,6 +18,14 @@ import {
   VisaInfo,
   MannerInfo,
   TransportInfo,
+  LocalFoodInfo,
+  SouvenirInfo,
+  EventsInfo,
+  TechnologyInfo,
+  HealthcareInfo,
+  RestroomsInfo,
+  SmokingInfo,
+  AlcoholInfo,
   DANGER_LEVEL_DESCRIPTIONS,
 } from "@/lib/types/travel-info";
 
@@ -337,6 +345,168 @@ const TransportInfoView = ({ data }: { data: TransportInfo }) => (
   </View>
 );
 
+const LocalFoodInfoView = ({ data }: { data: LocalFoodInfo }) => (
+  <View>
+    <Text style={styles.subHeader}>代表的な料理</Text>
+    {data.popularDishes.slice(0, 3).map((dish, i) => (
+      <View key={i} style={styles.bulletItem}>
+        <View style={styles.bullet} />
+        <Text style={styles.value}>{dish.name}: {dish.description}</Text>
+      </View>
+    ))}
+    {data.diningEtiquette.length > 0 && (
+      <View style={{ marginTop: 6 }}>
+        <Text style={styles.subHeader}>食事のマナー</Text>
+        {data.diningEtiquette.slice(0, 3).map((etiquette, i) => (
+            <View key={i} style={styles.bulletItem}>
+              <View style={styles.bullet} />
+              <Text style={styles.value}>{etiquette}</Text>
+            </View>
+        ))}
+      </View>
+    )}
+  </View>
+);
+
+const SouvenirInfoView = ({ data }: { data: SouvenirInfo }) => (
+  <View>
+    <Text style={styles.subHeader}>人気のお土産</Text>
+    {data.popularItems.slice(0, 3).map((item, i) => (
+      <View key={i} style={styles.bulletItem}>
+        <View style={styles.bullet} />
+        <Text style={styles.value}>{item.name}: {item.description}</Text>
+      </View>
+    ))}
+    {data.shoppingAreas.length > 0 && (
+        <View style={{ marginTop: 6 }}>
+            <Text style={styles.subHeader}>おすすめエリア</Text>
+            <Text style={styles.value}>{data.shoppingAreas.join("、")}</Text>
+        </View>
+    )}
+  </View>
+);
+
+const EventsInfoView = ({ data }: { data: EventsInfo }) => (
+  <View>
+    <Text style={styles.subHeader}>主要なイベント</Text>
+    {data.majorEvents.slice(0, 2).map((event, i) => (
+      <View key={i} style={styles.bulletItem}>
+        <View style={styles.bullet} />
+        <Text style={styles.value}>{event.name} ({event.date}): {event.description}</Text>
+      </View>
+    ))}
+    {data.seasonalFestivals.length > 0 && (
+        <View style={{ marginTop: 6 }}>
+            <Text style={styles.subHeader}>季節の祭り</Text>
+            {data.seasonalFestivals.slice(0, 2).map((festival, i) => (
+                <View key={i} style={styles.bulletItem}>
+                    <View style={styles.bullet} />
+                    <Text style={styles.value}>{festival.name} ({festival.date})</Text>
+                </View>
+            ))}
+        </View>
+    )}
+  </View>
+);
+
+const TechnologyInfoView = ({ data }: { data: TechnologyInfo }) => (
+  <View>
+    <View style={styles.row}>
+      <Text style={styles.label}>電圧</Text>
+      <Text style={styles.value}>{data.voltage}</Text>
+    </View>
+    <View style={[styles.row, styles.rowLast]}>
+      <Text style={styles.label}>プラグ形状</Text>
+      <Text style={styles.value}>{data.plugs.join(", ")}</Text>
+    </View>
+    {data.internet.length > 0 && (
+      <View style={{ marginTop: 6 }}>
+        <Text style={styles.subHeader}>インターネット事情</Text>
+        {data.internet.slice(0, 3).map((info, i) => (
+          <View key={i} style={styles.bulletItem}>
+            <View style={styles.bullet} />
+            <Text style={styles.value}>{info}</Text>
+          </View>
+        ))}
+      </View>
+    )}
+  </View>
+);
+
+const HealthcareInfoView = ({ data }: { data: HealthcareInfo }) => (
+  <View>
+    <View style={styles.row}>
+      <Text style={styles.label}>水道水</Text>
+      <Text style={styles.value}>{data.water}</Text>
+    </View>
+    <View style={[styles.row, styles.rowLast]}>
+      <Text style={styles.label}>医療水準</Text>
+      <Text style={styles.value}>{data.medicalLevel}</Text>
+    </View>
+    {data.vaccines.length > 0 && (
+      <View style={{ marginTop: 6 }}>
+        <Text style={styles.subHeader}>推奨ワクチン</Text>
+        <Text style={styles.value}>{data.vaccines.join("、")}</Text>
+      </View>
+    )}
+  </View>
+);
+
+const RestroomsInfoView = ({ data }: { data: RestroomsInfo }) => (
+  <View>
+    <View style={[styles.row, styles.rowLast]}>
+      <Text style={styles.label}>清潔度・普及</Text>
+      <Text style={styles.value}>{data.availability}</Text>
+    </View>
+    {data.notes.length > 0 && (
+      <View style={{ marginTop: 6 }}>
+        <Text style={styles.subHeader}>利用上の注意</Text>
+        {data.notes.slice(0, 3).map((note, i) => (
+          <View key={i} style={styles.bulletItem}>
+            <View style={styles.bullet} />
+            <Text style={styles.value}>{note}</Text>
+          </View>
+        ))}
+      </View>
+    )}
+  </View>
+);
+
+const SmokingInfoView = ({ data }: { data: SmokingInfo }) => (
+  <View>
+    <Text style={styles.subHeader}>喫煙ルール</Text>
+    <Text style={styles.text}>{data.rules}</Text>
+    <Text style={styles.subHeader}>喫煙場所</Text>
+    <Text style={styles.text}>{data.areas}</Text>
+    {data.fines && (
+        <View style={{ marginTop: 4 }}>
+            <Text style={[styles.value, { color: '#ef4444', fontWeight: 'bold' }]}>罰金: {data.fines}</Text>
+        </View>
+    )}
+  </View>
+);
+
+const AlcoholInfoView = ({ data }: { data: AlcoholInfo }) => (
+  <View>
+    <View style={styles.row}>
+      <Text style={styles.label}>年齢制限</Text>
+      <Text style={styles.value}>{data.ageLimit}</Text>
+    </View>
+    <Text style={styles.subHeader}>飲酒ルール</Text>
+    <Text style={styles.text}>{data.rules}</Text>
+    {data.notes.length > 0 && (
+      <View style={{ marginTop: 4 }}>
+        {data.notes.slice(0, 2).map((note, i) => (
+          <View key={i} style={styles.bulletItem}>
+            <View style={styles.bullet} />
+            <Text style={styles.value}>{note}</Text>
+          </View>
+        ))}
+      </View>
+    )}
+  </View>
+);
+
 const TravelInfoPDF: React.FC<TravelInfoPDFProps> = ({ destination, country, categoryStates, dates }) => {
 
   const renderSection = (category: TravelInfoCategory) => {
@@ -353,6 +523,14 @@ const TravelInfoPDF: React.FC<TravelInfoPDFProps> = ({ destination, country, cat
       case "visa": content = <VisaInfoView data={data as VisaInfo} />; break;
       case "manner": content = <MannerInfoView data={data as MannerInfo} />; break;
       case "transport": content = <TransportInfoView data={data as TransportInfo} />; break;
+      case "local_food": content = <LocalFoodInfoView data={data as LocalFoodInfo} />; break;
+      case "souvenir": content = <SouvenirInfoView data={data as SouvenirInfo} />; break;
+      case "events": content = <EventsInfoView data={data as EventsInfo} />; break;
+      case "technology": content = <TechnologyInfoView data={data as TechnologyInfo} />; break;
+      case "healthcare": content = <HealthcareInfoView data={data as HealthcareInfo} />; break;
+      case "restrooms": content = <RestroomsInfoView data={data as RestroomsInfo} />; break;
+      case "smoking": content = <SmokingInfoView data={data as SmokingInfo} />; break;
+      case "alcohol": content = <AlcoholInfoView data={data as AlcoholInfo} />; break;
       default: return null;
     }
 
@@ -397,11 +575,19 @@ const TravelInfoPDF: React.FC<TravelInfoPDFProps> = ({ destination, country, cat
             {renderSection("basic")}
             {renderSection("visa")}
             {renderSection("transport")}
+            {renderSection("technology")}
+            {renderSection("healthcare")}
+            {renderSection("restrooms")}
+            {renderSection("smoking")}
+            {renderSection("alcohol")}
           </View>
           <View style={styles.column}>
             {renderSection("safety")}
             {renderSection("climate")}
             {renderSection("manner")}
+            {renderSection("local_food")}
+            {renderSection("souvenir")}
+            {renderSection("events")}
           </View>
         </View>
 
