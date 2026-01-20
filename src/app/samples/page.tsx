@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import SamplePlanList from "@/components/samples/SamplePlanList";
-import { samplePlans } from "@/lib/sample-plans";
+import { loadAllSamplePlans } from "@/lib/sample-plans-loader";
 
 export const metadata: Metadata = {
   title: "サンプルプラン集",
@@ -9,7 +9,9 @@ export const metadata: Metadata = {
     "AIが作成した旅行プランのサンプル集。家族旅行、カップル旅行、一人旅など、様々なシチュエーションに合わせたプラン例をご覧いただけます。",
 };
 
-export default function SamplesPage() {
+export default async function SamplesPage() {
+  const plans = await loadAllSamplePlans();
+
   return (
     <div className="flex flex-col min-h-screen bg-[#fcfbf9]">
       {/* Header Section */}
@@ -36,7 +38,7 @@ export default function SamplesPage() {
       {/* Main Content */}
       <main className="flex-1 w-full px-4 md:px-6 pb-20">
         <div className="max-w-6xl mx-auto">
-          <SamplePlanList plans={samplePlans} />
+          <SamplePlanList plans={plans} />
         </div>
 
         {/* CTA Section */}
