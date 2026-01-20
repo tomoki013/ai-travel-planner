@@ -18,7 +18,7 @@ export async function generateTravelPlanPdf(
 
   // Dynamically import the PDF document component
   const ItineraryPDFModule = await import(
-    "@/components/TravelPlanner/ItineraryPDF"
+    "@/components/features/planner/ItineraryPDF"
   );
   const ItineraryPDF = ItineraryPDFModule.default;
 

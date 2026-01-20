@@ -1,15 +1,16 @@
 import { Suspense } from "react";
-import TravelPlanner from "@/components/TravelPlanner";
-import Header from "@/components/layout/Header";
-
-import HeroSection from "@/components/landing/HeroSection";
-import AboutSection from "@/components/landing/AboutSection";
-import FeaturesHeroSection from "@/components/landing/FeaturesHeroSection";
-import FeatureSection from "@/components/landing/FeatureSection";
-import UsageGuideHero from "@/components/landing/UsageGuideHero";
-import ExampleSection from "@/components/landing/ExampleSection";
-import TravelInfoSection from "@/components/landing/TravelInfoSection";
-import FAQSection from "@/components/landing/FAQSection";
+import TravelPlanner from "@/components/features/planner";
+import { Header } from "@/components/common";
+import {
+  HeroSection,
+  AboutSection,
+  FeaturesHeroSection,
+  FeatureSection,
+  UsageGuideHero,
+  ExampleSection,
+  TravelInfoSection,
+  FAQSection,
+} from "@/components/features/landing";
 import { getSamplePlanById } from "@/lib/sample-plans";
 import { UserInput } from '@/types';
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import TrinityCircle from "@/components/ui/TrinityCircle";
+import { TrinityCircle } from "@/components/features/landing";
 import {
   FaLightbulb,
   FaHeart,

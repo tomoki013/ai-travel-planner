@@ -16,7 +16,7 @@ import { encodeTravelInfoUrl } from "@/lib/travelInfoUrlUtils";
 import {
   CategorySelector,
   TravelInfoDisplay,
-} from "@/components/TravelInfo";
+} from "@/components/features/travel-info";
 
 /**
  * カテゴリ別の状態

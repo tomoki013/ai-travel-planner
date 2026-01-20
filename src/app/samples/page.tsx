@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import SamplePlanList from "@/components/samples/SamplePlanList";
+import { SamplePlanList } from "@/components/features/samples";
 import { samplePlans } from "@/lib/sample-plans";
 
 export const metadata: Metadata = {

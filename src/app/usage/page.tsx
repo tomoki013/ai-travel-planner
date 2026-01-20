@@ -1,6 +1,8 @@
-import FeaturesHeroSection from "@/components/landing/FeaturesHeroSection";
-import FeaturesDetailSection from "@/components/landing/FeaturesDetailSection";
-import HowToUseSection from "@/components/landing/HowToUseSection";
+import {
+  FeaturesHeroSection,
+  FeaturesDetailSection,
+  HowToUseSection,
+} from "@/components/features/landing";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

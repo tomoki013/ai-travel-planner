@@ -1,4 +1,5 @@
 import FAQContent from "@/components/faq/FAQContent";
+// TODO: Move faq components to features/ when component structure is finalized
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

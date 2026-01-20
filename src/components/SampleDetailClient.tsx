@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserInput, Itinerary } from '@/types';
-import ResultView from "@/components/TravelPlanner/ResultView";
-import RequestSummary from "@/components/TravelPlanner/RequestSummary";
+import ResultView from "@/components/features/planner/ResultView";
+import RequestSummary from "@/components/features/planner/RequestSummary";
 import SamplePlanActions from "@/components/SamplePlanActions";
-import PlanModal from "@/components/ui/PlanModal";
+import { PlanModal } from "@/components/common";
 import { regeneratePlan } from "@/app/actions/travel-planner";
 import { encodePlanData } from "@/lib/urlUtils";
 

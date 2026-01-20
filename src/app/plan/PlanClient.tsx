@@ -8,11 +8,10 @@ import { decodePlanData, encodePlanData } from "@/lib/urlUtils";
 import { regeneratePlan, fetchHeroImage, generatePlanOutline, generatePlanChunk } from "@/app/actions/travel-planner";
 import { splitDaysIntoChunks, extractDuration } from "@/lib/planUtils";
 import { getSamplePlanById } from "@/lib/sample-plans";
-import ResultView from "@/components/TravelPlanner/ResultView";
-import LoadingView from "@/components/TravelPlanner/LoadingView";
-import PlanModal from "@/components/ui/PlanModal";
-import FAQSection from "@/components/landing/FAQSection";
-import ExampleSection from "@/components/landing/ExampleSection";
+import ResultView from "@/components/features/planner/ResultView";
+import LoadingView from "@/components/features/planner/LoadingView";
+import { PlanModal } from "@/components/common";
+import { FAQSection, ExampleSection } from "@/components/features/landing";
 import { FaPlus } from "react-icons/fa6";
 
 function PlanContent() {

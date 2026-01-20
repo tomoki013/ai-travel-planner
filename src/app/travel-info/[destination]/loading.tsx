@@ -1,4 +1,4 @@
-import { LoadingState } from '@/components/TravelInfo';
+import { LoadingState } from '@/components/features/travel-info';
 
 /**
  * 目的地ページのローディング表示

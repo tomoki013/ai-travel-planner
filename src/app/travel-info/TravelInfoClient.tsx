@@ -14,7 +14,7 @@ import { FaPassport } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import type { TravelInfoCategory } from '@/types';
 import { encodeTravelInfoUrl } from "@/lib/travelInfoUrlUtils";
-import { CategorySelector } from "@/components/TravelInfo";
+import { CategorySelector } from "@/components/features/travel-info";
 
 /**
  * 人気の目的地リスト
