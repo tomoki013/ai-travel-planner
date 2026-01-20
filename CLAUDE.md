@@ -38,6 +38,42 @@ See [docs/testing.md](docs/testing.md) for the full strategy.
 - **Vector DB**: Pinecone with Google embeddings
 - **Testing**: Vitest, Playwright
 
+## Directory Structure
+
+See [docs/coding-standards.md](docs/coding-standards.md) for full coding guidelines.
+
+### Quick Reference
+
+- `src/components/ui/` - Reusable UI components (no business logic)
+- `src/components/common/` - Shared app components
+- `src/components/features/` - Feature-specific components
+- `src/lib/services/` - Business logic
+- `src/lib/utils/` - Utility functions
+- `src/lib/hooks/` - Custom hooks
+- `src/types/` - Type definitions (centralized)
+
+### Naming Conventions
+
+| Type | Convention | Example |
+|------|------------|---------|
+| Component | PascalCase | `CategorySelector.tsx` |
+| Utility | kebab-case | `http-client.ts` |
+| Hook | camelCase + use | `useItinerary.ts` |
+| Test | Original + .test | `Button.test.tsx` |
+| Variables | camelCase | `userName` |
+| Constants | SCREAMING_SNAKE | `MAX_RETRY_COUNT` |
+| Types | PascalCase | `UserInput` |
+
+### Import Order
+
+1. React/Next.js
+2. External libraries (alphabetical)
+3. Type imports
+4. Services/utilities
+5. Hooks
+6. Components
+7. Relative imports
+
 ## Notes
 
 - All user-facing content is in Japanese
