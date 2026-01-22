@@ -24,6 +24,8 @@ import {
   EmergencyContact,
   Embassy,
   HighRiskRegion,
+  WarningInfo,
+  WarningPriority,
   DANGER_LEVEL_DESCRIPTIONS,
 } from '@/types';
 
@@ -1231,7 +1233,7 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
       }
 
       const dangerLevel = this.extractDangerLevel(opendata);
-      const warnings = this.extractWarnings(opendata);
+      const warnings = this.extractWarnings(opendata, dangerLevel);
 
       // 追加情報の抽出
       const lead = opendata.riskLead?.trim();
@@ -1463,16 +1465,78 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
   }
 
   /**
-   * XMLオブジェクトから警告情報を抽出
+   * 重要度を決定するヘルパー
+   * 危険レベルや警告タイトルのキーワードに基づいて判定
    */
-  private extractWarnings(opendata: MofaXmlResponse): string[] {
-    const warnings: string[] = [];
+  private determinePriority(
+    title: string,
+    dangerLevel: DangerLevel = 0,
+    type: WarningInfo['type'] = 'general'
+  ): WarningPriority {
+    // 危険情報の場合は危険レベルに基づいて判定
+    if (type === 'danger') {
+      if (dangerLevel >= 4) return 'critical';
+      if (dangerLevel >= 3) return 'high';
+      if (dangerLevel >= 2) return 'medium';
+      return 'low';
+    }
 
-    // 1. 危険情報のリード（riskLead）
+    // キーワードに基づく判定
+    const criticalKeywords = ['退避', '渡航中止', '退去', '危険', '戦争', '紛争', 'テロ'];
+    const highKeywords = ['注意', '警戒', '渡航', '感染症', '強盗', '犯罪'];
+
+    const lowerTitle = title.toLowerCase();
+
+    if (criticalKeywords.some(keyword => lowerTitle.includes(keyword))) {
+      return 'critical';
+    }
+    if (highKeywords.some(keyword => lowerTitle.includes(keyword))) {
+      return 'high';
+    }
+
+    // スポット情報はmedium、メール情報はlowがデフォルト
+    if (type === 'spot') return 'medium';
+    if (type === 'mail') return 'low';
+
+    return 'medium';
+  }
+
+  /**
+   * 日付文字列を正規化するヘルパー
+   * 例: "2024/01/15 12:00" -> "2024-01-15"
+   */
+  private normalizeDateString(dateStr: string | undefined): string | undefined {
+    if (!dateStr) return undefined;
+
+    // 様々な形式に対応
+    const match = dateStr.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+    if (match) {
+      const [, year, month, day] = match;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+
+    return undefined;
+  }
+
+  /**
+   * XMLオブジェクトから警告情報を抽出（リッチな構造）
+   */
+  private extractWarnings(opendata: MofaXmlResponse, dangerLevel: DangerLevel = 0): WarningInfo[] {
+    const warnings: WarningInfo[] = [];
+    const addedTitles = new Set<string>();
+
+    // 1. 危険情報のリード（riskLead）- 最重要
     if (opendata.riskLead && typeof opendata.riskLead === 'string') {
       const lead = opendata.riskLead.trim();
-      if (lead.length > 0) {
-        warnings.push(lead);
+      if (lead.length > 0 && !addedTitles.has(lead)) {
+        warnings.push({
+          title: lead,
+          detail: opendata.riskSubText?.trim(),
+          date: this.normalizeDateString(opendata.riskLeaveDate),
+          priority: this.determinePriority(lead, dangerLevel, 'danger'),
+          type: 'danger',
+        });
+        addedTitles.add(lead);
       }
     }
 
@@ -1484,14 +1548,25 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
 
         if (spot.title) {
           const title = spot.title.trim();
-          if (title && !warnings.includes(title)) {
-            warnings.push(title);
+          if (title && !addedTitles.has(title)) {
+            const dateStr = typeof spot.leaveDate === 'object' && spot.leaveDate?.['#text']
+              ? spot.leaveDate['#text']
+              : undefined;
+
+            warnings.push({
+              title,
+              detail: spot.lead?.trim(),
+              date: this.normalizeDateString(dateStr),
+              priority: this.determinePriority(title, dangerLevel, 'spot'),
+              type: 'spot',
+            });
+            addedTitles.add(title);
           }
         }
       }
     }
 
-    // 3. メール情報のタイトル
+    // 3. メール情報のタイトル（最新のアラートなど）
     // isArray設定により、mailは常に配列として扱われる
     if (Array.isArray(opendata.mail)) {
       for (const mail of opendata.mail) {
@@ -1499,8 +1574,15 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
 
         if (mail.title) {
           const title = mail.title.trim();
-          if (title && !warnings.includes(title)) {
-            warnings.push(title);
+          if (title && !addedTitles.has(title)) {
+            warnings.push({
+              title,
+              detail: mail.lead?.trim(),
+              date: this.normalizeDateString(mail.leaveDate),
+              priority: this.determinePriority(title, dangerLevel, 'mail'),
+              type: 'mail',
+            });
+            addedTitles.add(title);
           }
         }
       }
@@ -1508,9 +1590,29 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
 
     // 警告がない場合は一般的な注意事項を追加
     if (warnings.length === 0) {
-      warnings.push('最新の渡航情報を確認してください');
-      warnings.push('海外旅行保険への加入を推奨します');
+      warnings.push({
+        title: '最新の渡航情報を確認してください',
+        detail: '外務省海外安全ホームページで最新情報をご確認ください。',
+        priority: 'low',
+        type: 'general',
+      });
+      warnings.push({
+        title: '海外旅行保険への加入を推奨します',
+        detail: '万が一のトラブルに備え、海外旅行保険への加入をお勧めします。',
+        priority: 'low',
+        type: 'general',
+      });
     }
+
+    // 重要度でソート（critical > high > medium > low）
+    const priorityOrder: Record<WarningPriority, number> = {
+      critical: 0,
+      high: 1,
+      medium: 2,
+      low: 3,
+    };
+
+    warnings.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 
     return warnings.slice(0, 5); // 最大5件
   }
@@ -1542,9 +1644,24 @@ export class MofaApiSource implements ITravelInfoSource<SafetyInfo> {
       dangerLevel: 0,
       dangerLevelDescription: DANGER_LEVEL_DESCRIPTIONS[0],
       warnings: [
-        '最新の渡航情報は外務省海外安全ホームページでご確認ください',
-        '海外旅行保険への加入を強くお勧めします',
-        '「たびレジ」への登録をお勧めします',
+        {
+          title: '最新の渡航情報は外務省海外安全ホームページでご確認ください',
+          detail: '渡航前に必ず最新の安全情報をご確認ください。',
+          priority: 'medium',
+          type: 'general',
+        },
+        {
+          title: '海外旅行保険への加入を強くお勧めします',
+          detail: '万が一のトラブルに備え、海外旅行保険への加入をお勧めします。',
+          priority: 'low',
+          type: 'general',
+        },
+        {
+          title: '「たびレジ」への登録をお勧めします',
+          detail: '渡航先の安全情報をメールで受け取れます。',
+          priority: 'low',
+          type: 'general',
+        },
       ],
       emergencyContacts: this.getDefaultEmergencyContacts(),
     };

@@ -263,10 +263,14 @@ describe('MofaApiSource', () => {
         throw new Error('Fetch failed');
       }
 
-      expect(result.data.warnings).toContain('首都バンコク及びその周辺地域では、一般犯罪に注意してください。');
+      // 警告はWarningInfo[]型として返される
+      expect(result.data.warnings.length).toBeGreaterThan(0);
+      expect(result.data.warnings[0].title).toBe('首都バンコク及びその周辺地域では、一般犯罪に注意してください。');
+      expect(result.data.warnings[0].type).toBe('danger');
+      expect(result.data.warnings[0].priority).toBeDefined();
     });
 
-    it('広域・スポット情報のタイトルを抽出する', async () => {
+    it('広域・スポット情報のタイトルと詳細を抽出する', async () => {
       const xml = `
         <opendata dataType="A" odType="04" lastModified="2025/01/16 00:00:00">
           <riskLevel1>1</riskLevel1>
@@ -289,7 +293,69 @@ describe('MofaApiSource', () => {
         throw new Error('Fetch failed');
       }
 
-      expect(result.data.warnings).toContain('タイ：デモ・集会に関する注意喚起');
+      // wideareaSpotはtype: 'spot'として抽出される
+      const spotWarning = result.data.warnings.find(w => w.type === 'spot');
+      expect(spotWarning).toBeDefined();
+      expect(spotWarning?.title).toBe('タイ：デモ・集会に関する注意喚起');
+      expect(spotWarning?.detail).toBe('バンコク市内でデモが予定されています。');
+    });
+
+    it('警告は重要度でソートされる', async () => {
+      const xml = `
+        <opendata dataType="A" odType="04" lastModified="2025/01/16 00:00:00">
+          <riskLevel3>1</riskLevel3>
+          <riskLead>渡航中止勧告が出ています。</riskLead>
+          <wideareaSpot>
+            <title>一般的な注意情報</title>
+          </wideareaSpot>
+          <mail>
+            <title>最新のお知らせ</title>
+          </mail>
+        </opendata>
+      `;
+
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve(xml),
+      });
+
+      const result = await source.fetch('タイ');
+
+      if (!result.success) {
+        throw new Error('Fetch failed');
+      }
+
+      // 重要度順にソートされている（critical/high > medium > low）
+      const priorities = result.data.warnings.map(w => w.priority);
+      const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+      for (let i = 0; i < priorities.length - 1; i++) {
+        expect(priorityOrder[priorities[i]]).toBeLessThanOrEqual(priorityOrder[priorities[i + 1]]);
+      }
+    });
+
+    it('警告がない場合はデフォルトの一般情報が追加される', async () => {
+      const xml = `
+        <opendata dataType="A" odType="04" lastModified="2025/01/16 00:00:00">
+          <riskLevel1>0</riskLevel1>
+        </opendata>
+      `;
+
+      fetchMock.mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve(xml),
+      });
+
+      const result = await source.fetch('タイ');
+
+      if (!result.success) {
+        throw new Error('Fetch failed');
+      }
+
+      // デフォルトの警告が追加される
+      expect(result.data.warnings.length).toBeGreaterThan(0);
+      expect(result.data.warnings.some(w => w.type === 'general')).toBe(true);
     });
   });
 

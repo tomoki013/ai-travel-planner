@@ -21,6 +21,8 @@ export type {
   TravelInfoCategory,
   SourceType,
   DangerLevel,
+  WarningPriority,
+  WarningInfo,
   TravelInfoSource,
   HighRiskRegion,
   SafetyInfo,

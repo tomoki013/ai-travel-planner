@@ -14,7 +14,7 @@ import {
   MapPinned,
   ChevronDown,
 } from 'lucide-react';
-import type { SafetyInfo, DangerLevel, HighRiskRegion } from '@/types';
+import type { SafetyInfo, DangerLevel, HighRiskRegion, WarningInfo, WarningPriority } from '@/types';
 import { DANGER_LEVEL_DESCRIPTIONS } from '@/types';
 import type { SectionBaseProps } from '../types';
 
@@ -219,20 +219,7 @@ export default function SafetyInfoSection({ data, source }: SectionBaseProps<Saf
           </h4>
           <ul className="grid gap-4">
             {data.warnings.map((warning, index) => (
-              <motion.li
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex items-start gap-5 p-6 bg-white border border-stone-100 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300"
-              >
-                <span className="flex-shrink-0 w-8 h-8 rounded-full bg-stone-50 text-stone-400 flex items-center justify-center text-sm font-serif font-bold mt-0.5 border border-stone-100">
-                  {index + 1}
-                </span>
-                <p className="text-stone-600 text-base leading-relaxed font-medium">
-                  {warning}
-                </p>
-              </motion.li>
+              <WarningItem key={index} warning={warning} index={index} />
             ))}
           </ul>
         </div>
@@ -350,5 +337,112 @@ function HighRiskRegionItem({ region }: { region: HighRiskRegion }) {
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * 警告の重要度に応じたスタイル定義
+ */
+const WARNING_PRIORITY_STYLES: Record<
+  WarningPriority,
+  { bg: string; border: string; badge: string; badgeText: string; label: string }
+> = {
+  critical: {
+    bg: 'bg-red-50',
+    border: 'border-red-200',
+    badge: 'bg-red-500',
+    badgeText: 'text-white',
+    label: '最重要',
+  },
+  high: {
+    bg: 'bg-orange-50',
+    border: 'border-orange-200',
+    badge: 'bg-orange-500',
+    badgeText: 'text-white',
+    label: '重要',
+  },
+  medium: {
+    bg: 'bg-yellow-50',
+    border: 'border-yellow-200',
+    badge: 'bg-yellow-500',
+    badgeText: 'text-white',
+    label: '注意',
+  },
+  low: {
+    bg: 'bg-stone-50',
+    border: 'border-stone-200',
+    badge: 'bg-stone-400',
+    badgeText: 'text-white',
+    label: '参考',
+  },
+};
+
+/**
+ * 警告の種類に応じたラベル
+ */
+const WARNING_TYPE_LABELS: Record<WarningInfo['type'], string> = {
+  danger: '危険情報',
+  spot: 'スポット情報',
+  mail: '安全情報',
+  general: '一般情報',
+};
+
+/**
+ * 警告情報の表示アイテム（リッチな構造）
+ */
+function WarningItem({ warning, index }: { warning: WarningInfo; index: number }) {
+  const style = WARNING_PRIORITY_STYLES[warning.priority];
+
+  return (
+    <motion.li
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className={`p-5 ${style.bg} border ${style.border} rounded-2xl shadow-sm hover:shadow-md transition-all duration-300`}
+    >
+      <div className="flex items-start gap-4">
+        {/* 番号バッジ */}
+        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-white text-stone-500 flex items-center justify-center text-sm font-serif font-bold border border-stone-200">
+          {index + 1}
+        </span>
+
+        <div className="flex-1 min-w-0">
+          {/* ヘッダー: 重要度バッジ + 種類 + 日付 */}
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${style.badge} ${style.badgeText}`}>
+              {style.label}
+            </span>
+            <span className="px-2 py-0.5 rounded bg-white/70 text-stone-500 text-[10px] font-bold border border-stone-200/50">
+              {WARNING_TYPE_LABELS[warning.type]}
+            </span>
+            {warning.date && (
+              <span className="text-[10px] text-stone-400 font-medium ml-auto">
+                {warning.date}
+              </span>
+            )}
+          </div>
+
+          {/* タイトル */}
+          <h5 className="font-bold text-stone-800 text-sm leading-relaxed mb-1">
+            {warning.title}
+          </h5>
+
+          {/* 詳細（ある場合） */}
+          {warning.detail && (
+            <p className="text-xs text-stone-600 leading-relaxed mt-2 pl-3 border-l-2 border-stone-200">
+              {warning.detail}
+            </p>
+          )}
+
+          {/* 対象地域（ある場合） */}
+          {warning.region && (
+            <div className="flex items-center gap-1.5 mt-2 text-xs text-stone-500">
+              <MapPin className="w-3 h-3" />
+              <span>{warning.region}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.li>
   );
 }

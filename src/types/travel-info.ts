@@ -82,6 +82,29 @@ export interface HighRiskRegion {
 }
 
 /**
+ * 警告の重要度
+ */
+export type WarningPriority = "critical" | "high" | "medium" | "low";
+
+/**
+ * 警告情報（リッチな構造）
+ */
+export interface WarningInfo {
+  /** 警告タイトル */
+  title: string;
+  /** 詳細説明（オプション） */
+  detail?: string;
+  /** 発行日（YYYY-MM-DD形式、オプション） */
+  date?: string;
+  /** 重要度（critical: 最重要, high: 高, medium: 中, low: 低） */
+  priority: WarningPriority;
+  /** 警告の種類（danger: 危険情報, spot: スポット情報, mail: メール情報） */
+  type: "danger" | "spot" | "mail" | "general";
+  /** 対象地域（オプション） */
+  region?: string;
+}
+
+/**
  * 安全情報
  */
 export interface SafetyInfo {
@@ -99,8 +122,8 @@ export interface SafetyInfo {
   isPartialCountryRisk?: boolean;
   /** 高リスク地域の一覧（主要観光地より高いレベルの地域） */
   highRiskRegions?: HighRiskRegion[];
-  /** 注意事項・警告一覧 */
-  warnings: string[];
+  /** 注意事項・警告一覧（リッチな構造） */
+  warnings: WarningInfo[];
   /** 緊急連絡先リスト */
   emergencyContacts: EmergencyContact[];
   /** 最寄りの日本大使館・領事館（オプション） */
