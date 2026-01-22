@@ -93,7 +93,7 @@ export default function TravelInfoClient() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Hero Section */}
-      <section className="relative w-full pt-16 pb-12 sm:pt-24 sm:pb-16 z-10">
+      <section className="relative w-full pt-32 pb-12 sm:pb-16 z-10">
         <div className="max-w-5xl mx-auto px-4 text-center relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

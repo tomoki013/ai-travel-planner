@@ -12,8 +12,8 @@ import {
   FaPen,
   FaMapMarkerAlt,
 } from "react-icons/fa";
-import PlanModal from "@/components/ui/PlanModal";
 import { throttle } from "@/lib/utils";
+import { usePlanModal } from "@/context/PlanModalContext";
 
 interface HeaderProps {
   forceShow?: boolean;
@@ -28,7 +28,7 @@ export default function Header({
 }: HeaderProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openModal } = usePlanModal();
   const isHome = pathname === "/";
 
   // Scroll-based visibility for homepage
@@ -106,7 +106,7 @@ export default function Header({
               <NavLink href="/faq" label="FAQ" icon={<FaQuestionCircle />} />
 
               <button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => openModal()}
                 className="flex items-center gap-2 bg-[#e67e22] text-white px-6 py-2 rounded-full font-serif font-bold text-sm shadow-md hover:bg-[#d35400] hover:shadow-lg transition-all transform hover:-translate-y-0.5"
               >
                 <FaPen className="text-xs" />
@@ -155,7 +155,7 @@ export default function Header({
             <button
               onClick={() => {
                 setIsOpen(false);
-                setIsModalOpen(true);
+                openModal();
               }}
               className="w-full bg-[#e67e22] text-white py-3 rounded-xl font-serif font-bold text-lg shadow-md"
             >
@@ -164,9 +164,6 @@ export default function Header({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Plan Modal */}
-      <PlanModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }
