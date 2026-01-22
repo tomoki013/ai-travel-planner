@@ -2,8 +2,8 @@
 import { config } from 'dotenv';
 import fs from 'fs/promises';
 import path from 'path';
-import { SimpleMarkdownHeaderTextSplitter as MarkdownHeaderTextSplitter } from '@/lib/rag/utils/simple-splitters';
-import { SimpleRecursiveCharacterTextSplitter as RecursiveCharacterTextSplitter } from '@/lib/rag/utils/simple-splitters';
+import { SimpleMarkdownHeaderTextSplitter as MarkdownHeaderTextSplitter } from '@/lib/services/rag/utils/simple-splitters';
+import { SimpleRecursiveCharacterTextSplitter as RecursiveCharacterTextSplitter } from '@/lib/services/rag/utils/simple-splitters';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { PineconeStore } from '@langchain/pinecone';
 import { Pinecone } from '@pinecone-database/pinecone';

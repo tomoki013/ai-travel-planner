@@ -4,11 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaWandMagicSparkles, FaPenToSquare } from "react-icons/fa6";
 import { UserInput, Itinerary, DayPlan } from '@/types';
-import { encodePlanData } from "@/lib/urlUtils";
+import { encodePlanData, splitDaysIntoChunks, extractDuration } from "@/lib/utils";
 import { generatePlanOutline, generatePlanChunk } from "@/app/actions/travel-planner";
-import { splitDaysIntoChunks, extractDuration } from "@/lib/planUtils";
-import PlanModal from "@/components/ui/PlanModal";
-import LoadingView from "@/components/TravelPlanner/LoadingView";
+import { PlanModal } from "@/components/common";
+import LoadingView from "@/components/features/planner/LoadingView";
 
 interface SamplePlanActionsProps {
   sampleInput: UserInput;

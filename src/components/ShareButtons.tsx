@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useSyncExternalStore } from "react";
 import { Itinerary, UserInput } from '@/types';
-import { encodePlanData } from "@/lib/urlUtils";
+import { encodePlanData } from "@/lib/utils";
 import { FaFacebook, FaLine, FaLink, FaShareAlt } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 

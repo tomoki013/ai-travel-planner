@@ -7,7 +7,7 @@ import type {
   TravelInfoSource,
   SourceType,
 } from '@/types';
-import type { ParsedSource } from '@/lib/ai/schemas/travel-info-schemas';
+import type { ParsedSource } from '@/lib/services/ai/schemas/travel-info-schemas';
 
 // ============================================
 // ソース関連
