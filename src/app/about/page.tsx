@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import TrinityCircle from "@/components/ui/TrinityCircle";
+import StartPlanningButton from "@/components/common/StartPlanningButton";
 import {
   FaRobot,
   FaLightbulb,
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-[#fcfbf9]">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-[#fcfbf9] pt-28">
       {/* Hero Section */}
       <section className="relative w-full">
         <div className="max-w-5xl mx-auto px-4 py-16 sm:py-24">
@@ -331,12 +332,7 @@ export default function AboutPage() {
             <p className="text-stone-600 font-hand text-lg">
               あなただけの旅の物語を、AIと一緒に紡ぎませんか？
             </p>
-            <Link
-              href="/"
-              className="inline-block bg-primary hover:bg-primary/90 text-white font-bold py-4 px-8 rounded-full transition-all hover:scale-105 shadow-lg"
-            >
-              プランを作成する
-            </Link>
+            <StartPlanningButton />
           </section>
         </div>
       </main>

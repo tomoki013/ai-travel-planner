@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import Link from "next/link";
+import StartPlanningButton from "@/components/common/StartPlanningButton";
 import SamplePlanList from "@/components/samples/SamplePlanList";
 import { loadAllSamplePlans } from "@/lib/sample-plans-loader";
 
@@ -15,7 +15,7 @@ export default async function SamplesPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#fcfbf9]">
       {/* Header Section */}
-      <div className="relative w-full py-16 md:py-24 px-4 overflow-hidden">
+      <div className="relative w-full pt-32 pb-16 px-4 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none bg-[radial-gradient(#e67e22_1px,transparent_1px)] [background-size:20px_20px]" />
 
         <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
@@ -54,12 +54,7 @@ export default async function SamplesPage() {
             <br />
             目的地、日程、同行者に合わせて最適なプランを提案します。
           </p>
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center px-8 py-3 bg-[#e67e22] text-white font-bold rounded-full hover:bg-[#d35400] transition-all hover:scale-105 shadow-md group"
-          >
-            <span>プランを作成する</span>
-          </Link>
+          <StartPlanningButton className="inline-flex items-center justify-center px-8 py-3 bg-[#e67e22] text-white font-bold rounded-full hover:bg-[#d35400] transition-all hover:scale-105 shadow-md group" />
         </div>
       </main>
     </div>

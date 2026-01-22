@@ -292,7 +292,7 @@ export default function PlanClient() {
     <div className="flex flex-col min-h-screen bg-[#fcfbf9] overflow-x-clip">
       <main className="flex-1 w-full flex flex-col items-center overflow-x-clip">
         {/* Title Section - Matches the aesthetic of the app */}
-        <div className="w-full pt-16 pb-8 text-center px-4 animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="w-full pt-32 pb-8 text-center px-4 animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="inline-block mb-4 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold tracking-wider uppercase">
             Result
           </div>
