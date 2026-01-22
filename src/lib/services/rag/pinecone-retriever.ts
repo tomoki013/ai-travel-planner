@@ -2,7 +2,7 @@
 import { PineconeStore } from "@langchain/pinecone";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import { ContentRetriever, Article, SearchOptions } from "@/lib/ai/types";
+import { ContentRetriever, Article, SearchOptions } from "@/lib/services/ai/types";
 
 export class PineconeRetriever implements ContentRetriever {
   private store: PineconeStore | null = null;

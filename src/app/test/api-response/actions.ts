@@ -1,7 +1,7 @@
 'use server';
 
-import { getSupportedDestinations, getCountryCodeByDestination } from '@/lib/travel-info/sources/mofa-api';
-import { JAPANESE_TO_ENGLISH_COUNTRY } from '@/lib/travel-info/sources/country-api';
+import { getSupportedDestinations, getCountryCodeByDestination } from '@/lib/services/travel-info/sources/mofa-api';
+import { JAPANESE_TO_ENGLISH_COUNTRY } from '@/lib/services/travel-info/sources/country-api';
 
 export async function verifyPassword(password: string): Promise<boolean> {
   return password === process.env.DEBUG_PAGE_PASSWORD;

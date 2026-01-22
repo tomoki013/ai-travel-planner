@@ -2,7 +2,7 @@
  * 目的地から国名を抽出するモジュール
  */
 
-import { getTravelInfoGenerator } from '@/lib/ai/travel-info-generator';
+import { getTravelInfoGenerator } from '@/lib/services/ai/travel-info-generator';
 import { logInfo, logWarn } from './logger';
 
 // ============================================

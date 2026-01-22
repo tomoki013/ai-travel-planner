@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { ContentRetriever, Article } from '@/lib/ai/types';
+import { ContentRetriever, Article } from '@/lib/services/ai/types';
 import {
   ethicalFetchSafe,
   RobotsTxtDeniedError,

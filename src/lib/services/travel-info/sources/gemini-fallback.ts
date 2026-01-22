@@ -36,7 +36,7 @@ import {
   RestroomsInfoSchema,
   SmokingInfoSchema,
   AlcoholInfoSchema,
-} from '@/lib/ai/schemas/travel-info-schemas';
+} from '@/lib/services/ai/schemas/travel-info-schemas';
 import { z } from 'zod';
 
 /**

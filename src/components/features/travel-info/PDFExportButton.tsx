@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Loader2, FileText } from "lucide-react";
 import { TravelInfoCategory, CategoryState } from "./types";
-import { downloadBlob } from "@/lib/pdfUtils";
+import { downloadBlob } from "@/lib/utils";
 import PDFPreviewModal from "@/components/features/planner/PDFPreviewModal";
 
 interface PDFExportButtonProps {

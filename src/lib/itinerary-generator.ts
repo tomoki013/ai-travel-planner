@@ -5,9 +5,9 @@
  */
 
 import { GeminiService } from "./ai/gemini";
-import { PineconeRetriever } from "./rag/pinecone-retriever";
+import { PineconeRetriever } from "./services/rag/pinecone-retriever";
 import { getUnsplashImage } from "./unsplash";
-import { extractDuration, splitDaysIntoChunks } from "./planUtils";
+import { extractDuration, splitDaysIntoChunks } from "./utils/plan";
 import { Itinerary, DayPlan, UserInput, Article } from "@/types";
 
 export interface ItineraryGenerationOptions {

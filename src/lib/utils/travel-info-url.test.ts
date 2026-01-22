@@ -5,7 +5,7 @@ import {
   decodeTravelInfoUrl,
   parseCategoriesParam,
   parseDatesParam,
-} from './travelInfoUrlUtils';
+} from './travel-info-url';
 import { ALL_TRAVEL_INFO_CATEGORIES } from '@/types';
 
 describe('travelInfoUrlUtils', () => {

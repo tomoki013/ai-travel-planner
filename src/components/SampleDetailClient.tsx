@@ -8,7 +8,7 @@ import RequestSummary from "@/components/features/planner/RequestSummary";
 import SamplePlanActions from "@/components/SamplePlanActions";
 import { PlanModal } from "@/components/common";
 import { regeneratePlan } from "@/app/actions/travel-planner";
-import { encodePlanData } from "@/lib/urlUtils";
+import { encodePlanData } from "@/lib/utils";
 
 interface SampleDetailClientProps {
   sampleInput: UserInput;

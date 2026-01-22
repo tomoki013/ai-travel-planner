@@ -13,7 +13,7 @@ import {
 import { FaPassport } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import type { TravelInfoCategory } from '@/types';
-import { encodeTravelInfoUrl } from "@/lib/travelInfoUrlUtils";
+import { encodeTravelInfoUrl } from "@/lib/utils";
 import { CategorySelector } from "@/components/features/travel-info";
 
 /**
