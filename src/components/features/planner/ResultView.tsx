@@ -364,8 +364,9 @@ export default function ResultView({
       </div>
 
       {/* Modern Toggle Switch Navigation */}
-      <div className="flex justify-center mb-10">
-        <div className="bg-stone-200/40 p-1.5 rounded-full inline-flex relative shadow-inner border border-stone-200/50">
+      {/* Sticky Container for Tabs - positioned to align with Day Header */}
+      <div className="sticky top-20 z-40 mb-10 w-full flex justify-end px-2 sm:px-0 pointer-events-none">
+        <div className="bg-stone-200/40 p-1.5 rounded-full inline-flex relative shadow-inner border border-stone-200/50 pointer-events-auto backdrop-blur-sm">
           {[
             { id: 'plan', icon: FaCalendarAlt, label: '旅程表' },
             { id: 'info', icon: FaGlobe, label: '渡航情報' }
@@ -374,7 +375,7 @@ export default function ResultView({
               key={tab.id}
               onClick={() => setActiveTab(tab.id as 'plan' | 'info')}
               className={`
-                relative px-6 sm:px-10 py-2.5 rounded-full text-sm font-bold transition-colors duration-300 flex items-center gap-2 z-10
+                relative px-4 sm:px-8 py-2.5 rounded-full text-sm font-bold transition-colors duration-300 flex items-center gap-2 z-10
                 ${activeTab === tab.id ? 'text-stone-800' : 'text-stone-500 hover:text-stone-700'}
               `}
             >
@@ -448,9 +449,9 @@ export default function ResultView({
               <div className="space-y-16" data-itinerary-section>
                 {displayResult.days.map((day, dayIndex) => (
                   <div key={day.day} className="relative">
-                    {/* Day Header - Sticky position updated to top-24 as tabs are no longer sticky */}
-                    <div className="sticky top-24 z-30 mb-8 flex items-center gap-4">
-                      <div className="inline-flex items-center gap-4 bg-white py-3 px-6 rounded-r-full shadow-md border border-stone-200 border-l-4 border-l-primary">
+                    {/* Day Header - Sticky position updated to top-20 to align with Tabs */}
+                    <div className="sticky top-20 z-30 mb-8 flex items-center gap-4 pointer-events-none">
+                      <div className="inline-flex items-center gap-4 bg-white py-3 px-6 rounded-r-full shadow-md border border-stone-200 border-l-4 border-l-primary pointer-events-auto">
                         <span className="text-4xl font-serif text-primary">
                           {day.day}
                         </span>
