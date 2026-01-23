@@ -363,50 +363,34 @@ export default function ResultView({
         </div>
       </div>
 
-      {/* Sticky Tab Navigation */}
-      <div className="sticky top-24 z-40 bg-[#fcfbf9]/95 backdrop-blur-md pt-4 pb-2 -mx-4 sm:-mx-8 lg:-mx-12 px-4 sm:px-8 lg:px-12 border-b border-stone-200/60 shadow-xs mb-8">
-        <div className="max-w-4xl mx-auto flex justify-center gap-4">
-          <button
-            onClick={() => setActiveTab('plan')}
-            className={`
-              flex-1 sm:flex-none sm:w-48 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 relative overflow-hidden group
-              ${activeTab === 'plan'
-                ? 'bg-white text-primary shadow-md border-2 border-primary/10 translate-y-0'
-                : 'bg-stone-100 text-stone-500 hover:bg-stone-200 hover:text-stone-700 border-2 border-transparent'}
-            `}
-          >
-            <div className="flex items-center justify-center gap-2 relative z-10">
-              <FaCalendarAlt className={activeTab === 'plan' ? 'text-primary' : 'text-stone-400'} />
-              <span>旅程表</span>
-            </div>
-            {activeTab === 'plan' && (
-              <motion.div
-                layoutId="activeTabIndicator"
-                className="absolute bottom-0 left-0 right-0 h-1 bg-primary"
-              />
-            )}
-          </button>
-
-          <button
-            onClick={() => setActiveTab('info')}
-            className={`
-              flex-1 sm:flex-none sm:w-48 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 relative overflow-hidden group
-              ${activeTab === 'info'
-                ? 'bg-white text-primary shadow-md border-2 border-primary/10 translate-y-0'
-                : 'bg-stone-100 text-stone-500 hover:bg-stone-200 hover:text-stone-700 border-2 border-transparent'}
-            `}
-          >
-            <div className="flex items-center justify-center gap-2 relative z-10">
-              <FaGlobe className={activeTab === 'info' ? 'text-primary' : 'text-stone-400'} />
-              <span>渡航情報</span>
-            </div>
-            {activeTab === 'info' && (
-              <motion.div
-                layoutId="activeTabIndicator"
-                className="absolute bottom-0 left-0 right-0 h-1 bg-primary"
-              />
-            )}
-          </button>
+      {/* Modern Toggle Switch Navigation */}
+      <div className="flex justify-center mb-10">
+        <div className="bg-stone-200/40 p-1.5 rounded-full inline-flex relative shadow-inner border border-stone-200/50">
+          {[
+            { id: 'plan', icon: FaCalendarAlt, label: '旅程表' },
+            { id: 'info', icon: FaGlobe, label: '渡航情報' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as 'plan' | 'info')}
+              className={`
+                relative px-6 sm:px-10 py-2.5 rounded-full text-sm font-bold transition-colors duration-300 flex items-center gap-2 z-10
+                ${activeTab === tab.id ? 'text-stone-800' : 'text-stone-500 hover:text-stone-700'}
+              `}
+            >
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeTabBackground"
+                  className="absolute inset-0 bg-white rounded-full shadow-sm border border-stone-200/50"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-2">
+                <tab.icon className={activeTab === tab.id ? 'text-primary' : 'text-stone-400'} size={14} />
+                {tab.label}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -464,8 +448,8 @@ export default function ResultView({
               <div className="space-y-16" data-itinerary-section>
                 {displayResult.days.map((day, dayIndex) => (
                   <div key={day.day} className="relative">
-                    {/* Day Header - Sticky position updated to top-44 to avoid overlap with new tabs */}
-                    <div className="sticky top-44 z-30 mb-8 flex items-center gap-4">
+                    {/* Day Header - Sticky position updated to top-24 as tabs are no longer sticky */}
+                    <div className="sticky top-24 z-30 mb-8 flex items-center gap-4">
                       <div className="inline-flex items-center gap-4 bg-white py-3 px-6 rounded-r-full shadow-md border border-stone-200 border-l-4 border-l-primary">
                         <span className="text-4xl font-serif text-primary">
                           {day.day}
@@ -694,7 +678,7 @@ export default function ResultView({
 
               {/* Sidebar / References */}
               {showReferences && (
-                <div className="lg:sticky lg:top-44 lg:self-start lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto space-y-8 custom-scrollbar">
+                <div className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto space-y-8 custom-scrollbar">
                   <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm">
                     <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-stone-400 border-b border-stone-100 pb-4 mb-4 flex items-center gap-2">
                       <FaCalendarAlt /> Reference Articles

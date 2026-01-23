@@ -82,6 +82,9 @@ export default function EmbeddedTravelInfo({
   // 取得済みの目的地を追跡
   const fetchedDestinations = useRef<Set<string>>(new Set());
 
+  // スクロールコンテナのRef
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   /**
    * 単一カテゴリを取得
    */
@@ -221,6 +224,19 @@ export default function EmbeddedTravelInfo({
   };
 
   /**
+   * スクロール操作
+   */
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 200;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  /**
    * 単一カテゴリの再取得
    */
   const handleRetryCategory = (category: TravelInfoCategory) => {
@@ -282,48 +298,68 @@ export default function EmbeddedTravelInfo({
           !inline ? "overflow-y-auto" : ""
         }`}
       >
-        {/* Current destination title */}
-        <div className="text-center relative flex items-center justify-center gap-4 sm:gap-8">
-          {hasMultipleDestinations && (
-            <button
-              onClick={() =>
-                setActiveDestinationIndex(Math.max(0, activeDestinationIndex - 1))
-              }
-              disabled={activeDestinationIndex === 0}
-              className="p-3 rounded-full bg-white shadow-sm border border-stone-200 text-stone-600 hover:text-primary hover:bg-stone-50 hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none transition-all flex-shrink-0"
-              aria-label="前の目的地"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-          )}
+        {/* Destination Selector (Modern Scrollable Chips) */}
+        {hasMultipleDestinations && (
+          <div className="relative group mx-auto max-w-2xl">
+            {/* Scroll Left Button */}
+            <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#fcfbf9] to-transparent z-10 flex items-center justify-start pointer-events-none group-hover:pointer-events-auto">
+              <button
+                onClick={() => scroll('left')}
+                className="p-1.5 rounded-full bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100 -ml-2"
+                aria-label="スクロール左"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            </div>
 
-          <div className="flex-1 max-w-lg">
-            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#2c2c2c] mb-1">
-              {activeDestination}
-            </h3>
-            {currentCountry !== activeDestination && (
-              <p className="text-stone-500 text-sm">{currentCountry}</p>
-            )}
-            {dates && (
-              <p className="text-sm text-stone-500 mt-1">
-                渡航予定: {dates.start} 〜 {dates.end}
-              </p>
-            )}
+            {/* Scrollable Container */}
+            <div
+              ref={scrollContainerRef}
+              className="flex items-center gap-3 overflow-x-auto px-4 py-2 no-scrollbar scroll-smooth snap-x"
+            >
+              {destinations.map((dest, index) => (
+                <button
+                  key={dest}
+                  onClick={() => setActiveDestinationIndex(index)}
+                  className={`
+                    flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 snap-center
+                    ${
+                      index === activeDestinationIndex
+                        ? 'bg-[#2c2c2c] text-white shadow-md scale-105'
+                        : 'bg-white border border-stone-200 text-stone-500 hover:border-primary/50 hover:text-primary'
+                    }
+                  `}
+                >
+                  {dest}
+                </button>
+              ))}
+            </div>
+
+            {/* Scroll Right Button */}
+            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#fcfbf9] to-transparent z-10 flex items-center justify-end pointer-events-none group-hover:pointer-events-auto">
+              <button
+                onClick={() => scroll('right')}
+                className="p-1.5 rounded-full bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100 -mr-2"
+                aria-label="スクロール右"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
+        )}
 
-          {hasMultipleDestinations && (
-            <button
-              onClick={() =>
-                setActiveDestinationIndex(
-                  Math.min(destinations.length - 1, activeDestinationIndex + 1)
-                )
-              }
-              disabled={activeDestinationIndex === destinations.length - 1}
-              className="p-3 rounded-full bg-white shadow-sm border border-stone-200 text-stone-600 hover:text-primary hover:bg-stone-50 hover:shadow-md disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none transition-all flex-shrink-0"
-              aria-label="次の目的地"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
+        {/* Current Destination Header */}
+        <div className="text-center mt-2 mb-6">
+          <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#2c2c2c] mb-1">
+            {activeDestination}
+          </h3>
+          {currentCountry !== activeDestination && (
+            <p className="text-stone-500 text-sm">{currentCountry}</p>
+          )}
+          {dates && (
+            <p className="text-sm text-stone-500 mt-1">
+              渡航予定: {dates.start} 〜 {dates.end}
+            </p>
           )}
         </div>
 
