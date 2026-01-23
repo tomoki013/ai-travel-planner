@@ -300,33 +300,33 @@ export default function EmbeddedTravelInfo({
       >
         {/* Destination Selector (Modern Scrollable Chips) */}
         {hasMultipleDestinations && (
-          <div className="relative group mx-auto max-w-2xl">
+          <div className="relative group mx-auto max-w-2xl mb-8">
             {/* Scroll Left Button */}
-            <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#fcfbf9] to-transparent z-10 flex items-center justify-start pointer-events-none group-hover:pointer-events-auto">
+            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent z-10 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto rounded-l-xl">
               <button
                 onClick={() => scroll('left')}
-                className="p-1.5 rounded-full bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100 -ml-2"
+                className="p-2 rounded-full bg-white shadow-md border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
                 aria-label="スクロール左"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
             </div>
 
             {/* Scrollable Container */}
             <div
               ref={scrollContainerRef}
-              className="flex items-center gap-3 overflow-x-auto px-4 py-2 no-scrollbar scroll-smooth snap-x"
+              className="flex items-center gap-4 overflow-x-auto px-16 py-4 no-scrollbar scroll-smooth snap-x"
             >
               {destinations.map((dest, index) => (
                 <button
                   key={dest}
                   onClick={() => setActiveDestinationIndex(index)}
                   className={`
-                    flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 snap-center
+                    flex-shrink-0 px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 snap-center font-serif tracking-wide
                     ${
                       index === activeDestinationIndex
-                        ? 'bg-[#2c2c2c] text-white shadow-md scale-105'
-                        : 'bg-white border border-stone-200 text-stone-500 hover:border-primary/50 hover:text-primary'
+                        ? 'bg-[#2c2c2c] text-white shadow-lg scale-105 border-2 border-[#2c2c2c]'
+                        : 'bg-white text-stone-500 border-2 border-dashed border-stone-200 hover:border-primary/50 hover:text-primary hover:bg-stone-50 shadow-sm'
                     }
                   `}
                 >
@@ -336,13 +336,13 @@ export default function EmbeddedTravelInfo({
             </div>
 
             {/* Scroll Right Button */}
-            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#fcfbf9] to-transparent z-10 flex items-center justify-end pointer-events-none group-hover:pointer-events-auto">
+            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent z-10 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto rounded-r-xl">
               <button
                 onClick={() => scroll('right')}
-                className="p-1.5 rounded-full bg-white/90 shadow-sm border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100 -mr-2"
+                className="p-2 rounded-full bg-white shadow-md border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
                 aria-label="スクロール右"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           </div>
