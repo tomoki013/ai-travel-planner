@@ -365,7 +365,7 @@ export default function ResultView({
 
       {/* Modern Toggle Switch Navigation */}
       {/* Sticky Container for Tabs - positioned to align with Day Header */}
-      <div className="sticky top-20 z-40 mb-10 w-full flex justify-end px-2 sm:px-0 pointer-events-none">
+      <div className="sticky top-24 md:top-28 z-40 mb-10 w-full flex justify-end md:justify-center px-2 sm:px-0 pointer-events-none">
         <div className="bg-stone-200/40 p-1.5 rounded-full inline-flex relative shadow-inner border border-stone-200/50 pointer-events-auto backdrop-blur-sm">
           {[
             { id: 'plan', icon: FaCalendarAlt, label: '旅程表' },
@@ -449,8 +449,8 @@ export default function ResultView({
               <div className="space-y-16" data-itinerary-section>
                 {displayResult.days.map((day, dayIndex) => (
                   <div key={day.day} className="relative">
-                    {/* Day Header - Sticky position updated to top-20 to align with Tabs */}
-                    <div className="sticky top-20 z-30 mb-8 flex items-center gap-4 pointer-events-none">
+                    {/* Day Header - Sticky position updated to top-24 md:top-28 to align with Tabs */}
+                    <div className="sticky top-24 md:top-28 z-30 mb-8 flex items-center gap-4 pointer-events-none">
                       <div className="inline-flex items-center gap-4 bg-white py-3 px-6 rounded-r-full shadow-md border border-stone-200 border-l-4 border-l-primary pointer-events-auto">
                         <span className="text-4xl font-serif text-primary">
                           {day.day}
