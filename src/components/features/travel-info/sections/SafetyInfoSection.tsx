@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertTriangle,
   Phone,
@@ -414,6 +415,7 @@ const WARNING_TYPE_LABELS: Record<WarningInfo['type'], string> = {
  */
 function WarningItem({ warning, index }: { warning: WarningInfo; index: number }) {
   const style = WARNING_PRIORITY_STYLES[warning.priority];
+  const [isOpen, setIsOpen] = useState(warning.priority === 'critical');
 
   return (
     <motion.li
@@ -422,7 +424,10 @@ function WarningItem({ warning, index }: { warning: WarningInfo; index: number }
       transition={{ delay: index * 0.1 }}
       className={`p-5 ${style.bg} border ${style.border} rounded-2xl shadow-sm hover:shadow-md transition-all duration-300`}
     >
-      <div className="flex items-start gap-4">
+      <div
+        className="flex items-start gap-4 cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {/* 番号バッジ */}
         <span className="flex-shrink-0 w-7 h-7 rounded-full bg-white text-stone-500 flex items-center justify-center text-sm font-serif font-bold border border-stone-200">
           {index + 1}
@@ -431,17 +436,26 @@ function WarningItem({ warning, index }: { warning: WarningInfo; index: number }
         <div className="flex-1 min-w-0">
           {/* ヘッダー: 重要度バッジ + 種類 + 日付 */}
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${style.badge} ${style.badgeText}`}>
+            <span
+              className={`px-2 py-0.5 rounded text-[10px] font-bold ${style.badge} ${style.badgeText}`}
+            >
               {style.label}
             </span>
             <span className="px-2 py-0.5 rounded bg-white/70 text-stone-500 text-[10px] font-bold border border-stone-200/50">
               {WARNING_TYPE_LABELS[warning.type]}
             </span>
-            {warning.date && (
-              <span className="text-[10px] text-stone-400 font-medium ml-auto">
-                {warning.date}
-              </span>
-            )}
+            <div className="ml-auto flex items-center gap-2">
+              {warning.date && (
+                <span className="text-[10px] text-stone-400 font-medium">
+                  {warning.date}
+                </span>
+              )}
+              <ChevronDown
+                className={`w-4 h-4 text-stone-400 transition-transform duration-300 ${
+                  isOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </div>
           </div>
 
           {/* タイトル */}
@@ -449,20 +463,31 @@ function WarningItem({ warning, index }: { warning: WarningInfo; index: number }
             {warning.title}
           </h5>
 
-          {/* 詳細（ある場合） */}
-          {warning.detail && (
-            <p className="text-xs text-stone-600 leading-relaxed mt-2 pl-3 border-l-2 border-stone-200">
-              {warning.detail}
-            </p>
-          )}
+          {/* 詳細（開閉可能エリア） */}
+          <AnimatePresence initial={false}>
+            {isOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="overflow-hidden"
+              >
+                {warning.detail && (
+                  <p className="text-xs text-stone-600 leading-relaxed mt-2 pl-3 border-l-2 border-stone-200">
+                    {warning.detail}
+                  </p>
+                )}
 
-          {/* 対象地域（ある場合） */}
-          {warning.region && (
-            <div className="flex items-center gap-1.5 mt-2 text-xs text-stone-500">
-              <MapPin className="w-3 h-3" />
-              <span>{warning.region}</span>
-            </div>
-          )}
+                {warning.region && (
+                  <div className="flex items-center gap-1.5 mt-2 text-xs text-stone-500">
+                    <MapPin className="w-3 h-3" />
+                    <span>{warning.region}</span>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.li>
