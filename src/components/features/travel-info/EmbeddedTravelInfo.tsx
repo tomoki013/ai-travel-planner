@@ -85,6 +85,21 @@ export default function EmbeddedTravelInfo({
   // スクロールコンテナのRef
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  const [canScroll, setCanScroll] = useState(false);
+
+  const checkScrollable = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScroll(scrollWidth > clientWidth);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkScrollable();
+    window.addEventListener("resize", checkScrollable);
+    return () => window.removeEventListener("resize", checkScrollable);
+  }, [checkScrollable, destinations]);
+
   /**
    * 単一カテゴリを取得
    */
@@ -302,15 +317,17 @@ export default function EmbeddedTravelInfo({
         {hasMultipleDestinations && (
           <div className="relative group mx-auto max-w-2xl mb-8">
             {/* Scroll Left Button */}
-            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent z-10 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto rounded-l-xl">
-              <button
-                onClick={() => scroll('left')}
-                className="p-2 rounded-full bg-white shadow-md border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
-                aria-label="スクロール左"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-            </div>
+            {canScroll && (
+              <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent z-10 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto rounded-l-xl">
+                <button
+                  onClick={() => scroll("left")}
+                  className="p-2 rounded-full bg-white shadow-md border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+                  aria-label="スクロール左"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              </div>
+            )}
 
             {/* Scrollable Container */}
             <div
@@ -325,8 +342,8 @@ export default function EmbeddedTravelInfo({
                     flex-shrink-0 px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 snap-center font-serif tracking-wide
                     ${
                       index === activeDestinationIndex
-                        ? 'bg-[#2c2c2c] text-white shadow-lg scale-105 border-2 border-[#2c2c2c]'
-                        : 'bg-white text-stone-500 border-2 border-dashed border-stone-200 hover:border-primary/50 hover:text-primary hover:bg-stone-50 shadow-sm'
+                        ? "bg-[#2c2c2c] text-white shadow-lg scale-105 border-2 border-[#2c2c2c]"
+                        : "bg-white text-stone-500 border-2 border-dashed border-stone-200 hover:border-primary/50 hover:text-primary hover:bg-stone-50 shadow-sm"
                     }
                   `}
                 >
@@ -336,15 +353,17 @@ export default function EmbeddedTravelInfo({
             </div>
 
             {/* Scroll Right Button */}
-            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent z-10 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto rounded-r-xl">
-              <button
-                onClick={() => scroll('right')}
-                className="p-2 rounded-full bg-white shadow-md border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
-                aria-label="スクロール右"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
+            {canScroll && (
+              <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#fcfbf9] via-[#fcfbf9]/80 to-transparent z-10 flex items-center justify-center pointer-events-none group-hover:pointer-events-auto rounded-r-xl">
+                <button
+                  onClick={() => scroll("right")}
+                  className="p-2 rounded-full bg-white shadow-md border border-stone-100 text-stone-600 hover:text-primary hover:scale-110 transition-all opacity-0 group-hover:opacity-100"
+                  aria-label="スクロール右"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </div>
         )}
 
