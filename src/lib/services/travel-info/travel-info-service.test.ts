@@ -237,7 +237,7 @@ describe('TravelInfoService', () => {
       const result = await service.getCategoryInfo('Tokyo', 'safety');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error).toContain('No sources available');
+        expect(result.error).toContain('No sources for category: safety');
       }
     });
   });

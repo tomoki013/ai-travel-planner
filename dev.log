@@ -1,0 +1,141 @@
+
+> tabidea@0.3.1 dev /app
+> next dev
+
+   ▲ Next.js 16.0.10 (Turbopack)
+   - Local:         http://localhost:3000
+   - Network:       http://192.168.0.2:3000
+
+ ✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+ ✓ Ready in 1200ms
+ ○ Compiling /samples/[id] ...
+ GET /samples/amalfi-coast-drive 200 in 17.3s (compile: 15.2s, render: 2.2s)
+[2026-01-23T15:36:58.423Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_basic_1769182618423_ajvgeg",
+  "destination": "アマルフィ・ポジターノ",
+  "category": "basic"
+}
+[2026-01-23T15:36:58.426Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_basic_1769182618423_ajvgeg'
+}
+ POST /samples/amalfi-coast-drive 200 in 285ms (compile: 46ms, render: 239ms)
+[2026-01-23T15:36:58.489Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_safety_1769182618489_f64m8c",
+  "destination": "アマルフィ・ポジターノ",
+  "category": "safety"
+}
+[2026-01-23T15:36:58.489Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_safety_1769182618489_f64m8c'
+}
+ POST /samples/amalfi-coast-drive 200 in 29ms (compile: 8ms, render: 21ms)
+[2026-01-23T15:36:58.562Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_visa_1769182618562_ws9uea",
+  "destination": "アマルフィ・ポジターノ",
+  "category": "visa"
+}
+[2026-01-23T15:36:58.563Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_visa_1769182618562_ws9uea'
+}
+ POST /samples/amalfi-coast-drive 200 in 22ms (compile: 6ms, render: 17ms)
+ GET /samples/amalfi-coast-drive 200 in 695ms (compile: 52ms, render: 643ms)
+[2026-01-23T15:38:48.312Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_basic_1769182728312_vf114o",
+  "destination": "アマルフィ・ポジターノ",
+  "category": "basic"
+}
+[2026-01-23T15:38:48.314Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_basic_1769182728312_vf114o'
+}
+ POST /samples/amalfi-coast-drive 200 in 83ms (compile: 51ms, render: 33ms)
+[2026-01-23T15:38:48.405Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_safety_1769182728405_w2zn1n",
+  "destination": "アマルフィ・ポジターノ",
+  "category": "safety"
+}
+[2026-01-23T15:38:48.406Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_safety_1769182728405_w2zn1n'
+}
+ POST /samples/amalfi-coast-drive 200 in 17ms (compile: 7ms, render: 10ms)
+[2026-01-23T15:38:48.525Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_visa_1769182728525_meg750",
+  "destination": "アマルフィ・ポジターノ",
+  "category": "visa"
+}
+[2026-01-23T15:38:48.525Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_visa_1769182728525_meg750'
+}
+ POST /samples/amalfi-coast-drive 200 in 34ms (compile: 13ms, render: 21ms)
+ ✓ Compiled in 146ms
+ GET /samples/paris-art-culture 200 in 1861ms (compile: 329ms, render: 1532ms)
+[2026-01-23T15:41:30.679Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_basic_1769182890679_nov1f1",
+  "destination": "Paris",
+  "category": "basic"
+}
+[2026-01-23T15:41:30.680Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_basic_1769182890679_nov1f1'
+}
+ POST /samples/paris-art-culture 200 in 98ms (compile: 43ms, render: 55ms)
+[2026-01-23T15:41:30.738Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_safety_1769182890738_3y9cku",
+  "destination": "Paris",
+  "category": "safety"
+}
+[2026-01-23T15:41:30.739Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_safety_1769182890738_3y9cku'
+}
+ POST /samples/paris-art-culture 200 in 19ms (compile: 8ms, render: 11ms)
+[2026-01-23T15:41:30.834Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_visa_1769182890834_utuvli",
+  "destination": "Paris",
+  "category": "visa"
+}
+[2026-01-23T15:41:30.835Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_visa_1769182890834_utuvli'
+}
+ POST /samples/paris-art-culture 200 in 22ms (compile: 7ms, render: 15ms)
+[2026-01-23T15:41:31.695Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_basic_1769182891695_h27tyu",
+  "destination": "London",
+  "category": "basic"
+}
+[2026-01-23T15:41:31.696Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_basic_1769182891695_h27tyu'
+}
+ POST /samples/paris-art-culture 200 in 17ms (compile: 6ms, render: 11ms)
+[2026-01-23T15:41:31.732Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_safety_1769182891732_cffv8c",
+  "destination": "London",
+  "category": "safety"
+}
+[2026-01-23T15:41:31.733Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_safety_1769182891732_cffv8c'
+}
+ POST /samples/paris-art-culture 200 in 18ms (compile: 8ms, render: 9ms)
+[2026-01-23T15:41:31.782Z] [travel-info] [getSingleCategoryInfo] 処理開始 {
+  "requestId": "single_visa_1769182891782_b5nqei",
+  "destination": "London",
+  "category": "visa"
+}
+[2026-01-23T15:41:31.782Z] [travel-info] [getSingleCategoryInfo] APIキーが設定されていません {
+  error: { raw: 'undefined' },
+  requestId: 'single_visa_1769182891782_b5nqei'
+}
+ POST /samples/paris-art-culture 200 in 58ms (compile: 5ms, render: 53ms)
+ ✓ Compiled in 100ms

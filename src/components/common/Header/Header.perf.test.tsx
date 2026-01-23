@@ -2,6 +2,7 @@ import { render, act } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 import Header from "./Header";
 import React from "react";
+import { PlanModalProvider } from "@/context/PlanModalContext";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -31,7 +32,11 @@ describe("Header Performance Benchmark", () => {
   });
 
   it("measures window.scrollY accesses during scroll events", () => {
-    render(<Header forceShow={true} />);
+    render(
+      <PlanModalProvider>
+        <Header forceShow={true} />
+      </PlanModalProvider>
+    );
 
     // Initial check consumes 1 access
     expect(scrollYSpy).toHaveBeenCalled();
