@@ -6,7 +6,7 @@ import { PineconeRetriever } from "@/lib/services/rag/pinecone-retriever";
 import { Itinerary, UserInput, PlanOutline, PlanOutlineDay, DayPlan, Article } from '@/types';
 import { getUnsplashImage } from "@/lib/unsplash";
 import { extractDuration, splitDaysIntoChunks } from "@/lib/utils";
-import { getUser } from "@/lib/supabase/server";
+import { getUser, createAdminClient } from "@/lib/supabase/server";
 import { planService } from "@/lib/plans/service";
 import { EntitlementService } from "@/lib/entitlements";
 import { createClient } from "@/lib/supabase/server";
@@ -549,6 +549,39 @@ export async function updatePlanVisibility(
 }
 
 /**
+ * Update plan name (destination)
+ */
+export async function updatePlanName(
+  planId: string,
+  newName: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getUser();
+
+    if (!user) {
+      return { success: false, error: "認証が必要です" };
+    }
+
+    if (!newName || newName.trim().length === 0) {
+      return { success: false, error: "プラン名を入力してください" };
+    }
+
+    const result = await planService.updatePlan(planId, user.id, {
+      destination: newName.trim(),
+    });
+
+    if (!result.success) {
+      return { success: false, error: result.error };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update plan name:", error);
+    return { success: false, error: "プラン名の更新に失敗しました" };
+  }
+}
+
+/**
  * Check if user can generate plans (entitlement check)
  */
 export async function canGeneratePlan(): Promise<{
@@ -620,6 +653,47 @@ export async function getUserPlansList(limit: number = 5): Promise<{
   } catch (error) {
     console.error("Failed to get user plans:", error);
     return { success: false, error: "プランの取得に失敗しました" };
+  }
+}
+
+/**
+ * Delete user account and all associated data
+ */
+export async function deleteAccount(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getUser();
+
+    if (!user) {
+      return { success: false, error: "認証が必要です" };
+    }
+
+    const supabase = await createClient();
+
+    // First, delete all user's plans
+    const { error: plansDeleteError } = await supabase
+      .from('plans')
+      .delete()
+      .eq('user_id', user.id);
+
+    if (plansDeleteError) {
+      console.error('Failed to delete user plans:', plansDeleteError);
+      // Continue with account deletion even if plans deletion fails
+    }
+
+    // Delete the user from auth.users using admin client
+    // This will cascade delete from users table and other related tables
+    const adminClient = await createAdminClient();
+    const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id);
+
+    if (deleteError) {
+      console.error('Failed to delete user:', deleteError);
+      return { success: false, error: "アカウントの削除に失敗しました" };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete account:", error);
+    return { success: false, error: "アカウントの削除に失敗しました" };
   }
 }
 

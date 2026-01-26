@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   FaMapMarkerAlt,
   FaCalendarAlt,
@@ -14,11 +15,18 @@ import {
   FaSuitcase,
   FaPlane,
   FaSync,
+  FaEdit,
+  FaEllipsisV,
+  FaUserCog,
+  FaExclamationTriangle,
+  FaGlobe,
+  FaLock,
 } from 'react-icons/fa';
 
 import type { PlanListItem } from '@/types';
-import { deletePlan, updatePlanVisibility, savePlan } from '@/app/actions/travel-planner';
+import { deletePlan, updatePlanVisibility, savePlan, updatePlanName, deleteAccount } from '@/app/actions/travel-planner';
 import { usePlanModal } from '@/context/PlanModalContext';
+import { useAuth } from '@/context/AuthContext';
 import { getLocalPlans, deleteLocalPlan } from '@/lib/local-storage/plans';
 
 interface MyPlansClientProps {
@@ -31,11 +39,49 @@ export default function MyPlansClient({
   totalPlans,
 }: MyPlansClientProps) {
   const { openModal } = usePlanModal();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
   const [plans, setPlans] = useState<PlanListItem[]>(initialPlans);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
+
+  // Rename functionality
+  const [isRenaming, setIsRenaming] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const renameInputRef = useRef<HTMLInputElement>(null);
+
+  // Menu state for mobile actions
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Account deletion state
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
+  // Focus rename input when opening
+  useEffect(() => {
+    if (isRenaming && renameInputRef.current) {
+      renameInputRef.current.focus();
+      renameInputRef.current.select();
+    }
+  }, [isRenaming]);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+
+    if (openMenuId) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [openMenuId]);
 
   // Sync local plans to database when component mounts
   const syncLocalPlans = useCallback(async () => {
@@ -119,6 +165,53 @@ export default function MyPlansClient({
       alert(result.error || '更新に失敗しました');
     }
     setIsUpdating(null);
+  };
+
+  const handleStartRename = (planId: string, currentName: string) => {
+    setIsRenaming(planId);
+    setRenameValue(currentName || '');
+    setOpenMenuId(null);
+  };
+
+  const handleRename = async (planId: string) => {
+    if (!renameValue.trim()) {
+      setIsRenaming(null);
+      return;
+    }
+
+    setIsUpdating(planId);
+    const result = await updatePlanName(planId, renameValue.trim());
+
+    if (result.success) {
+      setPlans((prev) =>
+        prev.map((p) =>
+          p.id === planId ? { ...p, destination: renameValue.trim() } : p
+        )
+      );
+    } else {
+      alert(result.error || '名前の変更に失敗しました');
+    }
+
+    setIsRenaming(null);
+    setIsUpdating(null);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== '削除する') {
+      alert('確認テキストが正しくありません');
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    const result = await deleteAccount();
+
+    if (result.success) {
+      await signOut();
+      router.push('/');
+    } else {
+      alert(result.error || 'アカウントの削除に失敗しました');
+      setIsDeletingAccount(false);
+    }
   };
 
   const formatDate = (date: Date) => {
@@ -237,23 +330,69 @@ export default function MyPlansClient({
                   <div className="flex-1 p-5 sm:p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <Link
-                          href={`/plan/${plan.shareCode}`}
-                          className="group/link"
-                        >
-                          <h3 className="font-serif text-lg font-bold text-stone-800 group-hover/link:text-[#e67e22] transition-colors flex items-center gap-2">
-                            {plan.destination || '目的地未設定'}
-                            <FaExternalLinkAlt className="text-xs opacity-0 group-hover/link:opacity-100 transition-opacity" />
-                          </h3>
-                        </Link>
+                        {isRenaming === plan.id ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              ref={renameInputRef}
+                              type="text"
+                              value={renameValue}
+                              onChange={(e) => setRenameValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  handleRename(plan.id);
+                                } else if (e.key === 'Escape') {
+                                  setIsRenaming(null);
+                                }
+                              }}
+                              onBlur={() => handleRename(plan.id)}
+                              className="flex-1 font-serif text-lg font-bold text-stone-800 bg-white border-2 border-[#e67e22] rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-[#e67e22]/50"
+                              disabled={isUpdating === plan.id}
+                              placeholder="プラン名を入力"
+                            />
+                          </div>
+                        ) : (
+                          <Link
+                            href={`/plan/${plan.shareCode}`}
+                            className="group/link"
+                          >
+                            <h3 className="font-serif text-lg font-bold text-stone-800 group-hover/link:text-[#e67e22] transition-colors flex items-center gap-2">
+                              {plan.destination || '目的地未設定'}
+                              <FaExternalLinkAlt className="text-xs opacity-0 group-hover/link:opacity-100 transition-opacity" />
+                            </h3>
+                          </Link>
+                        )}
 
-                        <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-stone-500">
+                        <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-stone-500">
                           {plan.durationDays && (
                             <span className="flex items-center gap-1.5 bg-[#e67e22]/5 px-2.5 py-1 rounded-full">
                               <FaCalendarAlt className="text-[#e67e22]/60 text-xs" />
                               {plan.durationDays}日間
                             </span>
                           )}
+                          {/* Improved visibility indicator */}
+                          <button
+                            onClick={() => handleToggleVisibility(plan.id, plan.isPublic)}
+                            disabled={isUpdating === plan.id}
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all disabled:opacity-50 ${
+                              plan.isPublic
+                                ? 'bg-[#27ae60]/10 text-[#27ae60] hover:bg-[#27ae60]/20'
+                                : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                            }`}
+                            title={plan.isPublic ? 'クリックで非公開にする' : 'クリックで公開する'}
+                          >
+                            {plan.isPublic ? (
+                              <>
+                                <FaGlobe className="text-[10px]" />
+                                公開中
+                              </>
+                            ) : (
+                              <>
+                                <FaLock className="text-[10px]" />
+                                非公開
+                              </>
+                            )}
+                          </button>
                         </div>
 
                         <p className="text-xs text-stone-400 mt-3 font-hand">
@@ -261,30 +400,60 @@ export default function MyPlansClient({
                         </p>
                       </div>
 
-                      {/* Actions */}
-                      <div className="flex items-center gap-1">
+                      {/* Actions - Three dot menu */}
+                      <div className="relative" ref={openMenuId === plan.id ? menuRef : null}>
                         <button
-                          onClick={() =>
-                            handleToggleVisibility(plan.id, plan.isPublic)
-                          }
-                          disabled={isUpdating === plan.id}
-                          className={`p-2.5 rounded-full transition-all disabled:opacity-50 ${
-                            plan.isPublic
-                              ? 'text-[#27ae60] hover:bg-[#27ae60]/10'
-                              : 'text-stone-400 hover:bg-stone-100 hover:text-stone-600'
-                          }`}
-                          title={plan.isPublic ? '非公開にする' : '公開する'}
+                          onClick={() => setOpenMenuId(openMenuId === plan.id ? null : plan.id)}
+                          className="p-2.5 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-full transition-all"
+                          title="メニュー"
                         >
-                          {plan.isPublic ? <FaEye /> : <FaEyeSlash />}
+                          <FaEllipsisV />
                         </button>
-                        <button
-                          onClick={() => handleDelete(plan.id)}
-                          disabled={isDeleting === plan.id}
-                          className="p-2.5 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all disabled:opacity-50"
-                          title="削除"
-                        >
-                          <FaTrash />
-                        </button>
+
+                        {/* Dropdown menu */}
+                        {openMenuId === plan.id && (
+                          <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-stone-200 py-2 z-50">
+                            <button
+                              onClick={() => handleStartRename(plan.id, plan.destination || '')}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-stone-700 hover:bg-stone-50 transition-colors"
+                            >
+                              <FaEdit className="text-stone-400" />
+                              名前を変更
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleToggleVisibility(plan.id, plan.isPublic);
+                                setOpenMenuId(null);
+                              }}
+                              disabled={isUpdating === plan.id}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                            >
+                              {plan.isPublic ? (
+                                <>
+                                  <FaLock className="text-stone-400" />
+                                  非公開にする
+                                </>
+                              ) : (
+                                <>
+                                  <FaGlobe className="text-stone-400" />
+                                  公開する
+                                </>
+                              )}
+                            </button>
+                            <hr className="my-2 border-stone-100" />
+                            <button
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                handleDelete(plan.id);
+                              }}
+                              disabled={isDeleting === plan.id}
+                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                            >
+                              <FaTrash className="text-red-400" />
+                              削除
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -293,7 +462,130 @@ export default function MyPlansClient({
             ))}
           </div>
         )}
+
+        {/* Account Management Section */}
+        <div className="mt-16 pt-8 border-t border-dashed border-stone-200">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-stone-100 rounded-full">
+              <FaUserCog className="text-stone-500" />
+            </div>
+            <h2 className="font-serif text-xl font-bold text-stone-700">
+              アカウント設定
+            </h2>
+          </div>
+
+          {/* User Info Card */}
+          {user && (
+            <div className="bg-white rounded-xl border border-stone-200 p-6 mb-6">
+              <div className="flex items-center gap-4">
+                {user.avatarUrl ? (
+                  <Image
+                    src={user.avatarUrl}
+                    alt={user.displayName || 'ユーザー'}
+                    width={56}
+                    height={56}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-[#e67e22]/10 flex items-center justify-center">
+                    <span className="text-[#e67e22] text-xl font-bold">
+                      {user.displayName?.[0] || user.email?.[0] || 'U'}
+                    </span>
+                  </div>
+                )}
+                <div>
+                  <p className="font-medium text-stone-800">
+                    {user.displayName || 'ユーザー'}
+                  </p>
+                  <p className="text-sm text-stone-500">{user.email}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Danger Zone */}
+          <div className="bg-red-50/50 rounded-xl border border-red-200 p-6">
+            <div className="flex items-start gap-3 mb-4">
+              <FaExclamationTriangle className="text-red-500 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-red-700 mb-1">危険な操作</h3>
+                <p className="text-sm text-red-600/80">
+                  この操作は取り消すことができません
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowDeleteAccountModal(true)}
+              className="w-full sm:w-auto px-6 py-3 bg-white border-2 border-red-300 text-red-600 rounded-xl font-medium hover:bg-red-50 hover:border-red-400 transition-all"
+            >
+              アカウントを削除
+            </button>
+          </div>
+        </div>
       </main>
+
+      {/* Delete Account Modal */}
+      {showDeleteAccountModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-red-100 rounded-full">
+                <FaExclamationTriangle className="text-red-500 text-xl" />
+              </div>
+              <h3 className="font-serif text-xl font-bold text-stone-800">
+                アカウント削除
+              </h3>
+            </div>
+
+            <div className="mb-6 space-y-3 text-sm text-stone-600">
+              <p>
+                アカウントを削除すると、以下のデータがすべて<span className="font-bold text-red-600">完全に削除</span>されます：
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-stone-500">
+                <li>保存したすべてのプラン</li>
+                <li>アカウント情報</li>
+                <li>利用履歴</li>
+              </ul>
+              <p className="text-red-600 font-medium">
+                この操作は取り消すことができません。
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-stone-700 mb-2">
+                確認のため「削除する」と入力してください
+              </label>
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="削除する"
+                className="w-full px-4 py-3 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteAccountModal(false);
+                  setDeleteConfirmText('');
+                }}
+                className="flex-1 px-4 py-3 bg-stone-100 text-stone-700 rounded-xl font-medium hover:bg-stone-200 transition-colors"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirmText !== '削除する' || isDeletingAccount}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDeletingAccount ? '削除中...' : '削除する'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

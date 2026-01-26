@@ -217,6 +217,7 @@ export default function Header({
         onClose={() => setIsSidebarOpen(false)}
         serverPlans={serverPlans}
         isLoadingPlans={isLoadingPlans}
+        onPlansUpdate={fetchUserPlans}
       />
     </>
   );
