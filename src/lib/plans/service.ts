@@ -26,6 +26,7 @@ export interface UpdatePlanParams {
   input?: UserInput;
   itinerary?: Itinerary;
   isPublic?: boolean;
+  destination?: string;
 }
 
 // ============================================
@@ -419,8 +420,16 @@ export class PlanService {
 
     // Merge updates
     const newInput = params.input || decrypted.input;
-    const newItinerary = params.itinerary || decrypted.itinerary;
+    let newItinerary = params.itinerary || decrypted.itinerary;
     const newIsPublic = params.isPublic ?? existingPlan.is_public;
+
+    // Handle destination update
+    if (params.destination !== undefined && newItinerary) {
+      newItinerary = {
+        ...newItinerary,
+        destination: params.destination,
+      };
+    }
 
     // Re-encrypt
     const encryptedData: EncryptedPlanData = {
