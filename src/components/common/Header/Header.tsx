@@ -1,20 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   FaBars,
-  FaTimes,
   FaMap,
   FaQuestionCircle,
   FaPen,
   FaMapMarkerAlt,
+  FaUser,
 } from "react-icons/fa";
 import { throttle } from "@/lib/utils";
 import { usePlanModal } from "@/context/PlanModalContext";
+import { useAuth } from "@/context/AuthContext";
 import { AuthButton } from "../AuthButton";
+import MobileSidebar from "./MobileSidebar";
+import { getUserPlansList } from "@/app/actions/travel-planner";
+import type { PlanListItem } from "@/types";
 
 export interface HeaderProps {
   forceShow?: boolean;
@@ -28,16 +32,59 @@ export default function Header({
   isSticky = false,
 }: HeaderProps) {
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { openModal } = usePlanModal();
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const isHome = pathname === "/";
+
+  // Server plans for sidebar
+  const [serverPlans, setServerPlans] = useState<PlanListItem[]>([]);
+  const [isLoadingPlans, setIsLoadingPlans] = useState(false);
 
   // Scroll-based visibility for homepage
   const [scrollPastThreshold, setScrollPastThreshold] = useState(false);
 
-  // Close mobile menu when path changes
+  // Fetch user plans when authenticated
+  const fetchUserPlans = useCallback(async () => {
+    if (!isAuthenticated) {
+      setServerPlans([]);
+      return;
+    }
+
+    setIsLoadingPlans(true);
+    try {
+      const result = await getUserPlansList(5);
+      if (result.success && result.plans) {
+        setServerPlans(
+          result.plans.map((p) => ({
+            id: p.id,
+            shareCode: p.shareCode,
+            destination: p.destination,
+            durationDays: null,
+            thumbnailUrl: p.thumbnailUrl,
+            isPublic: false,
+            createdAt: new Date(p.createdAt),
+            updatedAt: new Date(p.createdAt),
+          }))
+        );
+      }
+    } catch (error) {
+      console.error("Failed to fetch user plans:", error);
+    } finally {
+      setIsLoadingPlans(false);
+    }
+  }, [isAuthenticated]);
+
+  // Fetch plans when auth state changes
   useEffect(() => {
-    const timer = setTimeout(() => setIsOpen(false), 0);
+    if (!isAuthLoading) {
+      fetchUserPlans();
+    }
+  }, [isAuthLoading, fetchUserPlans]);
+
+  // Close sidebar when path changes
+  useEffect(() => {
+    const timer = setTimeout(() => setIsSidebarOpen(false), 0);
     return () => clearTimeout(timer);
   }, [pathname]);
 
@@ -89,7 +136,16 @@ export default function Header({
         style={{ zIndex: 50 }}
       >
         <div className={`max-w-5xl w-full px-4 pointer-events-auto`}>
-          <div className="relative bg-[#fcfbf9]/95 backdrop-blur-md shadow-lg rounded-full border border-orange-100/50 px-6 py-3 flex items-center justify-between">
+          <div className="relative bg-[#fcfbf9]/95 backdrop-blur-md shadow-lg rounded-full border border-orange-100/50 px-4 md:px-6 py-3 flex items-center justify-between">
+            {/* Mobile: Hamburger on left */}
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="md:hidden p-2 text-[#e67e22] hover:opacity-80 transition-opacity"
+              aria-label="メニューを開く"
+            >
+              <FaBars size={20} />
+            </button>
+
             {/* Logo */}
             <Link href="/" className="group flex items-center gap-1">
               <span className="font-serif text-2xl font-bold text-[#e67e22] tracking-tight group-hover:opacity-80 transition-opacity flex items-center">
@@ -117,56 +173,51 @@ export default function Header({
               <AuthButton />
             </nav>
 
-            {/* Mobile Menu Toggle */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-[#e67e22] hover:opacity-80 transition-opacity"
-              aria-label="Toggle menu"
-            >
-              {isOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
-            </button>
+            {/* Mobile: User icon on right */}
+            <div className="md:hidden">
+              {isAuthLoading ? (
+                <div className="w-8 h-8 rounded-full bg-[#e67e22]/20 animate-pulse" />
+              ) : isAuthenticated ? (
+                <Link
+                  href="/my-plans"
+                  className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-[#e67e22]/10 transition-all"
+                >
+                  {user?.avatarUrl ? (
+                    <Image
+                      src={user.avatarUrl}
+                      alt={user.displayName || "ユーザー"}
+                      width={32}
+                      height={32}
+                      className="rounded-full ring-2 ring-[#e67e22]/20"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-[#e67e22]/10 ring-2 ring-[#e67e22]/20 flex items-center justify-center">
+                      <span className="text-[#e67e22] text-sm font-bold">
+                        {user?.displayName?.[0] || user?.email?.[0] || "U"}
+                      </span>
+                    </div>
+                  )}
+                </Link>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="flex items-center justify-center w-8 h-8 rounded-full text-[#e67e22] hover:bg-[#e67e22]/10 transition-all"
+                >
+                  <FaUser size={16} />
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Mobile Overlay Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-x-4 top-24 z-[60] bg-[#fcfbf9] rounded-2xl shadow-xl border border-orange-100 p-6 flex flex-col items-center gap-6 md:hidden"
-          >
-            <MobileMenuItem
-              href="/"
-              label="ホーム"
-              onClick={() => setIsOpen(false)}
-            />
-            <MobileMenuItem
-              href="/usage"
-              label="使い方"
-              onClick={() => setIsOpen(false)}
-            />
-            <MobileMenuItem
-              href="/faq"
-              label="よくある質問"
-              onClick={() => setIsOpen(false)}
-            />
-
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                openModal();
-              }}
-              className="w-full bg-[#e67e22] text-white py-3 rounded-xl font-serif font-bold text-lg shadow-md"
-            >
-              プランを作成する
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Mobile Sidebar */}
+      <MobileSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        serverPlans={serverPlans}
+        isLoadingPlans={isLoadingPlans}
+      />
     </>
   );
 }
@@ -189,26 +240,6 @@ function NavLink({
         {icon}
       </span>
       <span>{label}</span>
-    </Link>
-  );
-}
-
-function MobileMenuItem({
-  href,
-  label,
-  onClick,
-}: {
-  href: string;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className="text-lg font-bold text-stone-800 hover:text-[#e67e22] transition-colors"
-    >
-      {label}
     </Link>
   );
 }

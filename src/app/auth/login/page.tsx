@@ -37,9 +37,9 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#fcfbf9] px-4 py-12">
+    <main className="min-h-screen flex items-center justify-center bg-[#fcfbf9] px-4 pt-24 pb-12">
       {/* Decorative elements */}
-      <div className="fixed top-20 left-10 text-[#e67e22]/10 rotate-12 hidden lg:block">
+      <div className="fixed top-32 left-10 text-[#e67e22]/10 rotate-12 hidden lg:block">
         <FaPlane className="text-8xl" />
       </div>
       <div className="fixed bottom-20 right-10 text-[#27ae60]/10 -rotate-12 hidden lg:block">

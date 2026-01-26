@@ -27,6 +27,24 @@ vi.mock("@/lib/supabase/client", () => ({
   }),
 }));
 
+// Mock Server Actions
+vi.mock("@/app/actions/travel-planner", () => ({
+  getUserPlansList: () => Promise.resolve({ success: true, plans: [] }),
+}));
+
+// Mock local storage plans hook
+vi.mock("@/lib/local-storage/plans", () => ({
+  useLocalPlans: () => ({
+    plans: [],
+    isLoading: false,
+    savePlan: vi.fn(),
+    updatePlan: vi.fn(),
+    deletePlan: vi.fn(),
+    clearAll: vi.fn(),
+    hasPlans: false,
+  }),
+}));
+
 describe("Header Performance Benchmark", () => {
   let scrollYSpy: ReturnType<typeof vi.spyOn>;
 

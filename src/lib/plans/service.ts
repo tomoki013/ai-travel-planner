@@ -545,6 +545,77 @@ export class PlanService {
       total: count || 0,
     };
   }
+
+  async getPlanById(
+    planId: string,
+    userId: string
+  ): Promise<{
+    success: boolean;
+    plan?: Plan;
+    error?: string;
+  }> {
+    const supabase = await createClient();
+
+    // Get user's encryption salt
+    const { data: user } = await supabase
+      .from('users')
+      .select('encryption_salt')
+      .eq('id', userId)
+      .single();
+
+    if (!user) {
+      return { success: false, error: 'User not found' };
+    }
+
+    // Get plan by ID (must be owned by user)
+    const { data: plan, error } = await supabase
+      .from('plans')
+      .select('*')
+      .eq('id', planId)
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !plan) {
+      return { success: false, error: 'Plan not found or access denied' };
+    }
+
+    // Decrypt plan data
+    let input: UserInput | undefined;
+    let itinerary: Itinerary | undefined;
+
+    try {
+      const decrypted = decryptPlan(
+        plan.encrypted_data,
+        plan.encryption_iv,
+        userId,
+        user.encryption_salt,
+        plan.key_version
+      );
+      input = decrypted.input;
+      itinerary = decrypted.itinerary;
+    } catch (error) {
+      console.error('Failed to decrypt plan:', error);
+      return { success: false, error: 'Decryption failed' };
+    }
+
+    return {
+      success: true,
+      plan: {
+        id: plan.id,
+        shareCode: plan.share_code,
+        userId: plan.user_id,
+        destination: plan.destination || itinerary?.destination || null,
+        durationDays: plan.duration_days || itinerary?.days?.length || null,
+        thumbnailUrl: plan.thumbnail_url || itinerary?.heroImage || null,
+        isPublic: plan.is_public,
+        viewCount: plan.view_count,
+        createdAt: new Date(plan.created_at),
+        updatedAt: new Date(plan.updated_at),
+        input,
+        itinerary,
+      },
+    };
+  }
 }
 
 // Singleton instance
