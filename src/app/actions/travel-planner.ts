@@ -579,3 +579,97 @@ export async function canGeneratePlan(): Promise<{
     return { canGenerate: true, remaining: null, isAuthenticated: false };
   }
 }
+
+/**
+ * Get user's plans list for sidebar
+ */
+export async function getUserPlansList(limit: number = 5): Promise<{
+  success: boolean;
+  plans?: Array<{
+    id: string;
+    shareCode: string;
+    destination: string | null;
+    thumbnailUrl: string | null;
+    createdAt: string;
+  }>;
+  error?: string;
+}> {
+  try {
+    const user = await getUser();
+
+    if (!user) {
+      return { success: false, error: "認証が必要です" };
+    }
+
+    const result = await planService.getUserPlansList(user.id, { limit });
+
+    if (!result.success || !result.plans) {
+      return { success: false, error: result.error };
+    }
+
+    return {
+      success: true,
+      plans: result.plans.map((plan) => ({
+        id: plan.id,
+        shareCode: plan.shareCode,
+        destination: plan.destination,
+        thumbnailUrl: plan.thumbnailUrl,
+        createdAt: plan.createdAt.toISOString(),
+      })),
+    };
+  } catch (error) {
+    console.error("Failed to get user plans:", error);
+    return { success: false, error: "プランの取得に失敗しました" };
+  }
+}
+
+/**
+ * Get plan by ID (for logged-in user only)
+ */
+export async function getPlanById(planId: string): Promise<{
+  success: boolean;
+  plan?: {
+    id: string;
+    shareCode: string;
+    destination: string | null;
+    durationDays: number | null;
+    thumbnailUrl: string | null;
+    isPublic: boolean;
+    input?: UserInput;
+    itinerary?: Itinerary;
+  };
+  error?: string;
+}> {
+  try {
+    const user = await getUser();
+
+    if (!user) {
+      return { success: false, error: "認証が必要です" };
+    }
+
+    const result = await planService.getPlanById(planId, user.id);
+
+    if (!result.success || !result.plan) {
+      return { success: false, error: result.error || "プランが見つかりません" };
+    }
+
+    const { plan } = result;
+
+    return {
+      success: true,
+      plan: {
+        id: plan.id,
+        shareCode: plan.shareCode,
+        destination: plan.destination,
+        durationDays: plan.durationDays,
+        thumbnailUrl: plan.thumbnailUrl,
+        isPublic: plan.isPublic,
+        input: plan.input,
+        itinerary: plan.itinerary,
+      },
+    };
+  } catch (error) {
+    console.error("Failed to get plan:", error);
+    return { success: false, error: "プランの取得に失敗しました" };
+  }
+}
