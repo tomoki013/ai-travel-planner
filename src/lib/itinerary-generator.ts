@@ -99,11 +99,26 @@ export async function generateItinerary(
     const totalDays = extractDuration(input.dates);
     log(`[generateItinerary] Total days: ${totalDays}`);
 
+    // Pre-booked Transit Info string for prompt
+    let transitInfoStr = "";
+    if (input.transits) {
+      transitInfoStr = "\nPre-booked Transit Info (Must be respected):\n";
+      Object.entries(input.transits).forEach(([day, info]) => {
+        transitInfoStr += `- Day ${day}: ${info.type} from ${
+          info.departure.place
+        } (${info.departure.time || "?"}) to ${info.arrival.place} (${
+          info.arrival.time || "?"
+        }). Note: ${info.memo || ""}\n`;
+      });
+    }
+
     let prompt: string;
     const isMultiCity = input.destinations.length > 1;
     if (input.isDestinationDecided) {
       prompt = `
-        Destinations: ${destinationsStr}${isMultiCity ? " (Multi-city trip)" : ""}
+        Destinations: ${destinationsStr}${
+        isMultiCity ? " (Multi-city trip)" : ""
+      }
         Dates: ${input.dates}
         Total Days: ${totalDays}
         Companions: ${input.companions}
@@ -112,7 +127,12 @@ export async function generateItinerary(
         Pace: ${input.pace}
         Must-Visit: ${input.mustVisitPlaces?.join(", ") || "None"}
         Note: ${input.freeText || "None"}
-        ${isMultiCity ? `IMPORTANT: This is a multi-city trip visiting: ${destinationsStr}. Plan the route efficiently.` : ""}
+        ${transitInfoStr}
+        ${
+          isMultiCity
+            ? `IMPORTANT: This is a multi-city trip visiting: ${destinationsStr}. Plan the route efficiently.`
+            : ""
+        }
       `;
     } else {
       prompt = `
@@ -132,6 +152,7 @@ export async function generateItinerary(
         Pace: ${input.pace}
         Must-Visit: ${input.mustVisitPlaces?.join(", ") || "None"}
         Note: ${input.freeText || "None"}
+        ${transitInfoStr}
 
         TASK: Select best destination and outline plan.
       `;
@@ -189,6 +210,16 @@ export async function generateItinerary(
     // Merge results
     const mergedDays: DayPlan[] = chunkResults.flat();
     mergedDays.sort((a, b) => a.day - b.day);
+
+    // Inject user transit info
+    if (input.transits) {
+      mergedDays.forEach((dayPlan) => {
+        const transit = input.transits![dayPlan.day];
+        if (transit) {
+          dayPlan.transit = transit;
+        }
+      });
+    }
 
     // 6. Fetch Hero Image (optional)
     let heroImageData = null;

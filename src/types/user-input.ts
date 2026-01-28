@@ -3,6 +3,8 @@
  * User Input Types for AI Travel Planner
  */
 
+import { TransitInfo } from './itinerary';
+
 /**
  * ユーザーの旅行計画入力
  */
@@ -31,4 +33,6 @@ export interface UserInput {
   mustVisitPlaces?: string[];
   /** 必ず訪れたい場所があるか（Step 2のバリデーション用） */
   hasMustVisitPlaces?: boolean;
+  /** 既定の移動情報（DayIndexをキーとするマップ） */
+  transits?: Record<number, TransitInfo>;
 }

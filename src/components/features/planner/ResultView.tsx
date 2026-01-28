@@ -6,6 +6,7 @@ import TravelPlannerChat from "@/components/TravelPlannerChat";
 import ShareButtons from "@/components/ShareButtons";
 import PDFDownloadButton from "./PDFDownloadButton";
 import RequestSummary from "./RequestSummary";
+import TransitCard from "./TransitCard";
 import { EmbeddedTravelInfo } from "@/components/features/travel-info";
 import {
   FaMapMarkerAlt,
@@ -545,6 +546,15 @@ export default function ResultView({
 
                     {/* Activities */}
                     <div className="border-l-2 border-stone-200 ml-8 space-y-8 pb-8 relative">
+                      {/* Transit Card */}
+                      {day.transit && (
+                        <div className="relative pl-4 sm:pl-10 mb-8">
+                          {/* Dot on timeline (Black for transit) */}
+                          <div className="absolute left-[-9px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-stone-800 border-2 border-white shadow-sm z-10 ring-1 ring-stone-200"></div>
+                          <TransitCard transit={day.transit} />
+                        </div>
+                      )}
+
                       {day.activities.map((act, actIndex) => (
                         <div key={actIndex} className="relative pl-10 group">
                           {/* Dot on timeline */}
