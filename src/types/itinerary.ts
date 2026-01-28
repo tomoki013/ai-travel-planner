@@ -4,6 +4,33 @@
  */
 
 /**
+ * 移動手段タイプ
+ */
+export type TransitType = 'flight' | 'train' | 'bus' | 'ship' | 'car' | 'other';
+
+/**
+ * 移動情報
+ */
+export interface TransitInfo {
+  /** 移動手段 */
+  type: TransitType;
+  /** 出発情報 */
+  departure: {
+    place: string;
+    time?: string;
+  };
+  /** 到着情報 */
+  arrival: {
+    place: string;
+    time?: string;
+  };
+  /** 所要時間（例: "2h 30m"） */
+  duration?: string;
+  /** メモ（便名など） */
+  memo?: string;
+}
+
+/**
  * アクティビティ
  */
 export interface Activity {
@@ -23,6 +50,8 @@ export interface DayPlan {
   day: number;
   /** 日のタイトル */
   title: string;
+  /** その日の主要な移動（到着や都市間移動） */
+  transit?: TransitInfo;
   /** アクティビティ一覧 */
   activities: Activity[];
   /** 参考記事のインデックス */

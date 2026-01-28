@@ -11,6 +11,8 @@ export type {
   Itinerary,
   PlanOutlineDay,
   PlanOutline,
+  TransitType,
+  TransitInfo,
 } from './itinerary';
 
 // ユーザー入力型
