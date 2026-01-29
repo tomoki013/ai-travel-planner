@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   createContext,
@@ -7,12 +7,12 @@ import {
   useState,
   useCallback,
   type ReactNode,
-} from 'react';
+} from "react";
 
-import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import type { User as SupabaseUser, Session } from "@supabase/supabase-js";
 
-import { createClient } from '@/lib/supabase/client';
-import type { User, AuthProvider } from '@/types';
+import { createClient } from "@/lib/supabase/client";
+import type { User, AuthProvider } from "@/types";
 
 interface AuthContextType {
   user: User | null;
@@ -33,8 +33,7 @@ function mapSupabaseUser(user: SupabaseUser): User {
     displayName:
       user.user_metadata?.full_name || user.user_metadata?.name || null,
     avatarUrl: user.user_metadata?.avatar_url || null,
-    authProvider:
-      (user.app_metadata?.provider as 'google' | 'twitter') || null,
+    authProvider: (user.app_metadata?.provider as "google" | "twitter") || null,
     createdAt: new Date(user.created_at),
     updatedAt: new Date(user.updated_at || user.created_at),
   };
@@ -57,10 +56,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (currentSession?.user) {
           setSession(currentSession);
+          console.log("🔐 Session obtained:", currentSession);
           setUser(mapSupabaseUser(currentSession.user));
         }
       } catch (error) {
-        console.error('Failed to get session:', error);
+        console.error("Failed to get session:", error);
       } finally {
         setIsLoading(false);
       }
@@ -89,8 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(
     async (provider: AuthProvider) => {
-      const appUrl =
-        process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -100,18 +99,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
-        console.error('Sign in error:', error);
+        console.error("Sign in error:", error);
         throw error;
       }
     },
-    [supabase.auth]
+    [supabase.auth],
   );
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.error('Sign out error:', error);
+      console.error("Sign out error:", error);
       throw error;
     }
 
@@ -126,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = await supabase.auth.refreshSession();
 
     if (error) {
-      console.error('Refresh session error:', error);
+      console.error("Refresh session error:", error);
       return;
     }
 
@@ -153,7 +152,7 @@ export function useAuth() {
   const context = useContext(AuthContext);
 
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
 
   return context;

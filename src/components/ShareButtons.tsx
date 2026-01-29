@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
-import { Itinerary, UserInput } from '@/types';
+import { useState, useCallback, useSyncExternalStore } from "react";
+import { Itinerary, UserInput } from "@/types";
 import { FaFacebook, FaLine, FaLink, FaShareAlt } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
@@ -19,6 +19,10 @@ const emptySubscribe = () => () => {};
 const getEmptyStringSnapshot = () => "";
 const getFalseSnapshot = () => false;
 
+// Cached client snapshot for canShare (doesn't depend on props)
+const getCanShareSnapshot = () =>
+  typeof navigator !== "undefined" && !!navigator.share;
+
 export default function ShareButtons({
   input,
   result,
@@ -28,26 +32,29 @@ export default function ShareButtons({
 }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
 
+  // Memoize the getSnapshot function to prevent infinite loop
+  const getShareUrlSnapshot = useCallback(() => {
+    if (typeof window === "undefined") return "";
+    if (shareCode) {
+      return `${window.location.origin}/plan/${shareCode}`;
+    }
+    if (localId) {
+      return `${window.location.origin}/plan/local/${localId}`;
+    }
+    return "";
+  }, [shareCode, localId]);
+
   // Generate share URL based on shareCode or localId
   const shareUrl = useSyncExternalStore(
     emptySubscribe,
-    () => {
-      if (shareCode) {
-        return `${window.location.origin}/plan/${shareCode}`;
-      }
-      if (localId) {
-        return `${window.location.origin}/plan/local/${localId}`;
-      }
-      // No share URL available
-      return "";
-    },
-    getEmptyStringSnapshot
+    getShareUrlSnapshot,
+    getEmptyStringSnapshot,
   );
 
   const canShare = useSyncExternalStore(
     emptySubscribe,
-    () => !!navigator.share,
-    getFalseSnapshot
+    getCanShareSnapshot,
+    getFalseSnapshot,
   );
 
   const shareText = `AIに旅行プランを作ってもらいました！\n目的地: ${
@@ -77,13 +84,13 @@ export default function ShareButtons({
   };
 
   const xShareUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(
-    shareText
+    shareText,
   )}&url=${encodeURIComponent(shareUrl)}`;
   const lineShareUrl = `https://line.me/R/share?text=${encodeURIComponent(
-    shareText + " " + shareUrl
+    shareText + " " + shareUrl,
   )}`;
   const fbShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-    shareUrl
+    shareUrl,
   )}`;
 
   // Don't render if no share URL available
